@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catalogue des Robes</title>
+  <link rel="stylesheet" href="./output.css" />
+  <!-- <script src="https://cdn.tailwindcss.com"></script> -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    /* Style pour la rotation de l'icône dans l'accordéon */
+    details[open] > summary .chevron-icon { transform: rotate(180deg); }
+  </style>
+</head>
+<body class="p-4 md:p-8 text-gray-800">
+
+  <header class="max-w-7xl mx-auto mb-6 md:mb-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="text-center md:text-left">
+        <h1 class="text-4xl font-bold">Location de Robes</h1>
+        <!-- Navigation -->
+        <nav class="mt-2 flex items-center justify-center md:justify-start gap-4 text-lg">
+          <a href="./p.html" class="text-gray-500 hover:text-blue-600 font-semibold pb-1">Gestionnaire</a>
+          <a href="./catalogue.html" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">Catalogue</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="max-w-7xl mx-auto">
+      <!-- Formulaire pour ajouter une robe -->
+      <details class="mb-8 bg-white rounded-xl shadow-lg border">
+        <summary class="list-none flex items-center justify-between p-6 cursor-pointer">
+          <h3 class="font-semibold text-xl text-gray-700">Ajouter une nouvelle robe</h3>
+          <i class="fas fa-chevron-down text-gray-500 transition-transform duration-300 chevron-icon"></i>
+        </summary>
+        <div class="p-6 border-t">
+          <form id="add-dress-form" class="grid md:grid-cols-2 gap-x-6 gap-y-4">
+            <!-- Nom -->
+            <div>
+              <label for="dress-name" class="block text-sm font-medium text-gray-600 mb-1">Nom de la robe</label>
+              <input type="text" id="dress-name" placeholder="Ex: Robe de Soirée Rouge" class="w-full p-2 border rounded-md" required>
+            </div>
+            <!-- Type -->
+            <div>
+              <label for="dress-type" class="block text-sm font-medium text-gray-600 mb-1">Type</label>
+              <select id="dress-type" class="w-full p-2 border rounded-md bg-white">
+                <option value="karakou">Karakou</option>
+                <option value="caftan">Caftan</option>
+                <option value="kabyle">Kabyle</option>
+                <option value="autre">Autre</option>
+              </select>
+            </div>
+            <!-- Taille -->
+            <div>
+              <label for="dress-size" class="block text-sm font-medium text-gray-600 mb-1">Taille</label>
+              <input type="text" id="dress-size" placeholder="Ex: 38, M, Standard" class="w-full p-2 border rounded-md">
+            </div>
+            <!-- Date d'achat -->
+            <div>
+              <label for="dress-purchase-date" class="block text-sm font-medium text-gray-600 mb-1">Date d'achat</label>
+              <input type="date" id="dress-purchase-date" class="w-full p-2 border rounded-md">
+            </div>
+            <!-- Prix -->
+            <div>
+              <label for="dress-price" class="block text-sm font-medium text-gray-600 mb-1">Prix (DA)</label>
+              <input type="number" id="dress-price" placeholder="Ex: 15000" class="w-full p-2 border rounded-md" step="0.01" min="0">
+            </div>
+            <!-- Photo -->
+            <div class="md:col-span-2">
+              <label for="dress-image" class="block text-sm font-medium text-gray-600 mb-1">Photo (fichier local)</label>
+              <input type="file" id="dress-image" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" accept="image/*">
+            </div>
+            <!-- Bouton Submit -->
+            <div class="md:col-span-2 mt-2">
+              <button type="submit" class="w-full bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+              <i class="fas fa-plus mr-2"></i>Ajouter au catalogue
+            </button>
+            </div>
+          </form>
+        </div>
+      </details>
+
+      <div id="catalogue-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        <!-- Le catalogue sera injecté ici par JS -->
+      </div>
+      <!-- Conteneur pour la pagination -->
+      <div id="pagination-controls" class="flex justify-center items-center gap-2 mt-8">
+        <!-- Les boutons de pagination seront injectés ici -->
+      </div>
+    </div>
+  </main>
+
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
+      // -------- Utils --------
+      function safeParse(key, fallback) {
+        try {
+          return JSON.parse(localStorage.getItem(key)) ?? fallback;
+        } catch {
+          return fallback;
+        }
+      }
+      const DAfmt = new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 2 });
+
+      // -------- State --------
+      // On récupère les robes depuis le localStorage, comme sur la page de gestion
+      let dresses = safeParse('dresses', []);
+      const saveDresses = () => localStorage.setItem('dresses', JSON.stringify(dresses));
+      let currentPage = 1;
+      const itemsPerPage = 10; // 10 robes par page
+
+      // -------- DOM Refs --------
+      const addDressForm = document.getElementById('add-dress-form');
+
+      // -------- Rendering --------
+      async function addDress(e) {
+        e.preventDefault();
+        const nameEl = document.getElementById('dress-name');
+        const name = (nameEl.value || '').trim();
+        if (!name) { nameEl.focus(); return; }
+
+        // Gestion de l'image locale
+        const imageFile = document.getElementById('dress-image').files[0];
+        let imageUrl = '';
+        if (imageFile) {
+          try {
+            imageUrl = await compressImage(imageFile, 800, 0.8); // Redimensionne à 800px de large, qualité 80%
+          } catch (error) {
+            console.error("Erreur de compression de l'image:", error);
+            alert("Impossible de traiter l'image.");
+            return;
+          }
+        }
+
+        const newDress = {
+          id: Date.now(),
+          name: name,
+          type: document.getElementById('dress-type').value,
+          size: (document.getElementById('dress-size').value || '').trim(),
+          purchaseDate: document.getElementById('dress-purchase-date').value,
+          price: parseFloat(document.getElementById('dress-price').value) || 0,
+          imageUrl: imageUrl
+        };
+
+        dresses.unshift(newDress); // Ajouter au début pour la voir directement
+        saveDresses();
+        addDressForm.reset();
+        fullRender(); // Re-render tout
+      }
+
+      function compressImage(file, maxWidth, quality) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = (event) => {
+            const img = new Image();
+            img.src = event.target.result;
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const scale = maxWidth / img.width;
+              const newWidth = img.width * scale;
+              const newHeight = img.height * scale;
+
+              canvas.width = newWidth;
+              canvas.height = newHeight;
+
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, newWidth, newHeight);
+
+              resolve(canvas.toDataURL('image/jpeg', quality));
+            };
+            img.onerror = reject;
+          };
+          reader.onerror = reject;
+        });
+      }
+
+      function renderCataloguePage(page) {
+        const catalogueGrid = document.getElementById('catalogue-grid');
+        if (!catalogueGrid) return;
+
+        catalogueGrid.innerHTML = ''; // Vider avant de remplir
+        if (dresses.length === 0) {
+          catalogueGrid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10">Aucune robe n'a été ajoutée dans le gestionnaire.</p>`;
+          return;
+        }
+
+        // Calculer les robes à afficher pour la page actuelle
+        const startIndex = (page - 1) * itemsPerPage;
+        const endIndex = startIndex + itemsPerPage;
+        const dressesToShow = dresses.slice(startIndex, endIndex);
+
+        const frag = document.createDocumentFragment();
+        dressesToShow.forEach(dress => {
+          const card = document.createElement('div');
+          card.className = 'bg-white rounded-lg shadow-md overflow-hidden group';
+          card.innerHTML = `
+            <div class="overflow-hidden">
+              <img src="${dress.imageUrl || 'https://placehold.co/400x600/cccccc/ffffff?text=Robe'}" alt="${dress.name}" class="w-full h-80 object-cover transition-transform duration-300 group-hover:scale-105">
+            </div>
+            <div class="p-4">
+              <h3 class="font-semibold text-lg truncate" title="${dress.name}">${dress.name}</h3>
+            </div>
+            ${dress.type === 'caftan' && dress.price ? `<p class="text-gray-700 text-sm mt-1">${DAfmt.format(dress.price)}</p>` : ''}
+          `;
+          frag.appendChild(card);
+        });
+        catalogueGrid.appendChild(frag);
+        window.scrollTo({ top: 0, behavior: 'smooth' }); // Remonter en haut de la page
+      }
+
+      function renderPagination() {
+        const paginationControls = document.getElementById('pagination-controls');
+        if (!paginationControls) return;
+
+        const totalPages = Math.ceil(dresses.length / itemsPerPage);
+        paginationControls.innerHTML = '';
+
+        if (totalPages <= 1) return; // Pas besoin de pagination si tout tient sur une page
+
+        // Bouton "Précédent"
+        const prevButton = document.createElement('button');
+        prevButton.innerHTML = `<i class="fas fa-chevron-left"></i>`;
+        prevButton.className = 'px-3 py-2 rounded-md border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed';
+        prevButton.disabled = currentPage === 1;
+        prevButton.dataset.page = currentPage - 1;
+        paginationControls.appendChild(prevButton);
+
+        // Boutons des numéros de page
+        for (let i = 1; i <= totalPages; i++) {
+          const pageButton = document.createElement('button');
+          pageButton.textContent = i;
+          pageButton.dataset.page = i;
+          if (i === currentPage) {
+            pageButton.className = 'px-3 py-2 rounded-md border bg-blue-600 text-white font-bold';
+          } else {
+            pageButton.className = 'px-3 py-2 rounded-md border bg-white hover:bg-gray-50';
+          }
+          paginationControls.appendChild(pageButton);
+        }
+
+        // Bouton "Suivant"
+        const nextButton = document.createElement('button');
+        nextButton.innerHTML = `<i class="fas fa-chevron-right"></i>`;
+        nextButton.className = 'px-3 py-2 rounded-md border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed';
+        nextButton.disabled = currentPage === totalPages;
+        nextButton.dataset.page = currentPage + 1;
+        paginationControls.appendChild(nextButton);
+
+        // Ajouter l'écouteur d'événements
+        paginationControls.addEventListener('click', (e) => {
+          const target = e.target.closest('button');
+          if (target && target.dataset.page) {
+            currentPage = parseInt(target.dataset.page);
+            renderCataloguePage(currentPage);
+            renderPagination();
+          }
+        });
+      }
+
+      function fullRender() {
+        renderCataloguePage(currentPage);
+        renderPagination();
+      }
+
+      // -------- Init --------
+      fullRender();
+
+      // -------- Events --------
+      addDressForm.addEventListener('submit', addDress);
+    });
+  </script>
+</body>
+</html>
