@@ -244,26 +244,27 @@
 
   <script type="module">
   /***** 1) Firebase SDK (CDN ESM) *****/
-  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-app.js";
-  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-auth.js";
-  import {
-    getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc,
-    serverTimestamp, onSnapshot, query, where, orderBy, writeBatch, Timestamp
-  } from "https://www.gstatic.com/firebasejs/10.13.1/firebase-firestore.js";
+ import { initializeApp } from "firebase/app";
+import { getAnalytics } from "firebase/analytics";
+// TODO: Add SDKs for Firebase products that you want to use
+// https://firebase.google.com/docs/web/setup#available-libraries
 
-  // >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>
-  // Remplace par ta config (Project settings → General → Your apps)
-  const firebaseConfig = {
-    apiKey: "AIzaSyCbWriw9_4XgthvqdjKj1lx2KPyvt0c4Yo",
-    authDomain: "maison-sabaya.firebaseapp.com",
-    projectId: "maison-sabaya",
-    storageBucket: "maison-sabaya.appspot.com",
-    messagingSenderId: "…",
-    appId: "…"
-  };
-  // <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
+// Your web app's Firebase configuration
+// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+const firebaseConfig = {
+  apiKey: "AIzaSyCbWriw9_4XgthvqdjKj1lx2KPyvt0c4Yo",
+  authDomain: "maison-sabaya.firebaseapp.com",
+  projectId: "maison-sabaya",
+  storageBucket: "maison-sabaya.firebasestorage.app",
+  messagingSenderId: "648348196831",
+  appId: "1:648348196831:web:a0f266e494eaefcb0bee6a",
+  measurementId: "G-M29ZTRW80Z"
+};
 
-  const app  = initializeApp(firebaseConfig);
+// Initialize Firebase
+const app = initializeApp(firebaseConfig);
+const analytics = getAnalytics(app);
+
   const auth = getAuth(app);
   const db   = getFirestore(app);
   await signInAnonymously(auth);
