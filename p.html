@@ -244,8 +244,15 @@
 
   <script type="module">
   /***** 1) Firebase SDK (CDN ESM) *****/
- import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
+
+  import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-auth.js";
+  import {
+    getFirestore, collection, doc, getDoc, getDocs, setDoc, addDoc, updateDoc, deleteDoc,
+    serverTimestamp, onSnapshot, query, where, orderBy, writeBatch, Timestamp
+  } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-firestore.js";
+
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-app.js";
+  import { getAnalytics } from "https://www.gstatic.com/firebasejs/12.4.0/firebase-analytics.js";
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 
