@@ -276,18 +276,20 @@
     const { Client, Databases, ID, Query, Account } = Appwrite;
     const client = new Client();
     client.setEndpoint(ENDPOINT).setProject(PROJECT);
+
     const databases = new Databases(client);
     const account = new Account(client);
-
-    // Gère la session anonyme
-    async function initAnonymousSession() {
+    
+        async function requireAuth() {
       try {
-        await account.get();
-      } catch (error) {
-        console.log("Création d'une session anonyme...");
-        await account.createAnonymousSession();
+        await account.get(); // ok → continuer
+      } catch {
+        window.location.replace('login.html'); // pas connecté → retour login
       }
     }
+
+    // Lance le guard immédiatement
+    requireAuth();
 
     // -------- Utils --------
     function fromISODateLocal(iso) {
@@ -351,7 +353,7 @@
       bookingRemaining.value = `${DAfmt.format(abs)}${remaining < 0 ? ' (trop-perçu)' : ''}`;
     }
 
-    function renderMonthSummary(year, month) {
+    async function renderMonthSummary(year, month) {
       const ym = `${year}-${String(month + 1).padStart(2, '0')}`;
       let count = 0, encaisse = 0, reste = 0;
       bookings.forEach(b => {
@@ -364,20 +366,32 @@
           reste += Math.max(0, cost - paid);
         }
       });
-      if (count === 0) {
-        monthSummary.classList.add('hidden');
-        monthSummary.textContent = '';
-        return;
-      }
-      monthSummary.classList.remove('hidden');
-      monthSummary.innerHTML = `
-        <div class="flex flex-wrap gap-4">
-          <div><span class="font-semibold">Réservations :</span> ${count}</div>
-          <div><span class="font-semibold">Encaissé :</span> ${DAfmt.format(encaisse)}</div>
-          <div><span class="font-semibold">Reste à encaisser :</span> ${DAfmt.format(reste)}</div>
-        </div>
-      `;
-    }
+      let user;
+  try {
+    user = await account.get();
+  } catch {
+    console.warn("Aucun utilisateur connecté");
+  }
+
+  // ✅ Vérifie si c’est l’utilisateur autorisé
+  const ADMIN_EMAIL = "rbekani@gmail.com"; // <-- mets ton email Appwrite ici
+
+  if (user && user.email === ADMIN_EMAIL) {
+    // Affiche le résumé uniquement pour cet utilisateur
+    monthSummary.classList.remove('hidden');
+    monthSummary.innerHTML = `
+      <div class="flex flex-wrap gap-4">
+        <div><span class="font-semibold">Réservations :</span> ${count}</div>
+        <div><span class="font-semibold">Encaissé :</span> ${DAfmt.format(encaisse)}</div>
+        <div><span class="font-semibold">Reste à encaisser :</span> ${DAfmt.format(reste)}</div>
+      </div>
+    `;
+  } else {
+    // Masque la section pour les autres
+    monthSummary.classList.add('hidden');
+    monthSummary.innerHTML = '';
+  }
+}
 
     // -------- Calendrier --------
     function generateCalendar(year, month) {
@@ -942,7 +956,7 @@
     async function main() {
       if (loadingOverlay) loadingOverlay.classList.remove('hidden');
       try {
-        await initAnonymousSession();
+        
         // !! On charge TOUJOURS les robes, même si on ne les affiche pas
         const [dressesResponse, bookingsResponse] = await Promise.all([
             databases.listDocuments(DB_ID, COL_DRESSES, [Query.limit(500)]),

@@ -5,6 +5,7 @@
   "main": "postcss.config.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "npx tailwindcss@3 -i ./src/input.css -o ./output.css --minify",
     "start": "node server.js"
   },
   "keywords": [],

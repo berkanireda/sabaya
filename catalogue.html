@@ -23,6 +23,7 @@
         <nav class="mt-2 flex items-center justify-center md:justify-start gap-4 text-lg">
           <a href="./index.html" class="text-gray-500 hover:text-blue-600 font-semibold pb-1">Gestionnaire</a>
           <a href="./catalogue.html" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">Catalogue</a>
+          <button id="logout">Se déconnecter</button>
         </nav>
       </div>
     </div>
@@ -33,9 +34,9 @@
       
 
 
-      <details id="add-edit-accordion" class="mb-8 bg-white rounded-xl shadow-lg border">
-      <summary class="list-none flex items-center justify-between p-6 cursor-pointer">
-        <h3 id="form-title" class="font-semibold text-xl text-gray-700">Ajouter une nouvelle robe</h3>
+      <details id="add-edit-accordion" class="mb-3 bg-white rounded-xl shadow-lg border">
+      <summary class="list-none flex items-center justify-between p-4 cursor-pointer">
+        <h3 id="form-title" class="font-semibold text-lg text-gray-700">Ajouter une nouvelle robe</h3>
         <i class="fas fa-chevron-down text-gray-500 transition-transform duration-300 chevron-icon"></i>
       </summary>
       <div class="p-6 border-t">
@@ -148,6 +149,13 @@
 
 
 <script>
+
+ 
+  document.getElementById('logout').addEventListener('click', async () => {
+    await account.deleteSession('current');
+    window.location.href = 'index.html';
+  });
+
   /* ====== Import Appwrite (depuis le SDK chargé avant) ====== */
   const {
     Client,
@@ -169,18 +177,21 @@
   const client = new Client();
   client.setEndpoint(ENDPOINT).setProject(PROJECT);
   const account = new Account(client);
+
+    // Exiger une session, sinon renvoyer à la page login
+  async function requireAuth() {
+    try {
+      await account.get(); // ok → continuer
+    } catch {
+      window.location.replace('login.html'); // pas connecté → retour login
+    }
+  }
+
+  // Lance le guard immédiatement
+  requireAuth();
   const databases = new Databases(client);
   const storage = new Storage(client);
 
-  // Gère la session anonyme
-  async function initAnonymousSession() {
-    try {
-      await account.get();
-    } catch (error) {
-      console.log("Création d'une session anonyme...");
-      await account.createAnonymousSession();
-    }
-  }
 
   /* ====== Utils ====== */
   const DAfmt = new Intl.NumberFormat('fr-DZ', {
@@ -579,7 +590,6 @@
 
   /* ====== Boot (MIS À JOUR - Suppression du chargement des bookings) ====== */
   async function main() {
-    await initAnonymousSession();
     
     try {
       // On n'a plus besoin de charger 'allBookings' ici !

@@ -1,0 +1,270 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Connexion • Location de Robes</title>
+
+  <!-- Tailwind compilé -->
+  <link rel="stylesheet" href="./output.css" />
+  <!-- Fonts & Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+  <!-- Appwrite SDK v11 -->
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
+
+  <style>
+    html, body { height: 100%; }
+    body { font-family: 'Inter', system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
+  </style>
+</head>
+<body class="min-h-full bg-gradient-to-br from-slate-50 via-white to-slate-100">
+
+  <!-- Header (optionnel) -->
+  <header class="px-4 sm:px-6 lg:px-8 py-6">
+    <div class="max-w-7xl mx-auto flex items-center justify-between">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-blue-600 text-white grid place-items-center shadow-lg">
+          <i class="fa-solid fa-gem text-lg"></i>
+        </div>
+        <div>
+          <p class="text-lg font-semibold text-slate-900">Location de Robes</p>
+          <p class="text-xs text-slate-500 -mt-1">Espace sécurisé</p>
+        </div>
+      </div>
+      <a href="./catalogue.html" class="hidden md:inline-flex items-center text-sm text-slate-500 hover:text-slate-700">
+        Voir le catalogue <i class="fa-solid fa-arrow-right ml-2"></i>
+      </a>
+    </div>
+  </header>
+
+  <!-- Main -->
+  <main class="px-4 sm:px-6 lg:px-8">
+    <div class="max-w-6xl mx-auto grid grid-cols-1 lg:grid-cols-2 gap-10 items-center">
+
+      <!-- Hero -->
+      <section class="hidden lg:block">
+        <div class="relative overflow-hidden rounded-2xl bg-gradient-to-br from-blue-600 to-indigo-600 text-white p-10 shadow-xl">
+          <div class="relative z-10">
+            <h1 class="text-3xl font-bold tracking-tight">Gérez vos réservations en toute simplicité</h1>
+            <p class="mt-3 text-white/90 leading-relaxed">
+              Connectez-vous pour accéder au calendrier, au catalogue et à la gestion complète des réservations.
+            </p>
+            <ul class="mt-6 space-y-3 text-white/95">
+              <li class="flex items-center gap-3"><i class="fa-solid fa-shield-halved"></i> Sécurité Appwrite</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-calendar-check"></i> Calendrier intuitif</li>
+              <li class="flex items-center gap-3"><i class="fa-solid fa-box-archive"></i> Catalogue riche</li>
+            </ul>
+          </div>
+          <div class="absolute -right-24 -top-24 w-72 h-72 bg-white/10 rounded-full blur-2xl"></div>
+          <div class="absolute -left-20 -bottom-20 w-72 h-72 bg-white/10 rounded-full blur-2xl"></div>
+        </div>
+      </section>
+
+      <!-- Auth Card -->
+      <section>
+        <div class="mx-auto w-full max-w-md">
+          <div class="bg-white/80 backdrop-blur shadow-xl rounded-2xl border border-slate-100">
+            <!-- Tabs -->
+            <div class="p-2 flex bg-slate-50 rounded-t-2xl">
+              <button id="tab-login" class="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold bg-white shadow-sm border border-slate-200">
+                <i class="fa-solid fa-right-to-bracket"></i> Se connecter
+              </button>
+              <button id="tab-signup" class="flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-slate-600 hover:text-slate-800">
+                <i class="fa-solid fa-user-plus"></i> Créer un compte
+              </button>
+            </div>
+
+            <!-- Body -->
+            <div class="p-6 sm:p-8">
+              <!-- Alert -->
+              <div id="alert" class="hidden mb-4 rounded-lg border border-red-200 bg-red-50 text-red-700 px-4 py-3 text-sm"></div>
+
+              <!-- Login form -->
+              <form id="login" class="space-y-5">
+                <div>
+                  <label for="li-email" class="block text-sm font-medium text-slate-700">Email</label>
+                  <input id="li-email" type="email" required
+                         class="mt-1 w-full rounded-lg border-slate-300 focus:border-blue-500 focus:ring-blue-500"/>
+                </div>
+                <div>
+                  <div class="flex items-center justify-between">
+                    <label for="li-pass" class="block text-sm font-medium text-slate-700">Mot de passe</label>
+                    <a href="#" class="text-xs text-blue-600 hover:text-blue-700">Mot de passe oublié ?</a>
+                  </div>
+                  <div class="mt-1 relative">
+                    <input id="li-pass" type="password" required
+                           class="w-full rounded-lg border-slate-300 pr-12 focus:border-blue-500 focus:ring-blue-500"/>
+                    <button type="button" data-toggle="#li-pass"
+                            class="toggle-pass absolute inset-y-0 right-0 px-3 text-slate-500 hover:text-slate-700">
+                      <i class="fa-regular fa-eye"></i>
+                    </button>
+                  </div>
+                </div>
+                <button id="btn-login"
+                        class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-blue-600 text-white py-2.5 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-60 disabled:cursor-not-allowed">
+                  <span>Se connecter</span>
+                  <span class="spinner hidden w-5 h-5 border-2 border-white/60 border-t-transparent rounded-full animate-spin"></span>
+                </button>
+              </form>
+
+              <!-- Divider -->
+              <div class="my-6 flex items-center">
+                <div class="flex-1 h-px bg-slate-200"></div>
+                <span class="px-3 text-xs text-slate-400">ou</span>
+                <div class="flex-1 h-px bg-slate-200"></div>
+              </div>
+
+              <!-- Signup form -->
+              <form id="signup" class="space-y-5 hidden">
+                <div>
+                  <label for="su-email" class="block text-sm font-medium text-slate-700">Email</label>
+                  <input id="su-email" type="email" required
+                         class="mt-1 w-full rounded-lg border-slate-300 focus:border-blue-500 focus:ring-blue-500"/>
+                </div>
+                <div>
+                  <label for="su-pass" class="block text-sm font-medium text-slate-700">Mot de passe (≥ 8 caractères)</label>
+                  <div class="mt-1 relative">
+                    <input id="su-pass" type="password" minlength="8" required
+                           class="w-full rounded-lg border-slate-300 pr-12 focus:border-blue-500 focus:ring-blue-500"/>
+                    <button type="button" data-toggle="#su-pass"
+                            class="toggle-pass absolute inset-y-0 right-0 px-3 text-slate-500 hover:text-slate-700">
+                      <i class="fa-regular fa-eye"></i>
+                    </button>
+                  </div>
+                  <p class="mt-1 text-xs text-slate-500">8 caractères minimum, mélangez lettres et chiffres.</p>
+                </div>
+                <button id="btn-signup"
+                        class="w-full inline-flex items-center justify-center gap-2 rounded-lg bg-slate-900 text-white py-2.5 hover:bg-black focus:outline-none focus:ring-2 focus:ring-slate-700 disabled:opacity-60 disabled:cursor-not-allowed">
+                  <span>Créer mon compte</span>
+                  <span class="spinner hidden w-5 h-5 border-2 border-white/70 border-t-transparent rounded-full animate-spin"></span>
+                </button>
+              </form>
+
+              <!-- Infos pied -->
+              <p class="mt-8 text-center text-xs text-slate-500">
+                En vous connectant, vous acceptez nos <a href="#" class="text-blue-600 hover:text-blue-700">Conditions</a> et notre <a href="#" class="text-blue-600 hover:text-blue-700">Politique de confidentialité</a>.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+    </div>
+  </main>
+
+  <script>
+    // === Appwrite Init (v11) ===
+    const client = new Appwrite.Client()
+      .setEndpoint('https://fra.cloud.appwrite.io/v1')
+      .setProject('690f54f700273a8387b3');
+    const account = new Appwrite.Account(client);
+
+    // === UI helpers ===
+    const $ = (sel) => document.querySelector(sel);
+    const $$ = (sel) => document.querySelectorAll(sel);
+    const alertBox = $('#alert');
+    function showAlert(msg) {
+      alertBox.textContent = msg;
+      alertBox.classList.remove('hidden');
+    }
+    function hideAlert() {
+      alertBox.classList.add('hidden');
+      alertBox.textContent = '';
+    }
+    function toggleLoading(btn, loading) {
+      const spinner = btn.querySelector('.spinner');
+      if (loading) {
+        btn.setAttribute('disabled', 'disabled');
+        spinner?.classList.remove('hidden');
+      } else {
+        btn.removeAttribute('disabled');
+        spinner?.classList.add('hidden');
+      }
+    }
+    // Toggle password visibility
+    $$('.toggle-pass').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const input = document.querySelector(btn.dataset.toggle);
+        if (!input) return;
+        input.type = input.type === 'password' ? 'text' : 'password';
+        const icon = btn.querySelector('i');
+        icon.classList.toggle('fa-eye');
+        icon.classList.toggle('fa-eye-slash');
+      });
+    });
+
+    // === Tabs ===
+    const tabLogin = $('#tab-login');
+    const tabSignup = $('#tab-signup');
+    const formLogin = $('#login');
+    const formSignup = $('#signup');
+
+    function setTab(tab) {
+      hideAlert();
+      if (tab === 'login') {
+        tabLogin.className = "flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold bg-white shadow-sm border border-slate-200";
+        tabSignup.className = "flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-slate-600 hover:text-slate-800";
+        formLogin.classList.remove('hidden');
+        formSignup.classList.add('hidden');
+      } else {
+        tabSignup.className = "flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-semibold bg-white shadow-sm border border-slate-200";
+        tabLogin.className = "flex-1 inline-flex items-center justify-center gap-2 py-3 rounded-xl text-sm font-medium text-slate-600 hover:text-slate-800";
+        formSignup.classList.remove('hidden');
+        formLogin.classList.add('hidden');
+      }
+    }
+    tabLogin.addEventListener('click', () => setTab('login'));
+    tabSignup.addEventListener('click', () => setTab('signup'));
+    setTab('login'); // Default
+
+    // === Auto-redirect si déjà connecté ===
+    (async () => {
+      try {
+        await account.get();
+        // déjà connecté → on bascule directement
+        window.location.replace('catalogue.html');
+      } catch(_) { /* not logged in */ }
+    })();
+
+    // === Login ===
+    formLogin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+      const btn = $('#btn-login');
+      toggleLoading(btn, true);
+      const email = $('#li-email').value.trim();
+      const pass  = $('#li-pass').value;
+
+      try {
+        await account.createEmailSession(email, pass);   // v11
+        window.location.href = 'catalogue.html';
+      } catch (err) {
+        showAlert(err?.message || "Impossible de se connecter.");
+      } finally {
+        toggleLoading(btn, false);
+      }
+    });
+
+    // === Signup ===
+    formSignup.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      hideAlert();
+      const btn = $('#btn-signup');
+      toggleLoading(btn, true);
+      const email = $('#su-email').value.trim();
+      const pass  = $('#su-pass').value;
+
+      try {
+        await account.create(Appwrite.ID.unique(), email, pass);
+        await account.createEmailSession(email, pass);   // login auto
+        window.location.href = 'catalogue.html';
+      } catch (err) {
+        showAlert(err?.message || "Inscription impossible.");
+      } finally {
+        toggleLoading(btn, false);
+      }
+    });
+  </script>
+</body>
+</html>
