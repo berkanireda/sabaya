@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Catalogue des Robes</title>
+  <link rel="stylesheet" href="./output.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet"/>
+
+  <style>
+    body { font-family: 'Inter', sans-serif; background-color: #f8fafc; }
+    /* Style pour la rotation de l'icône dans l'accordéon */
+    details[open] > summary .chevron-icon { transform: rotate(180deg); }
+  </style>
+</head>
+<body class="p-4 md:p-8 text-gray-800">
+
+  <header class="max-w-7xl mx-auto mb-6 md:mb-8">
+    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+      <div class="text-center md:text-left">
+        <h1 class="text-4xl font-bold">Location de Robes</h1>
+        <nav class="mt-2 flex items-center justify-center md:justify-start gap-4 text-lg">
+          <a href="./p.html" class="text-gray-500 hover:text-blue-600 font-semibold pb-1">Gestionnaire</a>
+          <a href="./catalogue.html" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">Catalogue</a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="max-w-7xl mx-auto">
+      
+
+
+      <details id="add-edit-accordion" class="mb-8 bg-white rounded-xl shadow-lg border">
+      <summary class="list-none flex items-center justify-between p-6 cursor-pointer">
+        <h3 id="form-title" class="font-semibold text-xl text-gray-700">Ajouter une nouvelle robe</h3>
+        <i class="fas fa-chevron-down text-gray-500 transition-transform duration-300 chevron-icon"></i>
+      </summary>
+      <div class="p-6 border-t">
+        <form id="add-dress-form" class="grid md:grid-cols-2 gap-x-6 gap-y-4">
+          <div>
+            <label for="dress-name" class="block text-sm font-medium text-gray-600 mb-1">Nom de la robe</label>
+            <input type="text" id="dress-name" placeholder="Ex: Robe de Soirée Rouge" class="w-full p-2 border rounded-md" required>
+          </div>
+          <div>
+            <label for="dress-type" class="block text-sm font-medium text-gray-600 mb-1">Type</label>
+            <select id="dress-type" class="w-full p-2 border rounded-md bg-white">
+              <option value="karakou">Karakou</option>
+              <option value="caftan">Caftan</option>
+              <option value="kabyle">Kabyle</option>
+              <option value="autre">Autre</option>
+            </select>
+          </div>
+          <div>
+            <label for="dress-size" class="block text-sm font-medium text-gray-600 mb-1">Taille</label>
+            <input type="text" id="dress-size" placeholder="Ex: 38, M, Standard" class="w-full p-2 border rounded-md">
+          </div>
+          <div>
+            <label for="dress-purchase-date" class="block text-sm font-medium text-gray-600 mb-1">Date d'achat</label>
+            <input type="date" id="dress-purchase-date" class="w-full p-2 border rounded-md">
+          </div>
+          <div>
+            <label for="dress-price" class="block text-sm font-medium text-gray-600 mb-1">Prix (DA)</label>
+            <input type="number" id="dress-price" placeholder="Ex: 15000" class="w-full p-2 border rounded-md" step="0.01" min="0">
+          </div>
+          <div>
+            <label for="dress-reference" class="block text-sm font-medium text-gray-600 mb-1">Référence de la robe</label>
+            <input type="text" id="dress-reference" placeholder="Ex: RSR-001" class="w-full p-2 border rounded-md">
+          </div>
+          <div class="md:col-span-2">
+            <label for="dress-image" class="block text-sm font-medium text-gray-600 mb-1">Photo (laisser vide pour ne pas changer)</label>
+            <input type="file" id="dress-image" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" accept="image/*">
+          </div>
+          
+          <div class="md:col-span-2 mt-2 flex gap-4">
+            <button type="submit" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+              <i id="form-submit-icon" class="fas fa-plus mr-2"></i>
+              <span id="form-submit-text">Ajouter au catalogue</span>
+            </button>
+            <button type="button" id="cancel-edit-btn" class="hidden border border-gray-300 bg-white text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition-colors">
+              Annuler
+            </button>
+          </div>
+        </form>
+      </div>
+    </details>
+      
+
+
+
+
+
+
+      <div id="filter-controls" class="mb-8 p-4 bg-white rounded-xl shadow-lg border grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+      
+      <div>
+        <label for="filter-type" class="block text-sm font-medium text-gray-600 mb-1">Type de robe</label>
+        <select id="filter-type" class="w-full p-2 border border-gray-300 rounded-md bg-white">
+          <option value="all">Tous les types</option>
+          <option value="karakou">Karakou</option>
+          <option value="caftan">Caftan</option>
+          <option value="kabyle">Kabyle</option>
+          <option value="autre">Autre</option>
+        </select>
+      </div>
+
+      <div>
+        <label for="filter-price-min" class="block text-sm font-medium text-gray-600 mb-1">Prix Min (DA)</label>
+        <input type="number" id="filter-price-min" placeholder="Ex: 5000" class="w-full p-2 border border-gray-300 rounded-md">
+      </div>
+
+      <div>
+        <label for="filter-price-max" class="block text-sm font-medium text-gray-600 mb-1">Prix Max (DA)</label>
+        <input type="number" id="filter-price-max" placeholder="Ex: 20000" class="w-full p-2 border border-gray-300 rounded-md">
+      </div>
+
+      <div class="flex gap-2">
+        <button id="filter-apply-btn" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+          <i class="fas fa-filter mr-2"></i>Filtrer
+        </button>
+        <button id="filter-reset-btn" title="Réinitialiser" class="p-2 border bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors">
+          <i class="fas fa-undo"></i>
+        </button>
+      </div>
+    </div>
+
+
+
+
+
+
+
+
+
+
+
+
+
+      <div id="catalogue-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        </div>
+      <div id="pagination-controls" class="flex justify-center items-center gap-2 mt-8">
+        </div>
+    </div>
+  </main>
+<script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
+
+
+<script>
+  /* ====== Import Appwrite (depuis le SDK chargé avant) ====== */
+  const {
+    Client,
+    Account,
+    Databases,
+    Storage,
+    ID,
+    Query
+  } = Appwrite;
+
+  /* ====== Configuration Appwrite ====== */
+  const ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
+  const PROJECT = '690f54f700273a8387b3';
+  const DB_ID = '690f560f001394b2c1a6';
+  const COL_DRESSES = 'dresses';
+  const BUCKET_DRESSES = '690f683500243ed9d576'; 
+
+  /* ====== Init Appwrite ====== */
+  const client = new Client();
+  client.setEndpoint(ENDPOINT).setProject(PROJECT);
+  const account = new Account(client);
+  const databases = new Databases(client);
+  const storage = new Storage(client);
+
+  // Gère la session anonyme
+  async function initAnonymousSession() {
+    try {
+      await account.get();
+    } catch (error) {
+      console.log("Création d'une session anonyme...");
+      await account.createAnonymousSession();
+    }
+  }
+
+  /* ====== Utils ====== */
+  const DAfmt = new Intl.NumberFormat('fr-DZ', {
+    style: 'currency',
+    currency: 'DZD',
+    maximumFractionDigits: 2
+  });
+  const itemsPerPage = 10;
+
+  /* ====== DOM ====== */
+  const addDressForm = document.getElementById('add-dress-form');
+  const grid = document.getElementById('catalogue-grid');
+  const pager = document.getElementById('pagination-controls');
+  const filterType = document.getElementById('filter-type');
+  const filterPriceMin = document.getElementById('filter-price-min');
+  const filterPriceMax = document.getElementById('filter-price-max');
+  const filterApplyBtn = document.getElementById('filter-apply-btn');
+  const filterResetBtn = document.getElementById('filter-reset-btn');
+  const addEditAccordion = document.getElementById('add-edit-accordion');
+  const formTitle = document.getElementById('form-title');
+  const formSubmitText = document.getElementById('form-submit-text');
+  const formSubmitIcon = document.getElementById('form-submit-icon');
+  const cancelEditBtn = document.getElementById('cancel-edit-btn');
+
+  /* ====== État pagination et filtres ====== */
+  let currentPage = 1;
+  let pageCursors = [null];
+  let totalShown = 0; 
+  let currentFilters = {
+    type: null,
+    min: null,
+    max: null
+  };
+  let editingDressId = null;
+
+
+  /* ====== Compression image (Inchangé) ====== */
+  function compressImage(file, maxWidth, quality, textOverlays = {}) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = (e) => {
+        const img = new Image();
+        img.src = e.target.result;
+        img.onload = () => {
+          const scale = Math.min(1, maxWidth / img.width || 1);
+          const w = Math.round(img.width * scale);
+          const h = Math.round(img.height * scale);
+          const canvas = document.createElement('canvas');
+          canvas.width = w;
+          canvas.height = h;
+          const ctx = canvas.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          const { name, price, reference } = textOverlays;
+          if (name || price || reference) {
+            const fontSize = Math.round(w * 0.08); // La taille que vous aviez modifiée
+            const padding = Math.round(w * 0.04); // La taille que vous aviez modifiée
+            const lineHeight = Math.round(fontSize * 1.2);
+            ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+            ctx.fillStyle = 'white';
+            ctx.strokeStyle = 'black';
+            ctx.lineWidth = Math.round(fontSize * 0.1);
+            ctx.textAlign = 'left';
+            ctx.textBaseline = 'bottom';
+            let yPos = h - padding;
+            if (price) {
+              ctx.strokeText(price, padding, yPos);
+              ctx.fillText(price, padding, yPos);
+              yPos -= lineHeight;
+            }
+            if (name) {
+              ctx.strokeText(name, padding, yPos);
+              ctx.fillText(name, padding, yPos);
+              yPos -= lineHeight;
+            }
+            if (reference) {
+              const refText = `Réf: ${reference}`;
+              ctx.strokeText(refText, padding, yPos);
+              ctx.fillText(refText, padding, yPos);
+            }
+          }
+          canvas.toBlob((blob) => {
+            if (!blob) {
+              return reject(new Error('Canvas toBlob a échoué'));
+            }
+            const compressedFile = new File([blob], file.name, {
+              type: 'image/jpeg',
+              lastModified: Date.now()
+            });
+            resolve(compressedFile);
+          }, 'image/jpeg', quality);
+        };
+        img.onerror = reject;
+      };
+      reader.onerror = reject;
+    });
+  }
+
+  /* ====== Logique d'Ajout/Modification (Inchangé) ====== */
+  async function handleAddOrEditDress(e) {
+    e.preventDefault();
+    const submitBtn = e.target.querySelector('button[type="submit"]');
+    submitBtn.disabled = true;
+
+    const nameEl = document.getElementById('dress-name');
+    const typeEl = document.getElementById('dress-type');
+    const sizeEl = document.getElementById('dress-size');
+    const purchaseEl = document.getElementById('dress-purchase-date');
+    const priceEl = document.getElementById('dress-price');
+    const fileEl = document.getElementById('dress-image');
+    const refEl = document.getElementById('dress-reference');
+
+    const name = (nameEl.value || '').trim();
+    const reference = (refEl.value || '').trim();
+    const priceValue = parseFloat(priceEl.value) || 0;
+    const priceString = priceValue > 0 ? DAfmt.format(priceValue) : '';
+
+    if (!name) {
+      nameEl.focus();
+      submitBtn.disabled = false;
+      return;
+    }
+
+    let imageUrl = addDressForm.dataset.existingImageUrl || '';
+    const imageFile = fileEl.files[0];
+
+    try {
+      const textOverlays = { name, price: priceString, reference };
+      
+      if (imageFile) {
+        const compressedFile = await compressImage(imageFile, 1000, 0.85, textOverlays);
+        const file = await storage.createFile(BUCKET_DRESSES, ID.unique(), compressedFile);
+        imageUrl = storage.getFileView(BUCKET_DRESSES, file.$id).href;
+      } 
+      else if (editingDressId && imageUrl) {
+        const response = await fetch(imageUrl);
+        const blob = await response.blob();
+        const existingFile = new File([blob], "existing_image.jpeg", { type: blob.type });
+
+        const compressedFile = await compressImage(existingFile, 1000, 0.85, textOverlays);
+        const file = await storage.createFile(BUCKET_DRESSES, ID.unique(), compressedFile);
+        imageUrl = storage.getFileView(BUCKET_DRESSES, file.$id).href;
+      }
+
+      const data = {
+        name,
+        type: typeEl.value,
+        size: (sizeEl.value || '').trim(),
+        purchaseDate: purchaseEl.value || '',
+        price: priceValue,
+        reference: reference,
+        imageUrl
+        // Le champ 'nb_reservation' n'est PAS inclus ici, 
+        // car il est géré uniquement par la Fonction Appwrite.
+      };
+
+      if (editingDressId) {
+        await databases.updateDocument(DB_ID, COL_DRESSES, editingDressId, data);
+      } else {
+        await databases.createDocument(DB_ID, COL_DRESSES, ID.unique(), data);
+      }
+
+      cancelEdit(); 
+      
+      if (!editingDressId) {
+        await resetFilters();
+      } else {
+        await renderCataloguePage(currentPage);
+        renderPagination();
+      }
+      
+    } catch (err) {
+      console.error('Erreur Appwrite:', err);
+      alert("Erreur lors de la sauvegarde : " + err.message);
+    } finally {
+      submitBtn.disabled = false;
+    }
+  }
+
+  /* ====== Récupération d’une page (Inchangé) ====== */
+  async function fetchPage(pageIndex) {
+    const baseQueries = [];
+    if (currentFilters.type) {
+      baseQueries.push(Query.equal('type', currentFilters.type));
+    }
+    if (currentFilters.min != null) {
+      baseQueries.push(Query.greaterThanEqual('price', currentFilters.min));
+    }
+    if (currentFilters.max != null) {
+      baseQueries.push(Query.lessThanEqual('price', currentFilters.max));
+    }
+    baseQueries.push(Query.orderDesc('$createdAt'));
+    baseQueries.push(Query.limit(itemsPerPage));
+
+    let queries = [...baseQueries];
+    
+    if (pageIndex > 1) {
+      while (pageCursors.length < pageIndex) {
+        const prevCursor = pageCursors[pageCursors.length - 1];
+        const prevQueryList = [...baseQueries];
+        if (prevCursor) {
+          prevQueryList.push(Query.cursorAfter(prevCursor));
+        }
+        const response = await databases.listDocuments(DB_ID, COL_DRESSES, prevQueryList);
+        const lastDoc = response.documents[response.documents.length - 1] || null;
+        pageCursors.push(lastDoc ? lastDoc.$id : null); 
+        if (!lastDoc) break;
+      }
+      const cursor = pageCursors[pageIndex - 1];
+      if (cursor) {
+        queries.push(Query.cursorAfter(cursor));
+      }
+    }
+    const response = await databases.listDocuments(DB_ID, COL_DRESSES, queries);
+    const lastDocOnPage = response.documents[response.documents.length - 1] || null;
+    pageCursors[pageIndex] = lastDocOnPage ? lastDocOnPage.$id : null;
+    return response.documents; 
+  }
+
+  /* ======================================================= */
+  /* ======            MODIFICATION CI-DESSOUS         ====== */
+  /* ======================================================= */
+
+  /* ====== Rendu d’une page (MIS À JOUR) ====== */
+  async function renderCataloguePage(pageIndex) {
+    grid.innerHTML = '<p class="col-span-full text-center text-gray-500 py-10">Chargement...</p>';
+    if (filterApplyBtn) filterApplyBtn.disabled = true;
+    if (filterResetBtn) filterResetBtn.disabled = true;
+
+    try {
+      const dresses = await fetchPage(pageIndex);
+      if (dresses.length === 0) {
+        grid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10">Aucune robe ne correspond à ces filtres.</p>`;
+        totalShown = 0;
+        return;
+      }
+      grid.innerHTML = '';
+      const frag = document.createDocumentFragment();
+      dresses.forEach(dress => {
+        const card = document.createElement('div');
+        card.className = 'bg-white rounded-lg shadow-md overflow-hidden group';
+        
+        card.innerHTML = `
+          <div class="overflow-hidden relative"> <img src="${dress.imageUrl || 'https://placehold.co/400x600/cccccc/ffffff?text=Robe'}"
+                 alt="${dress.name}" class="w-full h-80 object-cover transition-transform duration-300 group-hover:scale-105">
+            
+         
+            </div>
+          <div class="p-4">
+            <h3 class="font-semibold text-lg truncate" title="${dress.name}">${dress.name}</h3>
+            ${dress.price ? `<p class="text-gray-700 text-sm mt-1">${DAfmt.format(dress.price)}</p>` : ''}
+            ${dress.reference ? `<p class="text-gray-500 text-xs mt-1">Réf: ${dress.reference}</p>` : ''} 
+            ${dress.size ? `<p class="text-gray-500 text-xs mt-1">Taille: ${dress.size}</p>` : ''}
+            ${dress.type ? `<p class="text-gray-500 text-xs">Type: ${dress.type}</p>` : ''}
+            ${`<p class="text-gray-500 text-xs">Nombre de réservations: ${dress.nb_reservation}</p>` }
+            
+            <button class="edit-dress-btn text-sm text-blue-600 hover:text-blue-800 font-medium mt-3" data-id="${dress.$id}">
+              <i class="fas fa-pencil-alt mr-1"></i> Modifier
+            </button>
+          </div>
+        `;
+        frag.appendChild(card);
+      });
+      grid.appendChild(frag);
+      totalShown = dresses.length;
+    } catch (error) {
+      console.error("Erreur lors du fetchPage:", error);
+      grid.innerHTML = `<p class="col-span-full text-center text-red-600 py-10">Erreur: ${error.message}.</p>`;
+    } finally {
+      if (filterApplyBtn) filterApplyBtn.disabled = false;
+      if (filterResetBtn) filterResetBtn.disabled = false;
+    }
+  }
+
+  /* ====== Pagination UI (Inchangé) ====== */
+  function renderPagination() {
+    pager.innerHTML = '';
+    if (pageCursors.length <= 2 && totalShown < itemsPerPage && currentPage === 1) return;
+    const prevBtn = document.createElement('button');
+    prevBtn.innerHTML = `<i class="fas fa-chevron-left"></i>`;
+    prevBtn.className = 'px-3 py-2 rounded-md border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed';
+    prevBtn.disabled = currentPage === 1;
+    prevBtn.addEventListener('click', async () => {
+      if (currentPage > 1) {
+        currentPage--;
+        await renderCataloguePage(currentPage);
+        renderPagination();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+    });
+    pager.appendChild(prevBtn);
+    const makePageBtn = (n) => {
+      const b = document.createElement('button');
+      b.textContent = n;
+      b.className = (n === currentPage) ?
+        'px-3 py-2 rounded-md border bg-blue-600 text-white font-bold' :
+        'px-3 py-2 rounded-md border bg-white hover:bg-gray-50';
+      b.addEventListener('click', async () => {
+        if (n === currentPage) return;
+        currentPage = n;
+        await renderCataloguePage(currentPage);
+        renderPagination();
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      });
+      return b;
+    };
+    const start = Math.max(1, currentPage - 2);
+    const end = Math.max(currentPage + 2, start + 4);
+    for (let i = start; i <= end; i++) {
+      pager.appendChild(makePageBtn(i));
+    }
+    const nextBtn = document.createElement('button');
+    nextBtn.innerHTML = `<i class="fas fa-chevron-right"></i>`;
+    nextBtn.className = 'px-3 py-2 rounded-md border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed';
+    nextBtn.disabled = totalShown < itemsPerPage;
+    nextBtn.addEventListener('click', async () => {
+      if (nextBtn.disabled) return;
+      currentPage++;
+      await renderCataloguePage(currentPage);
+      renderPagination();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    });
+    pager.appendChild(nextBtn);
+  }
+
+  /* ====== Fonctions de Filtre (Inchangées) ====== */
+  async function applyFilters() {
+    const type = filterType.value;
+    const min = parseFloat(filterPriceMin.value);
+    const max = parseFloat(filterPriceMax.value);
+    currentFilters = {
+      type: type === 'all' ? null : type,
+      min: isNaN(min) ? null : min,
+      max: isNaN(max) ? null : max
+    };
+    currentPage = 1;
+    pageCursors = [null]; 
+    await renderCataloguePage(currentPage);
+    renderPagination();
+  }
+
+  async function resetFilters() {
+    filterType.value = 'all';
+    filterPriceMin.value = '';
+    filterPriceMax.value = '';
+    currentFilters = { type: null, min: null, max: null };
+    currentPage = 1;
+    pageCursors = [null];
+    await renderCataloguePage(currentPage);
+    renderPagination();
+  }
+
+  /* ====== Fonctions d'Édition (Inchangées) ====== */
+  async function startEditDress(dressId) {
+    try {
+      const dress = await databases.getDocument(DB_ID, COL_DRESSES, dressId);
+      document.getElementById('dress-name').value = dress.name;
+      document.getElementById('dress-type').value = dress.type;
+      document.getElementById('dress-size').value = dress.size;
+      document.getElementById('dress-purchase-date').value = dress.purchaseDate;
+      document.getElementById('dress-price').value = dress.price;
+      document.getElementById('dress-reference').value = dress.reference;
+      addDressForm.dataset.existingImageUrl = dress.imageUrl || '';
+      editingDressId = dressId;
+      formTitle.textContent = 'Modifier la robe';
+      formSubmitText.textContent = 'Enregistrer les modifications';
+      formSubmitIcon.className = 'fas fa-save mr-2';
+      cancelEditBtn.classList.remove('hidden');
+      addEditAccordion.open = true;
+      addEditAccordion.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    } catch (error) {
+      console.error("Erreur lors du chargement de la robe:", error);
+      alert("Impossible de charger les données de la robe.");
+    }
+  }
+
+  function cancelEdit() {
+    editingDressId = null;
+    addDressForm.reset();
+    addDressForm.dataset.existingImageUrl = ''; 
+    formTitle.textContent = 'Ajouter une nouvelle robe';
+    formSubmitText.textContent = 'Ajouter au catalogue';
+    formSubmitIcon.className = 'fas fa-plus mr-2';
+    cancelEditBtn.classList.add('hidden');
+  }
+  
+  async function handleGridClick(e) {
+    const editBtn = e.target.closest('.edit-dress-btn');
+    if (editBtn) {
+      e.preventDefault();
+      const id = editBtn.dataset.id;
+      await startEditDress(id);
+    }
+  }
+
+
+  /* ====== Boot (MIS À JOUR - Suppression du chargement des bookings) ====== */
+  async function main() {
+    await initAnonymousSession();
+    
+    try {
+      // On n'a plus besoin de charger 'allBookings' ici !
+      // La Fonction Appwrite s'occupe de tout.
+      await renderCataloguePage(currentPage);
+      renderPagination();
+    } catch (err) {
+      console.error("Erreur au chargement initial:", err);
+      grid.innerHTML = `<p class="col-span-full text-center text-red-600 py-10">Erreur: ${err.message}. Vérifiez la console.</p>`;
+    }
+    
+    // 3. On attache les événements
+    addDressForm.addEventListener('submit', handleAddOrEditDress); 
+    filterApplyBtn.addEventListener('click', applyFilters);
+    filterResetBtn.addEventListener('click', resetFilters);
+    cancelEditBtn.addEventListener('click', cancelEdit);
+    grid.addEventListener('click', handleGridClick);
+  }
+
+  // Lancement de l'application
+  main();
+</script>
+</body>
+</html>
