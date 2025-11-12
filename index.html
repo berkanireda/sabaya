@@ -45,50 +45,73 @@
   </style>
 </head>
 
-<body class="p-4 md:p-8">
+<body class="p-2 md:p-8">
   <div class="max-w-7xl mx-auto">
-    <header class="mb-6 md:mb-8">
-      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-        <div class="text-center md:text-left">
-          <h1 class="text-4xl font-bold text-gray-800">Location de Robes</h1>
-          <nav class="mt-2 flex items-center justify-center md:justify-start gap-4 text-lg">
-            <a href="./p.html" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">Gestionnaire</a>
-            <a href="./catalogue.html" class="text-gray-500 hover:text-blue-600 font-semibold pb-1">Catalogue</a>
-          </nav>
-        </div>
-        <div class="flex items-center gap-2 justify-center">
-          <button id="export-btn" class="px-3 py-2 rounded-md border bg-white hover:bg-gray-50">
-            <i class="fa-solid fa-file-export mr-2"></i>Exporter
-          </button>
-          <label class="px-3 py-2 rounded-md border bg-white hover:bg-gray-50 cursor-pointer">
-            <i class="fa-solid fa-file-import mr-2"></i>Importer
-            <input id="import-input" type="file" accept="application/json" class="hidden" />
-          </label>
-        </div>
+<header class="sticky top-0 z-50 bg-white/60 backdrop-blur-xl shadow-md border-b border-gray-200 mb-8">
+  <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+
+    <!-- Logo / Titre -->
+    <a href="./catalogue.html" class="flex items-center gap-3 group">
+      <div class="bg-blue-100 text-blue-600 p-2 rounded-xl group-hover:bg-blue-200 transition">
+        <i class="fa-solid fa-hanger text-lg"></i>
       </div>
-    </header>
+      <span class="text-2xl font-bold tracking-tight text-gray-800 group-hover:text-blue-700 transition">
+        Location de Robes
+      </span>
+    </a>
+
+    <!-- Navigation (boutons arrondis, semi-transparents) -->
+    <nav class="hidden md:flex items-center gap-3 text-sm font-medium">
+      <!-- Gestionnaire (actif sur cette page) -->
+      <a href="./p.html"
+         class="px-4 py-2 rounded-full bg-blue-600 text-white shadow-md ring-2 ring-blue-500/50
+                hover:bg-blue-700 hover:ring-blue-600/70 transition-all duration-200"
+         data-route="p">
+        <i class="fa-solid fa-gear mr-1"></i> Gestionnaire
+      </a>
+
+      <!-- Catalogue (inactif ici) -->
+      <a href="./catalogue.html"
+         class="px-4 py-2 rounded-full bg-blue-50/60 text-gray-700 shadow-sm
+                hover:bg-blue-100 hover:text-blue-800 transition-all duration-200"
+         data-route="catalogue">
+        <i class="fa-solid fa-book-open mr-1"></i> Catalogue
+      </a>
+    </nav>
+
+    <!-- Bouton Déconnexion -->
+    <button id="logout"
+      class="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 
+             text-white px-4 py-2 font-medium text-sm shadow hover:shadow-lg hover:from-blue-600 hover:to-blue-700 
+             transition-all duration-200 ml-2">
+      <i class="fa-solid fa-right-from-bracket group-hover:-rotate-12 transition-transform"></i>
+      <span class="hidden sm:inline">Se déconnecter</span>
+    </button>
+
+  </div>
+</header>
+
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Colonne de gauche : Gestion des robes -->
 
 
-  <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
-      
-      <div>
-        <h2 class="text-2xl font-semibold mb-4 text-gray-700">Rechercher</h2>
-        
-        <div class="relative mb-4">
-          <input type="search" id="reservation-search-input" 
-                 placeholder="Nom, N° bon, ou nom de robe..." 
-                 class="w-full p-2.5 pl-10 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
-        </div>
-        
-        <div id="search-results-container" class="space-y-3 max-h-[80vh] overflow-y-auto pr-2">
-           </div>
-      </div>
+      <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
 
-    </div>
+        <div>
+          <h2 class="text-2xl font-semibold mb-4 text-gray-700">Rechercher</h2>
+
+          <div class="relative mb-4">
+            <input type="search" id="reservation-search-input" placeholder="Nom, N° bon, ou nom de robe..."
+              class="w-full p-2.5 pl-10 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+          </div>
+
+          <div id="search-results-container" class="space-y-3 max-h-[80vh] overflow-y-auto pr-2">
+          </div>
+        </div>
+
+      </div>
 
 
 
@@ -262,271 +285,283 @@
   <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
 
 
-<script>
-  document.addEventListener('DOMContentLoaded', () => {
+  <script>
+    document.addEventListener('DOMContentLoaded', () => {
 
-    // -------- Configuration Appwrite --------
-    const ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
-    const PROJECT = '690f54f700273a8387b3';
-    const DB_ID = '690f560f001394b2c1a6';
-    const COL_DRESSES = 'dresses';
-    const COL_BOOKINGS = 'bookings';
+      // -------- Configuration Appwrite --------
+      const ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
+      const PROJECT = '690f54f700273a8387b3';
+      const DB_ID = '690f560f001394b2c1a6';
+      const COL_DRESSES = 'dresses';
+      const COL_BOOKINGS = 'bookings';
 
-    // -------- Initialisation Appwrite --------
-    const { Client, Databases, ID, Query, Account } = Appwrite;
-    const client = new Client();
-    client.setEndpoint(ENDPOINT).setProject(PROJECT);
+      // -------- Initialisation Appwrite --------
+      const { Client, Databases, ID, Query, Account } = Appwrite;
+      const client = new Client();
+      client.setEndpoint(ENDPOINT).setProject(PROJECT);
 
-    const databases = new Databases(client);
-    const account = new Account(client);
-    
-        async function requireAuth() {
-      try {
-        await account.get(); // ok → continuer
-      } catch {
-        window.location.replace('login.html'); // pas connecté → retour login
-      }
-    }
+      const databases = new Databases(client);
+      const account = new Account(client);
 
-    // Lance le guard immédiatement
-    requireAuth();
-
-    // -------- Utils --------
-    function fromISODateLocal(iso) {
-      if (!iso) return new Date();
-      const [y, m, d] = iso.split('T')[0].split('-').map(Number);
-      return new Date(y, m - 1, d);
-    }
-    const DAfmt = new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 2 });
-
-    // -------- State (chargé depuis Appwrite) --------
-    let currentDate = new Date();
-    // !! IMPORTANT: On garde 'dresses' pour la recherche et les modales
-    let dresses = []; 
-    let bookings = [];
-
-    // 'selectedDressId' a été supprimé
-    let newBookingSelectedDressIds = [];
-    let editingBookingId = null;
-
-    // -------- DOM refs --------
-    const calendarBody = document.getElementById('calendar-body');
-    const currentMonthEl = document.getElementById('current-month');
-    // 'dressListEl' et 'showAllBtn' ont été supprimés
-    const monthSummary = document.getElementById('month-summary');
-    const modal = document.getElementById('booking-modal');
-    const closeModalBtn = document.getElementById('close-modal');
-    const modalDateEl = document.getElementById('modal-date');
-    const bookingDateInput = document.getElementById('booking-date');
-    const addBookingForm = document.getElementById('add-booking-form');
-    const existingBookingsList = document.getElementById('existing-bookings-list');
-    const newBookingSection = document.getElementById('new-booking-section');
-    const bookingNotes = document.getElementById('booking-notes');
-    const bookingAccessories = document.getElementById('booking-accessories');
-    const accessoriesDetailsContainer = document.getElementById('accessories-details-container');
-    const bookingAccessoriesDetails = document.getElementById('booking-accessories-details');
-    const bookingCost = document.getElementById('booking-cost');
-    const bookingPaid = document.getElementById('booking-paid');
-    const bookingRemaining = document.getElementById('booking-remaining');
-    const bookingVoucher = document.getElementById('booking-voucher');
-    const bookingVenue = document.getElementById('booking-venue');
-    const dressSelectContainer = document.getElementById('dress-select-container');
-    const dressSelectBox = document.getElementById('dress-select-box');
-    const dressSelectPlaceholder = document.getElementById('dress-select-placeholder');
-    const dressSearchInput = document.getElementById('dress-search-input');
-    const dressOptionsDropdown = document.getElementById('dress-options-dropdown');
-    const bookingSubmitText = document.getElementById('booking-submit-text');
-    const exportBtn = document.getElementById('export-btn');
-    const importInput = document.getElementById('import-input');
-    const loadingOverlay = document.getElementById('loading-overlay'); 
-
-    // -------- DOM REFS POUR LA RECHERCHE (Conservés) --------
-    const searchInput = document.getElementById('reservation-search-input');
-    const searchResultsContainer = document.getElementById('search-results-container');
-
-    // -------- Helpers UI --------
-    function calculateRemaining() {
-      const cost = Math.max(0, parseFloat(bookingCost.value) || 0);
-      const paid = Math.max(0, parseFloat(bookingPaid.value) || 0);
-      const remaining = cost - paid;
-      const abs = Math.abs(remaining);
-      bookingRemaining.value = `${DAfmt.format(abs)}${remaining < 0 ? ' (trop-perçu)' : ''}`;
-    }
-
-    async function renderMonthSummary(year, month) {
-      const ym = `${year}-${String(month + 1).padStart(2, '0')}`;
-      let count = 0, encaisse = 0, reste = 0;
-      bookings.forEach(b => {
-        const bookingDate = b.date.split('T')[0];
-        if (bookingDate.startsWith(ym)) {
-          count += 1;
-          const cost = parseFloat(b.coutTotal) || 0;
-          const paid = parseFloat(b.verse) || 0;
-          encaisse += paid;
-          reste += Math.max(0, cost - paid);
+      async function requireAuth() {
+        try {
+          await account.get(); // ok → continuer
+        } catch {
+          window.location.replace('login.html'); // pas connecté → retour login
         }
-      });
-      let user;
-  try {
-    user = await account.get();
-  } catch {
-    console.warn("Aucun utilisateur connecté");
-  }
+      }
 
-  // ✅ Vérifie si c’est l’utilisateur autorisé
-  const ADMIN_EMAIL = "rbekani@gmail.com"; // <-- mets ton email Appwrite ici
+      // Lance le guard immédiatement
+      requireAuth();
 
-  if (user && user.email === ADMIN_EMAIL) {
-    // Affiche le résumé uniquement pour cet utilisateur
-    monthSummary.classList.remove('hidden');
-    monthSummary.innerHTML = `
+
+
+     // se deconnecter 
+
+      document.getElementById('logout')?.addEventListener('click', async () => {
+  IS_LOGGING_OUT = true;
+  // optionnel: masquer l’UI immédiatemment pour éviter tout flicker
+  document.body.style.opacity = '0';
+  try { await account.deleteSession('current'); } catch (_) {}
+  // replace = pas d’historique retour
+  window.location.replace('login.html');
+});
+      // -------- Utils --------
+      function fromISODateLocal(iso) {
+        if (!iso) return new Date();
+        const [y, m, d] = iso.split('T')[0].split('-').map(Number);
+        return new Date(y, m - 1, d);
+      }
+      const DAfmt = new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 2 });
+
+      // -------- State (chargé depuis Appwrite) --------
+      let currentDate = new Date();
+      // !! IMPORTANT: On garde 'dresses' pour la recherche et les modales
+      let dresses = [];
+      let bookings = [];
+
+      // 'selectedDressId' a été supprimé
+      let newBookingSelectedDressIds = [];
+      let editingBookingId = null;
+
+      // -------- DOM refs --------
+      const calendarBody = document.getElementById('calendar-body');
+      const currentMonthEl = document.getElementById('current-month');
+      // 'dressListEl' et 'showAllBtn' ont été supprimés
+      const monthSummary = document.getElementById('month-summary');
+      const modal = document.getElementById('booking-modal');
+      const closeModalBtn = document.getElementById('close-modal');
+      const modalDateEl = document.getElementById('modal-date');
+      const bookingDateInput = document.getElementById('booking-date');
+      const addBookingForm = document.getElementById('add-booking-form');
+      const existingBookingsList = document.getElementById('existing-bookings-list');
+      const newBookingSection = document.getElementById('new-booking-section');
+      const bookingNotes = document.getElementById('booking-notes');
+      const bookingAccessories = document.getElementById('booking-accessories');
+      const accessoriesDetailsContainer = document.getElementById('accessories-details-container');
+      const bookingAccessoriesDetails = document.getElementById('booking-accessories-details');
+      const bookingCost = document.getElementById('booking-cost');
+      const bookingPaid = document.getElementById('booking-paid');
+      const bookingRemaining = document.getElementById('booking-remaining');
+      const bookingVoucher = document.getElementById('booking-voucher');
+      const bookingVenue = document.getElementById('booking-venue');
+      const dressSelectContainer = document.getElementById('dress-select-container');
+      const dressSelectBox = document.getElementById('dress-select-box');
+      const dressSelectPlaceholder = document.getElementById('dress-select-placeholder');
+      const dressSearchInput = document.getElementById('dress-search-input');
+      const dressOptionsDropdown = document.getElementById('dress-options-dropdown');
+      const bookingSubmitText = document.getElementById('booking-submit-text');
+  
+      const importInput = document.getElementById('import-input');
+      const loadingOverlay = document.getElementById('loading-overlay');
+
+      // -------- DOM REFS POUR LA RECHERCHE (Conservés) --------
+      const searchInput = document.getElementById('reservation-search-input');
+      const searchResultsContainer = document.getElementById('search-results-container');
+
+      // -------- Helpers UI --------
+      function calculateRemaining() {
+        const cost = Math.max(0, parseFloat(bookingCost.value) || 0);
+        const paid = Math.max(0, parseFloat(bookingPaid.value) || 0);
+        const remaining = cost - paid;
+        const abs = Math.abs(remaining);
+        bookingRemaining.value = `${DAfmt.format(abs)}${remaining < 0 ? ' (trop-perçu)' : ''}`;
+      }
+
+      async function renderMonthSummary(year, month) {
+        const ym = `${year}-${String(month + 1).padStart(2, '0')}`;
+        let count = 0, encaisse = 0, reste = 0;
+        bookings.forEach(b => {
+          const bookingDate = b.date.split('T')[0];
+          if (bookingDate.startsWith(ym)) {
+            count += 1;
+            const cost = parseFloat(b.coutTotal) || 0;
+            const paid = parseFloat(b.verse) || 0;
+            encaisse += paid;
+            reste += Math.max(0, cost - paid);
+          }
+        });
+        let user;
+        try {
+          user = await account.get();
+        } catch {
+          console.warn("Aucun utilisateur connecté");
+        }
+
+        // ✅ Vérifie si c’est l’utilisateur autorisé
+        const ADMIN_EMAIL = "rbekani@gmail.com"; // <-- mets ton email Appwrite ici
+
+        if (user && user.email === ADMIN_EMAIL) {
+          // Affiche le résumé uniquement pour cet utilisateur
+          monthSummary.classList.remove('hidden');
+          monthSummary.innerHTML = `
       <div class="flex flex-wrap gap-4">
         <div><span class="font-semibold">Réservations :</span> ${count}</div>
         <div><span class="font-semibold">Encaissé :</span> ${DAfmt.format(encaisse)}</div>
         <div><span class="font-semibold">Reste à encaisser :</span> ${DAfmt.format(reste)}</div>
       </div>
     `;
-  } else {
-    // Masque la section pour les autres
-    monthSummary.classList.add('hidden');
-    monthSummary.innerHTML = '';
-  }
-}
-
-    // -------- Calendrier --------
-    function generateCalendar(year, month) {
-      currentMonthEl.textContent = new Date(year, month, 1)
-        .toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
-
-      const firstDay = new Date(year, month, 1).getDay();
-      const daysInMonth = new Date(year, month + 1, 0).getDate();
-      const offset = (firstDay === 0) ? 6 : firstDay - 1;
-
-      const frag = document.createDocumentFragment();
-      for (let i = 0; i < offset; i++) frag.appendChild(document.createElement('div'));
-
-      const today = new Date();
-      today.setHours(0, 0, 0, 0);
-
-      for (let day = 1; day <= daysInMonth; day++) {
-        const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
-        const dayBookings = bookings.filter(b => b.date.startsWith(dateStr));
-
-        const dayEl = document.createElement('div');
-        dayEl.className = 'calendar-day border p-2 rounded-md bg-white hover:bg-sky-50 cursor-pointer transition-colors flex flex-col';
-        dayEl.dataset.date = dateStr;
-
-        const thisDate = new Date(year, month, day);
-        thisDate.setHours(0, 0, 0, 0);
-        const isPast = thisDate < today;
-        const isToday = thisDate.getTime() === today.getTime();
-
-        const numberSpan = document.createElement('span');
-        numberSpan.className = 'font-semibold';
-        if (isToday) {
-          numberSpan.className += ' bg-blue-600 text-white rounded-full w-7 h-7 inline-flex items-center justify-center';
+        } else {
+          // Masque la section pour les autres
+          monthSummary.classList.add('hidden');
+          monthSummary.innerHTML = '';
         }
-        numberSpan.textContent = String(day);
-
-        const headerWrap = document.createElement('div');
-        headerWrap.className = 'flex items-center gap-2';
-        headerWrap.appendChild(numberSpan);
-
-        if (dayBookings.length) {
-          const badge = document.createElement('span');
-          badge.className = 'ml-auto text-[10px] px-1 py-1 rounded text-zinc-100 bg-red-500';
-          badge.textContent = dayBookings.length;
-          headerWrap.appendChild(badge);
-        }
-        dayEl.appendChild(headerWrap);
-
-        const bookingsContainer = document.createElement('div');
-        bookingsContainer.className = 'mt-1 text-xs space-y-1 overflow-y-auto flex-1 min-h-0';
-        
-        dayBookings.forEach(booking => {
-          const bookingEl = document.createElement('div');
-          bookingEl.className = 'p-1 bg-blue-100 text-blue-800 rounded-md truncate';
-          let labelText = booking.clientName || 'Réservation';
-          if (booking.voucherNumber) labelText = `[${booking.voucherNumber}] ${labelText}`;
-          bookingEl.textContent = labelText;
-          
-          // La logique de filtrage 'if (selectedDressId)' a été supprimée
-          
-          bookingsContainer.appendChild(bookingEl);
-        });
-        
-        if (isPast && !isToday) dayEl.classList.add('opacity-70');
-        dayEl.appendChild(bookingsContainer);
-        frag.appendChild(dayEl);
       }
-      calendarBody.innerHTML = '';
-      calendarBody.appendChild(frag);
-      renderMonthSummary(year, month);
-    }
 
-    // -------- La fonction renderDresses() a été supprimée --------
+      // -------- Calendrier --------
+      function generateCalendar(year, month) {
+        currentMonthEl.textContent = new Date(year, month, 1)
+          .toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
 
-    // -------- Modal & Réservations --------
-    let prevFocusedEl = null;
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const offset = (firstDay === 0) ? 6 : firstDay - 1;
 
-    function openModal(date) {
-      editingBookingId = null;
-      prevFocusedEl = document.activeElement;
-      modal.classList.remove('modal-hidden');
-      bookingDateInput.value = date;
-      modalDateEl.textContent = fromISODateLocal(date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
-
-      // Reset form
-      bookingSubmitText.textContent = 'Réserver';
-      addBookingForm.reset();
-      newBookingSelectedDressIds = [];
-      dressOptionsDropdown.classList.add('hidden');
-      dressOptionsDropdown.innerHTML = '';
-      dressSearchInput.value = '';
-      dressSearchInput.style.display = 'none';
-      [...dressSelectBox.querySelectorAll('span[data-id]')].forEach(b => b.remove());
-      dressSelectPlaceholder.classList.remove('hidden');
-      dressSelectBox.classList.remove('border-red-500');
-      accessoriesDetailsContainer.classList.add('hidden');
-      bookingAccessories.checked = false;
-      document.getElementById('accessories-free').checked = true;
-      calculateRemaining();
-
-      const bookingsForDay = bookings
-        .filter(b => b.date.startsWith(date))
-        .sort((a, b) => (a.reservationTimestamp || '').localeCompare(b.reservationTimestamp || ''));
-
-      const existingBookingsBox = document.getElementById('existing-bookings');
-      existingBookingsList.innerHTML = '';
-
-      if (bookingsForDay.length > 0) {
-        existingBookingsBox.open = true;
         const frag = document.createDocumentFragment();
-        bookingsForDay.forEach(booking => {
-          // !! On utilise toujours 'dresses' ici
-          const bookedDresses = dresses.filter(d => Array.isArray(booking.dressIds) && booking.dressIds.includes(d.$id));
-          const dressNames = bookedDresses.map(d => d.name).join(', ') || 'Robe(s) supprimée(s)';
-          const wrap = document.createElement('div');
-          wrap.className = 'bg-gray-100 p-2 rounded';
-          const cost = parseFloat(booking.coutTotal) || 0;
-          const paid = parseFloat(booking.verse) || 0;
-          const remaining = cost - paid;
-          const remainingClass = remaining > 0 ? 'text-red-600 font-semibold' : 'text-green-600';
-          let accessoriesHtml = '';
-          if (booking.accessoires) {
+        for (let i = 0; i < offset; i++) frag.appendChild(document.createElement('div'));
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          const dayBookings = bookings.filter(b => b.date.startsWith(dateStr));
+
+          const dayEl = document.createElement('div');
+          dayEl.className = 'calendar-day border p-2 rounded-md bg-white hover:bg-sky-50 cursor-pointer transition-colors flex flex-col';
+          dayEl.dataset.date = dateStr;
+
+          const thisDate = new Date(year, month, day);
+          thisDate.setHours(0, 0, 0, 0);
+          const isPast = thisDate < today;
+          const isToday = thisDate.getTime() === today.getTime();
+
+          const numberSpan = document.createElement('span');
+          numberSpan.className = 'font-semibold';
+          if (isToday) {
+            numberSpan.className += ' bg-blue-600 text-white rounded-full w-7 h-7 inline-flex items-center justify-center';
+          }
+          numberSpan.textContent = String(day);
+
+          const headerWrap = document.createElement('div');
+          headerWrap.className = 'flex items-center gap-2';
+          headerWrap.appendChild(numberSpan);
+
+          if (dayBookings.length) {
+            const badge = document.createElement('span');
+            badge.className = 'ml-auto text-[10px] px-1 py-1 rounded text-zinc-100 bg-red-500';
+            badge.textContent = dayBookings.length;
+            headerWrap.appendChild(badge);
+          }
+          dayEl.appendChild(headerWrap);
+
+          const bookingsContainer = document.createElement('div');
+          bookingsContainer.className = 'mt-1 text-xs space-y-1 overflow-y-auto flex-1 min-h-0';
+
+          dayBookings.forEach(booking => {
+            const bookingEl = document.createElement('div');
+            bookingEl.className = 'p-1 bg-blue-100 text-blue-800 rounded-md truncate';
+            let labelText = booking.clientName || 'Réservation';
+            if (booking.voucherNumber) labelText = `[${booking.voucherNumber}] ${labelText}`;
+            bookingEl.textContent = labelText;
+
+            // La logique de filtrage 'if (selectedDressId)' a été supprimée
+
+            bookingsContainer.appendChild(bookingEl);
+          });
+
+          if (isPast && !isToday) dayEl.classList.add('opacity-70');
+          dayEl.appendChild(bookingsContainer);
+          frag.appendChild(dayEl);
+        }
+        calendarBody.innerHTML = '';
+        calendarBody.appendChild(frag);
+        renderMonthSummary(year, month);
+      }
+
+      // -------- La fonction renderDresses() a été supprimée --------
+
+      // -------- Modal & Réservations --------
+      let prevFocusedEl = null;
+
+      function openModal(date) {
+        editingBookingId = null;
+        prevFocusedEl = document.activeElement;
+        modal.classList.remove('modal-hidden');
+        bookingDateInput.value = date;
+        modalDateEl.textContent = fromISODateLocal(date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+        // Reset form
+        bookingSubmitText.textContent = 'Réserver';
+        addBookingForm.reset();
+        newBookingSelectedDressIds = [];
+        dressOptionsDropdown.classList.add('hidden');
+        dressOptionsDropdown.innerHTML = '';
+        dressSearchInput.value = '';
+        dressSearchInput.style.display = 'none';
+        [...dressSelectBox.querySelectorAll('span[data-id]')].forEach(b => b.remove());
+        dressSelectPlaceholder.classList.remove('hidden');
+        dressSelectBox.classList.remove('border-red-500');
+        accessoriesDetailsContainer.classList.add('hidden');
+        bookingAccessories.checked = false;
+        document.getElementById('accessories-free').checked = true;
+        calculateRemaining();
+
+        const bookingsForDay = bookings
+          .filter(b => b.date.startsWith(date))
+          .sort((a, b) => (a.reservationTimestamp || '').localeCompare(b.reservationTimestamp || ''));
+
+        const existingBookingsBox = document.getElementById('existing-bookings');
+        existingBookingsList.innerHTML = '';
+
+        if (bookingsForDay.length > 0) {
+          existingBookingsBox.open = true;
+          const frag = document.createDocumentFragment();
+          bookingsForDay.forEach(booking => {
+            // !! On utilise toujours 'dresses' ici
+            const bookedDresses = dresses.filter(d => Array.isArray(booking.dressIds) && booking.dressIds.includes(d.$id));
+            const dressNames = bookedDresses.map(d => d.name).join(', ') || 'Robe(s) supprimée(s)';
+            const wrap = document.createElement('div');
+            wrap.className = 'bg-gray-100 p-2 rounded';
+            const cost = parseFloat(booking.coutTotal) || 0;
+            const paid = parseFloat(booking.verse) || 0;
+            const remaining = cost - paid;
+            const remainingClass = remaining > 0 ? 'text-red-600 font-semibold' : 'text-green-600';
+            let accessoriesHtml = '';
+            if (booking.accessoires) {
               let text = `Accessoires: ${booking.accessoiresDetails || 'Oui'}`;
               if (booking.accessoiresCost === 'payant') text += ' <span class="font-semibold text-red-600">(Payant)</span>';
               else if (booking.accessoiresCost === 'gratuit') text += ' <span class="text-green-600">(Gratuit)</span>';
               accessoriesHtml = `<div class="text-xs text-blue-700 pl-6">${text}</div>`;
-          }
-          let notesHtml = booking.remarque ? `<div class="text-xs text-gray-600 pl-6 italic">Note: ${booking.remarque}</div>` : '';
-          let timestampHtml = '';
-          if (booking.reservationTimestamp) {
+            }
+            let notesHtml = booking.remarque ? `<div class="text-xs text-gray-600 pl-6 italic">Note: ${booking.remarque}</div>` : '';
+            let timestampHtml = '';
+            if (booking.reservationTimestamp) {
               const d = new Date(booking.reservationTimestamp);
               const formatted = d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
               timestampHtml = `<div class="text-xs text-gray-500 pl-6 mt-1 italic">Réservé le: ${formatted}</div>`;
-          }
-          wrap.innerHTML = `
+            }
+            wrap.innerHTML = `
             <div class="flex justify-between items-start">
               <div class="flex-grow">
                 <span><i class="fas fa-tshirt text-gray-500 mr-2"></i><strong>${dressNames}</strong> - ${booking.clientName}</span>
@@ -549,23 +584,23 @@
               </button>
             </div>
           `;
-          frag.appendChild(wrap);
-        });
-        existingBookingsList.appendChild(frag);
-      } else {
-        existingBookingsList.innerHTML = '<p class="text-gray-500 italic">Aucune réservation pour ce jour.</p>';
-      }
+            frag.appendChild(wrap);
+          });
+          existingBookingsList.appendChild(frag);
+        } else {
+          existingBookingsList.innerHTML = '<p class="text-gray-500 italic">Aucune réservation pour ce jour.</p>';
+        }
 
-      // !! On utilise toujours 'dresses' ici
-      const bookedDressIds = bookingsForDay.flatMap(b => (Array.isArray(b.dressIds) ? b.dressIds : []));
-      const availableDresses = dresses.filter(d => !bookedDressIds.includes(d.$id));
-      dressOptionsDropdown.innerHTML = '';
-      
-      newBookingSection.style.display = 'block';
+        // !! On utilise toujours 'dresses' ici
+        const bookedDressIds = bookingsForDay.flatMap(b => (Array.isArray(b.dressIds) ? b.dressIds : []));
+        const availableDresses = dresses.filter(d => !bookedDressIds.includes(d.$id));
+        dressOptionsDropdown.innerHTML = '';
 
-      if (availableDresses.length > 0) {
-        const frag = document.createDocumentFragment();
-        availableDresses.forEach(d => {
+        newBookingSection.style.display = 'block';
+
+        if (availableDresses.length > 0) {
+          const frag = document.createDocumentFragment();
+          availableDresses.forEach(d => {
             const optionEl = document.createElement('label');
             optionEl.className = 'flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer';
             optionEl.dataset.name = (d.name || '').toLowerCase();
@@ -574,56 +609,56 @@
               <span class="ml-2 text-sm text-gray-700">${d.name || 'Robe sans nom'}</span>
             `;
             frag.appendChild(optionEl);
-        });
-        dressOptionsDropdown.appendChild(frag);
-      } else {
-        dressOptionsDropdown.innerHTML = '<p class="text-sm text-gray-500 italic p-2">Aucune robe disponible pour ce jour.</p>';
-      }
+          });
+          dressOptionsDropdown.appendChild(frag);
+        } else {
+          dressOptionsDropdown.innerHTML = '<p class="text-sm text-gray-500 italic p-2">Aucune robe disponible pour ce jour.</p>';
+        }
 
-      const onKeydown = (e) => {
-        if (e.key === 'Escape') closeModal();
-        if (e.key === 'Tab') {
+        const onKeydown = (e) => {
+          if (e.key === 'Escape') closeModal();
+          if (e.key === 'Tab') {
             const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
             const firstElement = focusableElements[0];
             const lastElement = focusableElements[focusableElements.length - 1];
             if (e.shiftKey) {
-                if (document.activeElement === firstElement) { lastElement.focus(); e.preventDefault(); }
+              if (document.activeElement === firstElement) { lastElement.focus(); e.preventDefault(); }
             } else {
-                if (document.activeElement === lastElement) { firstElement.focus(); e.preventDefault(); }
+              if (document.activeElement === lastElement) { firstElement.focus(); e.preventDefault(); }
             }
-        }
-      };
-      modal.addEventListener('keydown', onKeydown);
-    }
+          }
+        };
+        modal.addEventListener('keydown', onKeydown);
+      }
 
-    function closeModal() {
-      modal.classList.add('modal-hidden');
-      if (prevFocusedEl && typeof prevFocusedEl.focus === 'function') prevFocusedEl.focus();
-    }
+      function closeModal() {
+        modal.classList.add('modal-hidden');
+        if (prevFocusedEl && typeof prevFocusedEl.focus === 'function') prevFocusedEl.focus();
+      }
 
-    async function handleBookingSubmit(e) {
-      e.preventDefault();
-      const submitBtn = e.target.querySelector('button[type="submit"]');
-      submitBtn.disabled = true;
-      bookingSubmitText.textContent = editingBookingId ? 'Modification...' : 'Réservation...';
+      async function handleBookingSubmit(e) {
+        e.preventDefault();
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        bookingSubmitText.textContent = editingBookingId ? 'Modification...' : 'Réservation...';
 
-      const selectedDressIds = newBookingSelectedDressIds.slice();
-      const clientName = (document.getElementById('client-name').value || '').trim();
-      
-      if (!clientName) {
+        const selectedDressIds = newBookingSelectedDressIds.slice();
+        const clientName = (document.getElementById('client-name').value || '').trim();
+
+        if (!clientName) {
           document.getElementById('client-name').focus();
           submitBtn.disabled = false;
           bookingSubmitText.textContent = editingBookingId ? 'Modifier la réservation' : 'Réserver';
           return;
-      }
-      
-      dressSelectBox.classList.remove('border-red-500');
+        }
 
-      const accessoriesCost = bookingAccessories.checked
+        dressSelectBox.classList.remove('border-red-500');
+
+        const accessoriesCost = bookingAccessories.checked
           ? document.querySelector('input[name="accessories-cost"]:checked').value
           : '';
 
-      const appwriteData = {
+        const appwriteData = {
           dressIds: selectedDressIds,
           date: new Date(bookingDateInput.value).toISOString(),
           clientName: clientName,
@@ -635,23 +670,23 @@
           accessoiresCost: accessoriesCost,
           coutTotal: Math.max(0, parseFloat(bookingCost.value) || 0),
           verse: Math.max(0, parseFloat(bookingPaid.value) || 0),
-      };
+        };
 
-      try {
+        try {
           if (editingBookingId) {
-              if (newBookingSelectedDressIds.length === 0) {
-                 const originalBooking = bookings.find(b => b.$id === editingBookingId);
-                 appwriteData.dressIds = originalBooking.dressIds || [];
-              }
-              const updatedDoc = await databases.updateDocument(DB_ID, COL_BOOKINGS, editingBookingId, appwriteData);
-              const index = bookings.findIndex(b => b.$id === editingBookingId);
-              if (index > -1) {
-                  bookings[index] = updatedDoc;
-              }
+            if (newBookingSelectedDressIds.length === 0) {
+              const originalBooking = bookings.find(b => b.$id === editingBookingId);
+              appwriteData.dressIds = originalBooking.dressIds || [];
+            }
+            const updatedDoc = await databases.updateDocument(DB_ID, COL_BOOKINGS, editingBookingId, appwriteData);
+            const index = bookings.findIndex(b => b.$id === editingBookingId);
+            if (index > -1) {
+              bookings[index] = updatedDoc;
+            }
           } else {
-              appwriteData.reservationTimestamp = new Date().toISOString();
-              const newDoc = await databases.createDocument(DB_ID, COL_BOOKINGS, ID.unique(), appwriteData);
-              bookings.push(newDoc);
+            appwriteData.reservationTimestamp = new Date().toISOString();
+            const newDoc = await databases.createDocument(DB_ID, COL_BOOKINGS, ID.unique(), appwriteData);
+            bookings.push(newDoc);
           }
 
           closeModal();
@@ -659,105 +694,105 @@
           handleSearch({ target: searchInput }); // Rafraîchir la recherche
           accessoriesDetailsContainer.classList.add('hidden');
 
-      } catch (error) {
+        } catch (error) {
           console.error("Erreur Appwrite:", error);
           alert("Erreur lors de la sauvegarde: " + error.message);
-      } finally {
+        } finally {
           submitBtn.disabled = false;
+        }
       }
-    }
 
-    function startEditBooking(bookingId) {
-      const bookingToEdit = bookings.find(b => b.$id === bookingId);
-      if (!bookingToEdit) return;
+      function startEditBooking(bookingId) {
+        const bookingToEdit = bookings.find(b => b.$id === bookingId);
+        if (!bookingToEdit) return;
 
-      editingBookingId = bookingId;
+        editingBookingId = bookingId;
 
-      document.getElementById('client-name').value = bookingToEdit.clientName || '';
-      bookingVoucher.value = bookingToEdit.voucherNumber || '';
-      bookingVenue.value = bookingToEdit.venue || '';
-      bookingCost.value = bookingToEdit.coutTotal || '';
-      bookingPaid.value = bookingToEdit.verse || '';
-      bookingNotes.value = bookingToEdit.remarque || '';
+        document.getElementById('client-name').value = bookingToEdit.clientName || '';
+        bookingVoucher.value = bookingToEdit.voucherNumber || '';
+        bookingVenue.value = bookingToEdit.venue || '';
+        bookingCost.value = bookingToEdit.coutTotal || '';
+        bookingPaid.value = bookingToEdit.verse || '';
+        bookingNotes.value = bookingToEdit.remarque || '';
 
-      bookingAccessories.checked = bookingToEdit.accessoires || false;
-      if (bookingAccessories.checked) {
+        bookingAccessories.checked = bookingToEdit.accessoires || false;
+        if (bookingAccessories.checked) {
           accessoriesDetailsContainer.classList.remove('hidden');
           bookingAccessoriesDetails.value = bookingToEdit.accessoiresDetails || '';
           if (bookingToEdit.accessoiresCost === 'payant') {
-              document.getElementById('accessories-paid').checked = true;
+            document.getElementById('accessories-paid').checked = true;
           } else {
-              document.getElementById('accessories-free').checked = true;
+            document.getElementById('accessories-free').checked = true;
           }
-      } else {
+        } else {
           accessoriesDetailsContainer.classList.add('hidden');
-      }
+        }
 
-      newBookingSelectedDressIds = [...(bookingToEdit.dressIds || [])];
-      [...dressSelectBox.querySelectorAll('span[data-id]')].forEach(b => b.remove());
+        newBookingSelectedDressIds = [...(bookingToEdit.dressIds || [])];
+        [...dressSelectBox.querySelectorAll('span[data-id]')].forEach(b => b.remove());
 
-      newBookingSelectedDressIds.forEach(id => {
+        newBookingSelectedDressIds.forEach(id => {
           // !! On utilise toujours 'dresses' ici
           const dress = dresses.find(d => d.$id === id);
           if (dress) {
-              const badge = document.createElement('span');
-              badge.className = 'bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5';
-              badge.dataset.id = id;
-              badge.innerHTML = `${dress.name} <button type="button" class="remove-dress-badge font-bold text-blue-600 hover:text-blue-800" data-id="${id}">&times;</button>`;
-              dressSelectBox.insertBefore(badge, dressSearchInput);
+            const badge = document.createElement('span');
+            badge.className = 'bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5';
+            badge.dataset.id = id;
+            badge.innerHTML = `${dress.name} <button type="button" class="remove-dress-badge font-bold text-blue-600 hover:text-blue-800" data-id="${id}">&times;</button>`;
+            dressSelectBox.insertBefore(badge, dressSearchInput);
           }
-      });
-      if (newBookingSelectedDressIds.length > 0) dressSelectPlaceholder.classList.add('hidden');
+        });
+        if (newBookingSelectedDressIds.length > 0) dressSelectPlaceholder.classList.add('hidden');
 
-      calculateRemaining();
-      bookingSubmitText.textContent = 'Modifier la réservation';
-      newBookingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
-      document.getElementById('client-name').focus();
-      document.getElementById('existing-bookings').open = false;
-    }
-
-    // -------- FONCTIONS DE RECHERCHE (Conservées) --------
-    function handleSearch(e) {
-      const term = e.target.value.toLowerCase().trim();
-      
-      if (term.length < 2) {
-        searchResultsContainer.innerHTML = ''; 
-        return;
+        calculateRemaining();
+        bookingSubmitText.textContent = 'Modifier la réservation';
+        newBookingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('client-name').focus();
+        document.getElementById('existing-bookings').open = false;
       }
 
-      const matches = bookings.filter(booking => {
-        if (booking.clientName.toLowerCase().includes(term)) return true;
-        if (booking.voucherNumber && booking.voucherNumber.toLowerCase().includes(term)) return true;
-        if (Array.isArray(booking.dressIds)) {
-          // !! On utilise toujours 'dresses' ici
-          return booking.dressIds.some(dressId => {
-            const dress = dresses.find(d => d.$id === dressId);
-            return dress && dress.name.toLowerCase().includes(term);
-          });
+      // -------- FONCTIONS DE RECHERCHE (Conservées) --------
+      function handleSearch(e) {
+        const term = e.target.value.toLowerCase().trim();
+
+        if (term.length < 2) {
+          searchResultsContainer.innerHTML = '';
+          return;
         }
-        return false;
-      });
-      
-      matches.sort((a, b) => new Date(b.date) - new Date(a.date));
-      renderSearchResults(matches);
-    }
 
-    function renderSearchResults(matches) {
-      if (matches.length === 0) {
-        searchResultsContainer.innerHTML = '<p class="text-gray-500 italic px-2">Aucun résultat trouvé.</p>';
-        return;
+        const matches = bookings.filter(booking => {
+          if (booking.clientName.toLowerCase().includes(term)) return true;
+          if (booking.voucherNumber && booking.voucherNumber.toLowerCase().includes(term)) return true;
+          if (Array.isArray(booking.dressIds)) {
+            // !! On utilise toujours 'dresses' ici
+            return booking.dressIds.some(dressId => {
+              const dress = dresses.find(d => d.$id === dressId);
+              return dress && dress.name.toLowerCase().includes(term);
+            });
+          }
+          return false;
+        });
+
+        matches.sort((a, b) => new Date(b.date) - new Date(a.date));
+        renderSearchResults(matches);
       }
 
-      const frag = document.createDocumentFragment();
-      matches.forEach(booking => {
-        // !! On utilise toujours 'dresses' ici
-        const bookedDresses = dresses.filter(d => Array.isArray(booking.dressIds) && booking.dressIds.includes(d.$id));
-        const dressNames = bookedDresses.map(d => d.name).join(', ') || 'Aucune robe';
-        const bookingDate = fromISODateLocal(booking.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+      function renderSearchResults(matches) {
+        if (matches.length === 0) {
+          searchResultsContainer.innerHTML = '<p class="text-gray-500 italic px-2">Aucun résultat trouvé.</p>';
+          return;
+        }
 
-        const wrap = document.createElement('div');
-        wrap.className = 'bg-gray-50 p-3 rounded-lg border border-gray-200';
-        wrap.innerHTML = `
+        const frag = document.createDocumentFragment();
+        matches.forEach(booking => {
+          // !! On utilise toujours 'dresses' ici
+          const bookedDresses = dresses.filter(d => Array.isArray(booking.dressIds) && booking.dressIds.includes(d.$id));
+          const dressNames = bookedDresses.map(d => d.name).join(', ') || 'Aucune robe';
+          const bookingDate = fromISODateLocal(booking.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+          const wrap = document.createElement('div');
+          wrap.className = 'bg-gray-50 p-3 rounded-lg border border-gray-200';
+          wrap.innerHTML = `
           <div class="flex justify-between items-start">
             <div class="flex-grow min-w-0">
               <span class="font-semibold text-blue-800">${bookingDate}</span>
@@ -773,87 +808,87 @@
             </button>
           </div>
         `;
-        frag.appendChild(wrap);
-      });
-      searchResultsContainer.innerHTML = '';
-      searchResultsContainer.appendChild(frag);
-    }
+          frag.appendChild(wrap);
+        });
+        searchResultsContainer.innerHTML = '';
+        searchResultsContainer.appendChild(frag);
+      }
 
-    async function handleBookingActionClick(e) {
-      const deleteBtn = e.target.closest('.delete-booking-btn');
-      const editBtn = e.target.closest('.edit-booking-btn');
+      async function handleBookingActionClick(e) {
+        const deleteBtn = e.target.closest('.delete-booking-btn');
+        const editBtn = e.target.closest('.edit-booking-btn');
 
-      if (editBtn) {
-        const bookingIdToEdit = editBtn.dataset.bookingId;
-        const bookingToEdit = bookings.find(b => b.$id === bookingIdToEdit);
-        if (!bookingToEdit) return;
-        
-        openModal(bookingToEdit.date.split('T')[0]);
-        startEditBooking(bookingIdToEdit);
-      } 
-      else if (deleteBtn) {
-        const bookingIdToDelete = deleteBtn.dataset.bookingId;
-        const bookingToDelete = bookings.find(b => b.$id === bookingIdToDelete);
-        if (!bookingToDelete) return;
-        
-        const dateStr = fromISODateLocal(bookingToDelete.date).toLocaleDateString('fr-FR');
-        const ok = confirm(`Supprimer la réservation de ${bookingToDelete.clientName} du ${dateStr} ?`);
-        if (!ok) return;
+        if (editBtn) {
+          const bookingIdToEdit = editBtn.dataset.bookingId;
+          const bookingToEdit = bookings.find(b => b.$id === bookingIdToEdit);
+          if (!bookingToEdit) return;
 
-        try {
-          await databases.deleteDocument(DB_ID, COL_BOOKINGS, bookingIdToDelete);
-          bookings = bookings.filter(b => b.$id !== bookingIdToDelete);
-          
-          generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-          handleSearch({ target: searchInput }); // Rafraîchir la liste de recherche
+          openModal(bookingToEdit.date.split('T')[0]);
+          startEditBooking(bookingIdToEdit);
+        }
+        else if (deleteBtn) {
+          const bookingIdToDelete = deleteBtn.dataset.bookingId;
+          const bookingToDelete = bookings.find(b => b.$id === bookingIdToDelete);
+          if (!bookingToDelete) return;
 
-          const dateCourte = bookingToDelete.date.split('T')[0];
-          if (!modal.classList.contains('modal-hidden') && bookingDateInput.value === dateCourte) {
-            openModal(dateCourte);
+          const dateStr = fromISODateLocal(bookingToDelete.date).toLocaleDateString('fr-FR');
+          const ok = confirm(`Supprimer la réservation de ${bookingToDelete.clientName} du ${dateStr} ?`);
+          if (!ok) return;
+
+          try {
+            await databases.deleteDocument(DB_ID, COL_BOOKINGS, bookingIdToDelete);
+            bookings = bookings.filter(b => b.$id !== bookingIdToDelete);
+
+            generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+            handleSearch({ target: searchInput }); // Rafraîchir la liste de recherche
+
+            const dateCourte = bookingToDelete.date.split('T')[0];
+            if (!modal.classList.contains('modal-hidden') && bookingDateInput.value === dateCourte) {
+              openModal(dateCourte);
+            }
+          } catch (error) {
+            console.error("Erreur lors de la suppression:", error);
+            alert("Erreur: " + error.message);
           }
-        } catch (error) {
-          console.error("Erreur lors de la suppression:", error);
-          alert("Erreur: " + error.message);
         }
       }
-    }
 
-    // -------- Events --------
-    document.getElementById('prev-month').addEventListener('click', () => {
-      currentDate.setMonth(currentDate.getMonth() - 1);
-      generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-    });
-    document.getElementById('next-month').addEventListener('click', () => {
-      currentDate.setMonth(currentDate.getMonth() + 1);
-      generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-    });
-    modal.addEventListener('click', (e) => {
-      if (e.target === modal || e.target.closest('#close-modal')) closeModal();
-    });
+      // -------- Events --------
+      document.getElementById('prev-month').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      });
+      document.getElementById('next-month').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      });
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal || e.target.closest('#close-modal')) closeModal();
+      });
 
-    addBookingForm.addEventListener('submit', handleBookingSubmit);
-    bookingAccessories.addEventListener('change', () => {
-      if (bookingAccessories.checked) accessoriesDetailsContainer.classList.remove('hidden');
-      else { accessoriesDetailsContainer.classList.add('hidden'); bookingAccessoriesDetails.value = ''; }
-    });
+      addBookingForm.addEventListener('submit', handleBookingSubmit);
+      bookingAccessories.addEventListener('change', () => {
+        if (bookingAccessories.checked) accessoriesDetailsContainer.classList.remove('hidden');
+        else { accessoriesDetailsContainer.classList.add('hidden'); bookingAccessoriesDetails.value = ''; }
+      });
 
-    bookingCost.addEventListener('input', calculateRemaining);
-    bookingPaid.addEventListener('input', calculateRemaining);
+      bookingCost.addEventListener('input', calculateRemaining);
+      bookingPaid.addEventListener('input', calculateRemaining);
 
-    calendarBody.addEventListener('click', (e) => {
-      const dayEl = e.target.closest('.calendar-day');
-      if (dayEl && dayEl.dataset.date) openModal(dayEl.dataset.date);
-    });
+      calendarBody.addEventListener('click', (e) => {
+        const dayEl = e.target.closest('.calendar-day');
+        if (dayEl && dayEl.dataset.date) openModal(dayEl.dataset.date);
+      });
 
-    // Les écouteurs pour 'dressListEl' et 'showAllBtn' ont été supprimés
+      // Les écouteurs pour 'dressListEl' et 'showAllBtn' ont été supprimés
 
-    existingBookingsList.addEventListener('click', handleBookingActionClick);
-    searchResultsContainer.addEventListener('click', handleBookingActionClick);
-    searchInput.addEventListener('input', handleSearch);
+      existingBookingsList.addEventListener('click', handleBookingActionClick);
+      searchResultsContainer.addEventListener('click', handleBookingActionClick);
+      searchInput.addEventListener('input', handleSearch);
 
-    // --- Sélecteur multi-robes ---
-    dressSelectBox.addEventListener('click', (e) => {
-      if (e.target.classList.contains('remove-dress-badge')) {
+      // --- Sélecteur multi-robes ---
+      dressSelectBox.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-dress-badge')) {
           e.stopPropagation();
           const id = e.target.dataset.id;
           newBookingSelectedDressIds = newBookingSelectedDressIds.filter(x => x !== id);
@@ -861,129 +896,105 @@
           const checkbox = dressOptionsDropdown.querySelector(`input[value="${id}"]`);
           if (checkbox) checkbox.checked = false;
           if (newBookingSelectedDressIds.length === 0) {
-              dressSelectPlaceholder.classList.remove('hidden');
-              dressSearchInput.style.display = 'none';
+            dressSelectPlaceholder.classList.remove('hidden');
+            dressSearchInput.style.display = 'none';
           }
-      } else if (e.target.id === 'dress-search-input') {
+        } else if (e.target.id === 'dress-search-input') {
           e.stopPropagation();
           dressOptionsDropdown.classList.remove('hidden');
           dressSelectContainer.setAttribute('aria-expanded', 'true');
-      } else {
+        } else {
           dressOptionsDropdown.classList.remove('hidden');
           dressSelectContainer.setAttribute('aria-expanded', 'true');
           dressSelectPlaceholder.classList.add('hidden');
           dressSearchInput.style.display = 'block';
           dressSearchInput.focus();
-      }
-    });
+        }
+      });
 
-    dressSearchInput.addEventListener('keyup', () => {
-      const filter = dressSearchInput.value.toLowerCase();
-      dressOptionsDropdown.querySelectorAll('label').forEach(option => {
+      dressSearchInput.addEventListener('keyup', () => {
+        const filter = dressSearchInput.value.toLowerCase();
+        dressOptionsDropdown.querySelectorAll('label').forEach(option => {
           const name = option.dataset.name || '';
           option.style.display = name.includes(filter) ? 'flex' : 'none';
+        });
       });
-    });
 
-    dressOptionsDropdown.addEventListener('change', (e) => {
-      if (e.target.type === 'checkbox') {
+      dressOptionsDropdown.addEventListener('change', (e) => {
+        if (e.target.type === 'checkbox') {
           const id = e.target.value;
           const name = e.target.nextElementSibling.textContent;
           if (e.target.checked) {
-              if (!newBookingSelectedDressIds.includes(id)) newBookingSelectedDressIds.push(id);
-              const badge = document.createElement('span');
-              badge.className = 'bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5';
-              badge.dataset.id = id;
-              badge.innerHTML = `${name} <button type="button" class="remove-dress-badge font-bold text-blue-600 hover:text-blue-800" data-id="${id}">&times;</button>`;
-              dressSelectBox.insertBefore(badge, dressSearchInput);
+            if (!newBookingSelectedDressIds.includes(id)) newBookingSelectedDressIds.push(id);
+            const badge = document.createElement('span');
+            badge.className = 'bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5';
+            badge.dataset.id = id;
+            badge.innerHTML = `${name} <button type="button" class="remove-dress-badge font-bold text-blue-600 hover:text-blue-800" data-id="${id}">&times;</button>`;
+            dressSelectBox.insertBefore(badge, dressSearchInput);
           } else {
-              newBookingSelectedDressIds = newBookingSelectedDressIds.filter(x => x !== id);
-              const badge = dressSelectBox.querySelector(`span[data-id="${id}"]`);
-              if (badge) badge.remove();
+            newBookingSelectedDressIds = newBookingSelectedDressIds.filter(x => x !== id);
+            const badge = dressSelectBox.querySelector(`span[data-id="${id}"]`);
+            if (badge) badge.remove();
           }
           if (newBookingSelectedDressIds.length > 0) {
-              dressSelectPlaceholder.classList.add('hidden');
-              dressSearchInput.style.display = 'block';
+            dressSelectPlaceholder.classList.add('hidden');
+            dressSearchInput.style.display = 'block';
           } else {
-              dressSelectPlaceholder.classList.remove('hidden');
-              dressSearchInput.style.display = 'none';
+            dressSelectPlaceholder.classList.remove('hidden');
+            dressSearchInput.style.display = 'none';
           }
           dressSearchInput.focus();
-      }
-    });
+        }
+      });
 
-    document.addEventListener('click', (e) => {
-      if (!dressSelectContainer.contains(e.target)) {
+      document.addEventListener('click', (e) => {
+        if (!dressSelectContainer.contains(e.target)) {
           dressOptionsDropdown.classList.add('hidden');
           dressSelectContainer.setAttribute('aria-expanded', 'false');
-      }
-    });
-    dressOptionsDropdown.addEventListener('keydown', (e) => {
-      if (e.key === 'Tab') {
+        }
+      });
+      dressOptionsDropdown.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
           dressOptionsDropdown.classList.add('hidden');
           dressSelectContainer.setAttribute('aria-expanded', 'false');
-      }
-    });
+        }
+      });
 
-    // -------- Export/Import (local) --------
-    function exportData() {
-      const blob = new Blob([JSON.stringify({ dresses, bookings }, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
-      const a = Object.assign(document.createElement('a'), { href: url, download: 'location-robes-local.json' });
-      a.click();
-      URL.revokeObjectURL(url);
-    }
-    async function importData(file) {
-      const text = await file.text();
-      const data = JSON.parse(text);
-      if (!Array.isArray(data.dresses) || !Array.isArray(data.bookings)) throw new Error('Fichier invalide.');
-      dresses = data.dresses;
-      bookings = data.bookings;
-      // renderDresses() a été supprimé
-      generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-      alert("Import local terminé ✔️ (Non sauvegardé sur Appwrite)");
-    }
-    exportBtn.addEventListener('click', exportData);
-    importInput.addEventListener('change', async (e) => {
-      const file = e.target.files && e.target.files[0];
-      if (!file) return;
-      try { await importData(file); }
-      catch (err) { alert('Échec de l’import : ' + (err?.message || err)); }
-      finally { importInput.value = ''; }
-    });
+  
+ 
 
-    // -------- Init (Fonction principale asynchrone) --------
-    async function main() {
-      if (loadingOverlay) loadingOverlay.classList.remove('hidden');
-      try {
-        
-        // !! On charge TOUJOURS les robes, même si on ne les affiche pas
-        const [dressesResponse, bookingsResponse] = await Promise.all([
+      // -------- Init (Fonction principale asynchrone) --------
+      async function main() {
+        if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+        try {
+
+          // !! On charge TOUJOURS les robes, même si on ne les affiche pas
+          const [dressesResponse, bookingsResponse] = await Promise.all([
             databases.listDocuments(DB_ID, COL_DRESSES, [Query.limit(500)]),
             databases.listDocuments(DB_ID, COL_BOOKINGS, [Query.limit(5000)])
-        ]);
-        dresses = dressesResponse.documents;
-        bookings = bookingsResponse.documents;
-        
-        // renderDresses() a été supprimé
-        generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-      } catch (error) {
-        console.error("Impossible de charger les données Appwrite:", error);
-        document.body.innerHTML = `<div class="p-4 m-4 rounded-lg bg-red-100 text-red-800 border border-red-300">
+          ]);
+          dresses = dressesResponse.documents;
+          bookings = bookingsResponse.documents;
+
+          // renderDresses() a été supprimé
+          generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        } catch (error) {
+          console.error("Impossible de charger les données Appwrite:", error);
+          document.body.innerHTML = `<div class="p-4 m-4 rounded-lg bg-red-100 text-red-800 border border-red-300">
             <h3 class="font-bold">Erreur critique</h3>
             <p>Impossible de charger les données depuis Appwrite.</p>
             <p class="text-sm mt-2">Détails: ${error.message}</p>
             <p class="text-sm mt-2">Vérifie ta configuration et les permissions de tes collections.</pre>
         </div>`;
-      } finally {
-        if (loadingOverlay) loadingOverlay.classList.add('hidden');
+        } finally {
+          if (loadingOverlay) loadingOverlay.classList.add('hidden');
+        }
       }
-    }
 
-    // Lance le chargement
-    main();
-  });
-</script>
+      // Lance le chargement
+      main();
+    });
+  </script>
 
 </body>
 

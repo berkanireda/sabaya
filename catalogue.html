@@ -13,80 +13,158 @@
     /* Style pour la rotation de l'icône dans l'accordéon */
     details[open] > summary .chevron-icon { transform: rotate(180deg); }
   </style>
+
+  <script>
+    let IS_LOGGING_OUT = false;
+  </script>
 </head>
+
+
+
 <body class="p-4 md:p-8 text-gray-800">
 
-  <header class="max-w-7xl mx-auto mb-6 md:mb-8">
-    <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-      <div class="text-center md:text-left">
-        <h1 class="text-4xl font-bold">Location de Robes</h1>
-        <nav class="mt-2 flex items-center justify-center md:justify-start gap-4 text-lg">
-          <a href="./index.html" class="text-gray-500 hover:text-blue-600 font-semibold pb-1">Gestionnaire</a>
-          <a href="./catalogue.html" class="text-blue-600 font-semibold border-b-2 border-blue-600 pb-1">Catalogue</a>
-          <button id="logout">Se déconnecter</button>
-        </nav>
+<header class="sticky top-0 z-50 bg-white/60 backdrop-blur-xl shadow-md border-b border-gray-200 mb-8">
+  <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+
+    <!-- Logo / Titre -->
+    <a href="./catalogue.html" class="flex items-center gap-3 group">
+      <div class="bg-blue-100 text-blue-600 p-2 rounded-xl group-hover:bg-blue-200 transition">
+        <i class="fa-solid fa-hanger text-lg"></i>
       </div>
-    </div>
-  </header>
+      <span class="text-2xl font-bold tracking-tight text-gray-800 group-hover:text-blue-700 transition">
+        Location de Robes
+      </span>
+    </a>
+
+    <!-- Navigation stylisée -->
+    <nav class="hidden md:flex items-center gap-3">
+      <a href="./index.html"
+         class="px-4 py-2 rounded-full bg-blue-50/60 text-gray-600 font-medium hover:bg-blue-100 hover:text-blue-700 
+                transition-all duration-200 shadow-sm">
+        <i class="fa-solid fa-gear mr-1"></i> Gestionnaire
+      </a>
+
+      <a href="./catalogue.html"
+         class="px-4 py-2 rounded-full bg-blue-600 text-white font-semibold shadow-md ring-2 ring-blue-500/50 
+                hover:bg-blue-700 hover:ring-blue-600/70 transition-all duration-200">
+        <i class="fa-solid fa-book-open mr-1"></i> Catalogue
+      </a>
+    </nav>
+
+    <!-- Bouton Déconnexion -->
+    <button id="logout"
+      class="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 
+             text-white px-4 py-2 font-medium text-sm shadow hover:shadow-lg hover:from-blue-600 hover:to-blue-700 
+             transition-all duration-200 ml-2">
+      <i class="fa-solid fa-right-from-bracket group-hover:-rotate-12 transition-transform"></i>
+      <span class="hidden sm:inline">Se déconnecter</span>
+    </button>
+
+  </div>
+</header>
+
+
+
 
   <main>
     <div class="max-w-7xl mx-auto">
-      
-
-
-      <details id="add-edit-accordion" class="mb-3 bg-white rounded-xl shadow-lg border">
-      <summary class="list-none flex items-center justify-between p-4 cursor-pointer">
-        <h3 id="form-title" class="font-semibold text-lg text-gray-700">Ajouter une nouvelle robe</h3>
-        <i class="fas fa-chevron-down text-gray-500 transition-transform duration-300 chevron-icon"></i>
-      </summary>
-      <div class="p-6 border-t">
-        <form id="add-dress-form" class="grid md:grid-cols-2 gap-x-6 gap-y-4">
-          <div>
-            <label for="dress-name" class="block text-sm font-medium text-gray-600 mb-1">Nom de la robe</label>
-            <input type="text" id="dress-name" placeholder="Ex: Robe de Soirée Rouge" class="w-full p-2 border rounded-md" required>
-          </div>
-          <div>
-            <label for="dress-type" class="block text-sm font-medium text-gray-600 mb-1">Type</label>
-            <select id="dress-type" class="w-full p-2 border rounded-md bg-white">
-              <option value="karakou">Karakou</option>
-              <option value="caftan">Caftan</option>
-              <option value="kabyle">Kabyle</option>
-              <option value="autre">Autre</option>
-            </select>
-          </div>
-          <div>
-            <label for="dress-size" class="block text-sm font-medium text-gray-600 mb-1">Taille</label>
-            <input type="text" id="dress-size" placeholder="Ex: 38, M, Standard" class="w-full p-2 border rounded-md">
-          </div>
-          <div>
-            <label for="dress-purchase-date" class="block text-sm font-medium text-gray-600 mb-1">Date d'achat</label>
-            <input type="date" id="dress-purchase-date" class="w-full p-2 border rounded-md">
-          </div>
-          <div>
-            <label for="dress-price" class="block text-sm font-medium text-gray-600 mb-1">Prix (DA)</label>
-            <input type="number" id="dress-price" placeholder="Ex: 15000" class="w-full p-2 border rounded-md" step="0.01" min="0">
-          </div>
-          <div>
-            <label for="dress-reference" class="block text-sm font-medium text-gray-600 mb-1">Référence de la robe</label>
-            <input type="text" id="dress-reference" placeholder="Ex: RSR-001" class="w-full p-2 border rounded-md">
-          </div>
-          <div class="md:col-span-2">
-            <label for="dress-image" class="block text-sm font-medium text-gray-600 mb-1">Photo (laisser vide pour ne pas changer)</label>
-            <input type="file" id="dress-image" class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100" accept="image/*">
-          </div>
-          
-          <div class="md:col-span-2 mt-2 flex gap-4">
-            <button type="submit" class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
-              <i id="form-submit-icon" class="fas fa-plus mr-2"></i>
-              <span id="form-submit-text">Ajouter au catalogue</span>
-            </button>
-            <button type="button" id="cancel-edit-btn" class="hidden border border-gray-300 bg-white text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition-colors">
-              Annuler
-            </button>
-          </div>
-        </form>
+   <!-- Cartes d'actions -->
+<section id="action-cards" class="max-w-7xl mx-auto mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+  <!-- Carte : Ajouter un type de robe -->
+  <button id="open-add-type"
+          class="group relative overflow-hidden rounded-2xl border bg-white shadow-lg p-5 text-left hover:shadow-xl transition">
+    <div class="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-blue-50 group-hover:scale-125 transition"></div>
+    <div class="relative z-10 flex items-center gap-4">
+      <div class="grid h-12 w-12 place-items-center rounded-xl bg-blue-100 text-blue-700">
+        <i class="fa-solid fa-tags text-xl"></i>
       </div>
-    </details>
+      <div>
+        <p class="text-sm text-gray-500">Catalogue</p>
+        <h3 class="text-lg font-semibold">Ajouter un type de robe</h3>
+      </div>
+    </div>
+    <p class="relative z-10 mt-3 text-sm text-gray-600">Crée un nouveau type de robes.</p>
+  </button>
+
+  <!-- Carte : Ajouter une nouvelle robe -->
+  <button id="open-add-dress"
+          class="group relative overflow-hidden rounded-2xl border bg-white shadow-lg p-5 text-left hover:shadow-xl transition">
+ <div class="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-emerald-100 group-hover:scale-125 transition"></div>
+    <div class="relative z-10 flex items-center gap-4">
+      <div class="grid h-12 w-12 place-items-center rounded-xl bg-emerald-100 text-emerald-700">
+        <i class="fa-solid fa-circle-plus text-xl"></i>
+      </div>
+      <div>
+        <p class="text-sm text-gray-500">Catalogue</p>
+        <h3 class="text-lg font-semibold">Ajouter une nouvelle robe</h3>
+      </div>
+    </div>
+    <p class="relative z-10 mt-3 text-sm text-gray-600">Ouvre un formulaire dans une fenêtre modale.</p>
+  </button>
+</section>
+
+
+
+
+
+<!-- Modal : Ajouter / Modifier une robe -->
+<div id="add-dress-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+  <div class="absolute inset-0 bg-black/40" data-close-dress></div>
+
+  <div class="relative mx-4 w-full max-w-3xl rounded-2xl bg-white shadow-2xl">
+    <div class="flex items-center justify-between border-b p-4">
+      <h4 id="dress-modal-title" class="text-lg font-semibold">Ajouter une nouvelle robe</h4>
+      <button class="p-2 rounded-md hover:bg-gray-100" title="Fermer" data-close-dress>
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <form id="add-dress-form" class="p-6 grid md:grid-cols-2 gap-x-6 gap-y-4">
+      <div>
+        <label for="dress-name" class="block text-sm font-medium text-gray-600 mb-1">Nom de la robe</label>
+        <input type="text" id="dress-name" placeholder="Ex: Robe de Soirée Rouge" class="w-full p-2 border rounded-md" required>
+      </div>
+      <div>
+        <label for="dress-type" class="block text-sm font-medium text-gray-600 mb-1">Type</label>
+        <select id="dress-type" class="w-full p-2 border rounded-md bg-white"></select>
+      </div>
+      <div>
+        <label for="dress-size" class="block text-sm font-medium text-gray-600 mb-1">Taille</label>
+        <input type="text" id="dress-size" placeholder="Ex: 38, M, Standard" class="w-full p-2 border rounded-md">
+      </div>
+      <div>
+        <label for="dress-purchase-date" class="block text-sm font-medium text-gray-600 mb-1">Date d'achat</label>
+        <input type="date" id="dress-purchase-date" class="w-full p-2 border rounded-md">
+      </div>
+      <div>
+        <label for="dress-price" class="block text-sm font-medium text-gray-600 mb-1">Prix (DA)</label>
+        <input type="number" id="dress-price" placeholder="Ex: 15000" class="w-full p-2 border rounded-md" step="0.01" min="0">
+      </div>
+      <div>
+        <label for="dress-reference" class="block text-sm font-medium text-gray-600 mb-1">Référence de la robe</label>
+        <input type="text" id="dress-reference" placeholder="Ex: RSR-001" class="w-full p-2 border rounded-md">
+      </div>
+      <div class="md:col-span-2">
+        <label for="dress-image" class="block text-sm font-medium text-gray-600 mb-1">Photo (laisser vide pour ne pas changer)</label>
+        <input type="file" id="dress-image"
+               class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+               accept="image/*">
+      </div>
+
+      <div class="md:col-span-2 mt-2 flex gap-4">
+        <button type="submit"
+                class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+          <i id="form-submit-icon" class="fas fa-plus mr-2"></i>
+          <span id="form-submit-text">Ajouter au catalogue</span>
+        </button>
+        <button type="button" id="cancel-edit-btn"
+                class="hidden border border-gray-300 bg-white text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition-colors"
+                data-close-dress>Annuler</button>
+      </div>
+    </form>
+  </div>
+</div>
+
       
 
 
@@ -100,10 +178,7 @@
         <label for="filter-type" class="block text-sm font-medium text-gray-600 mb-1">Type de robe</label>
         <select id="filter-type" class="w-full p-2 border border-gray-300 rounded-md bg-white">
           <option value="all">Tous les types</option>
-          <option value="karakou">Karakou</option>
-          <option value="caftan">Caftan</option>
-          <option value="kabyle">Kabyle</option>
-          <option value="autre">Autre</option>
+
         </select>
       </div>
 
@@ -133,28 +208,68 @@
 
 
 
-
-
-
-
-
-
       <div id="catalogue-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
         </div>
       <div id="pagination-controls" class="flex justify-center items-center gap-2 mt-8">
         </div>
     </div>
   </main>
+
+
+
+
+
+
+
+
+
+
+<!-- Modal : Ajouter un type de robe -->
+<div id="add-type-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+  <div class="absolute inset-0 bg-black/40" data-close-modal></div>
+  <div class="relative mx-4 w-full max-w-md rounded-2xl bg-white shadow-2xl">
+    <div class="flex items-center justify-between border-b p-4">
+      <h4 class="text-lg font-semibold">Nouveau type de robe</h4>
+      <button class="p-2 rounded-md hover:bg-gray-100" title="Fermer" data-close-modal>
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+    <form id="add-type-form" class="p-4 space-y-4">
+      <div>
+        <label for="new-dress-type" class="block text-sm font-medium text-gray-700 mb-1">
+          Nom du type
+        </label>
+        <input id="new-dress-type" type="text" required
+               placeholder="Ex: Takchita, Soirée, Fustan..."
+               class="w-full rounded-md border p-2 outline-none focus:ring-2 focus:ring-blue-500"/>
+        <p id="add-type-error" class="hidden mt-2 text-sm text-red-600"></p>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit"
+                class="flex-1 rounded-md bg-blue-600 py-2 px-4 text-white font-medium hover:bg-blue-700">
+          <i class="fa-solid fa-plus mr-2"></i>Ajouter
+        </button>
+        <button type="button" class="rounded-md border bg-white py-2 px-4 hover:bg-gray-50"
+                data-close-modal>Annuler</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+
+
+
+
+
+
+
+
 <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
 
 
 <script>
 
  
-  document.getElementById('logout').addEventListener('click', async () => {
-    await account.deleteSession('current');
-    window.location.href = 'index.html';
-  });
 
   /* ====== Import Appwrite (depuis le SDK chargé avant) ====== */
   const {
@@ -189,6 +304,21 @@
 
   // Lance le guard immédiatement
   requireAuth();
+
+
+// logout
+
+  document.getElementById('logout')?.addEventListener('click', async () => {
+  IS_LOGGING_OUT = true;
+  // optionnel: masquer l’UI immédiatemment pour éviter tout flicker
+  document.body.style.opacity = '0';
+  try { await account.deleteSession('current'); } catch (_) {}
+  // replace = pas d’historique retour
+  window.location.replace('login.html');
+});
+
+
+
   const databases = new Databases(client);
   const storage = new Storage(client);
 
@@ -210,8 +340,6 @@
   const filterPriceMax = document.getElementById('filter-price-max');
   const filterApplyBtn = document.getElementById('filter-apply-btn');
   const filterResetBtn = document.getElementById('filter-reset-btn');
-  const addEditAccordion = document.getElementById('add-edit-accordion');
-  const formTitle = document.getElementById('form-title');
   const formSubmitText = document.getElementById('form-submit-text');
   const formSubmitIcon = document.getElementById('form-submit-icon');
   const cancelEditBtn = document.getElementById('cancel-edit-btn');
@@ -226,6 +354,39 @@
     max: null
   };
   let editingDressId = null;
+
+
+
+
+// Modal Robe
+const dressModal = document.getElementById('add-dress-modal');
+const openAddDressBtn = document.getElementById('open-add-dress');
+const dressModalTitle = document.getElementById('dress-modal-title');
+
+function openDressModal() {
+  dressModal.classList.remove('hidden');
+  dressModal.classList.add('flex');
+}
+function closeDressModal() {
+  dressModal.classList.add('hidden');
+  dressModal.classList.remove('flex');
+}
+dressModal?.querySelectorAll('[data-close-dress]').forEach(el => el.addEventListener('click', closeDressModal));
+
+// Ouvrir en mode "ajout"
+openAddDressBtn?.addEventListener('click', () => {
+  editingDressId = null;
+  addDressForm.reset();
+  addDressForm.dataset.existingImageUrl = '';
+  dressModalTitle.textContent = 'Ajouter une nouvelle robe';
+  formSubmitText.textContent = 'Ajouter au catalogue';
+  formSubmitIcon.className = 'fas fa-plus mr-2';
+  cancelEditBtn.classList.add('hidden');
+  openDressModal();
+});
+
+
+
 
 
   /* ====== Compression image (Inchangé) ====== */
@@ -362,6 +523,8 @@
         await renderCataloguePage(currentPage);
         renderPagination();
       }
+
+      closeDressModal();
       
     } catch (err) {
       console.error('Erreur Appwrite:', err);
@@ -545,38 +708,44 @@
   }
 
   /* ====== Fonctions d'Édition (Inchangées) ====== */
-  async function startEditDress(dressId) {
-    try {
-      const dress = await databases.getDocument(DB_ID, COL_DRESSES, dressId);
-      document.getElementById('dress-name').value = dress.name;
-      document.getElementById('dress-type').value = dress.type;
-      document.getElementById('dress-size').value = dress.size;
-      document.getElementById('dress-purchase-date').value = dress.purchaseDate;
-      document.getElementById('dress-price').value = dress.price;
-      document.getElementById('dress-reference').value = dress.reference;
-      addDressForm.dataset.existingImageUrl = dress.imageUrl || '';
-      editingDressId = dressId;
-      formTitle.textContent = 'Modifier la robe';
-      formSubmitText.textContent = 'Enregistrer les modifications';
-      formSubmitIcon.className = 'fas fa-save mr-2';
-      cancelEditBtn.classList.remove('hidden');
-      addEditAccordion.open = true;
-      addEditAccordion.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    } catch (error) {
-      console.error("Erreur lors du chargement de la robe:", error);
-      alert("Impossible de charger les données de la robe.");
-    }
+async function startEditDress(dressId) {
+  try {
+    const dress = await databases.getDocument(DB_ID, COL_DRESSES, dressId);
+    document.getElementById('dress-name').value = dress.name || '';
+    document.getElementById('dress-type').value = dress.type || '';
+    document.getElementById('dress-size').value = dress.size || '';
+    document.getElementById('dress-purchase-date').value = dress.purchaseDate || '';
+    document.getElementById('dress-price').value = dress.price ?? '';
+    document.getElementById('dress-reference').value = dress.reference || '';
+    addDressForm.dataset.existingImageUrl = dress.imageUrl || '';
+
+    editingDressId = dressId;
+    dressModalTitle.textContent = 'Modifier la robe';
+    formSubmitText.textContent = 'Enregistrer les modifications';
+    formSubmitIcon.className = 'fas fa-save mr-2';
+    cancelEditBtn.classList.remove('hidden');
+
+    openDressModal();
+  } catch (error) {
+    console.error("Erreur lors du chargement de la robe:", error);
+    alert("Impossible de charger les données de la robe.");
   }
+}
+
 
   function cancelEdit() {
     editingDressId = null;
     addDressForm.reset();
-    addDressForm.dataset.existingImageUrl = ''; 
-    formTitle.textContent = 'Ajouter une nouvelle robe';
+    addDressForm.dataset.existingImageUrl = '';
+    dressModalTitle.textContent = 'Ajouter une nouvelle robe';
     formSubmitText.textContent = 'Ajouter au catalogue';
     formSubmitIcon.className = 'fas fa-plus mr-2';
     cancelEditBtn.classList.add('hidden');
+    closeDressModal();
   }
+
+
+ 
   
   async function handleGridClick(e) {
     const editBtn = e.target.closest('.edit-dress-btn');
@@ -609,8 +778,139 @@
     grid.addEventListener('click', handleGridClick);
   }
 
+
+
+
+
+
+  
+/* ================== Types de robe persistés (Appwrite) ================== */
+const COL_TYPES = 'dress_types'; // <- Assure-toi que l'ID de collection est bien celui-là
+
+function normLabel(s){
+  return (s || "").normalize("NFKC").trim().replace(/\s+/g, " ");
+}
+
+/* Sélecteurs à alimenter */
+const selDressType  = document.getElementById('dress-type');
+const selFilterType = document.getElementById('filter-type');
+
+/* Remplit #dress-type et #filter-type depuis Appwrite */
+async function loadDressTypes() {
+  // on essaie d’abord de garder “Tous les types” si présent
+  const keepAll = selFilterType && selFilterType.querySelector('option[value="all"]');
+  if (selDressType)  selDressType.innerHTML  = '';
+  if (selFilterType) selFilterType.innerHTML = keepAll ? keepAll.outerHTML : '<option value="all">Tous les types</option>';
+
+  // On peut garder quelques valeurs de base si tu veux les précréer dans la BDD.
+  // Ici on lit tout depuis la collection.
+  const typesResp = await databases.listDocuments(DB_ID, COL_TYPES, [
+    Query.orderAsc('name'),
+    Query.limit(200)
+  ]);
+  const addOption = (selectEl, v) => {
+    const opt = new Option(v, v);
+    selectEl.add(opt);
+  };
+
+  typesResp.documents.forEach(doc => {
+    const name = (doc.name || '').trim();
+    if (!name) return;
+    if (selDressType)  addOption(selDressType, name);
+    if (selFilterType && name) addOption(selFilterType, name);
+  });
+}
+
+/* Crée un type en BDD puis rafraîchit les selects et sélectionne le nouveau type */
+async function createDressType(name) {
+  const clean = normLabel(name);
+  if (clean.length < 2) throw new Error('Le nom doit comporter au moins 2 caractères.');
+
+  // Vérif côté client (cas-insensitive)
+  const existing = await databases.listDocuments(DB_ID, COL_TYPES, [
+    Query.equal('name', clean)
+  ]);
+  if (existing.total > 0) throw new Error('Ce type existe déjà.');
+
+  await databases.createDocument(DB_ID, COL_TYPES, ID.unique(), { name: clean });
+
+  await loadDressTypes();
+  if (selDressType) selDressType.value = clean;
+}
+
+/* -------- Modal : interactions -------- */
+const modal          = document.getElementById('add-type-modal');
+const openBtn        = document.getElementById('open-add-type');
+const errorEl        = document.getElementById('add-type-error');
+const formAddType    = document.getElementById('add-type-form');
+const inputNewType   = document.getElementById('new-dress-type');
+
+function openModal(){
+  modal.classList.remove('hidden'); modal.classList.add('flex');
+  setTimeout(() => inputNewType?.focus(), 0);
+}
+function closeModal(){
+  modal.classList.add('hidden'); modal.classList.remove('flex');
+  if (formAddType) formAddType.reset();
+  if (errorEl){ errorEl.classList.add('hidden'); errorEl.textContent = ''; }
+}
+
+openBtn?.addEventListener('click', openModal);
+modal?.querySelectorAll('[data-close-modal]').forEach(el => el.addEventListener('click', closeModal));
+window.addEventListener('keydown', (e)=>{ if(e.key === 'Escape' && modal && !modal.classList.contains('hidden')) closeModal(); });
+
+formAddType?.addEventListener('submit', async (e)=>{
+  e.preventDefault();
+  errorEl.classList.add('hidden'); errorEl.textContent = '';
+  const value = inputNewType.value;
+  try {
+    await createDressType(value);
+    closeModal();
+  } catch (err) {
+    errorEl.textContent = err?.message || 'Une erreur est survenue.';
+    errorEl.classList.remove('hidden');
+  }
+});
+
+/* -------- Intégration au cycle de vie existant -------- */
+/* 1) Au démarrage, charger les types AVANT d’afficher le catalogue */
+const _main = main; // on wrappe ta fonction main existante
+main = async function(){
+  try {
+    await requireAuth();         // déjà chez toi
+    await loadDressTypes();      // << remplit les selects depuis Appwrite
+  } catch (e) {
+    console.error('Erreur chargement types:', e);
+  }
+  // puis on lance ton flux normal
+  await _main();
+};
+
+/* 2) Quand on réinitialise les filtres, on regénère la liste des types depuis la BDD */
+if (typeof resetFilters === 'function') {
+  const _resetFilters = resetFilters;
+  resetFilters = async function(){
+    await _resetFilters();
+    await loadDressTypes();
+  };
+}
+
+
+
+
+
+
+
   // Lancement de l'application
   main();
 </script>
+
+
+
+
+
+
+
+
 </body>
 </html>
