@@ -45,71 +45,74 @@
   </style>
 </head>
 
-<body class="p-2 md:p-8">
+<body class="p-2 md:p-8 bg-gradient-to-br from-slate-50 to-slate-100">
   <div class="max-w-7xl mx-auto">
-<header class="sticky top-0 z-50 bg-white/60 backdrop-blur-xl shadow-md border-b border-gray-200 mb-8">
-  <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
+    <header class="sticky top-0 z-50 bg-white/60 backdrop-blur-xl shadow-md border-b border-gray-200 mb-8">
+      <div class="max-w-7xl mx-auto flex items-center justify-between px-6 py-3">
 
-    <!-- Logo / Titre -->
-    <a href="./catalogue.html" class="flex items-center gap-3 group">
-      <div class="bg-blue-100 text-blue-600 p-2 rounded-xl group-hover:bg-blue-200 transition">
-        <i class="fa-solid fa-hanger text-lg"></i>
-      </div>
-      <span class="text-2xl font-bold tracking-tight text-gray-800 group-hover:text-blue-700 transition">
-        Location de Robes
-      </span>
-    </a>
+        <!-- Logo / Titre -->
+        <a href="./catalogue.html" class="flex items-center gap-3 group">
+          <div class="bg-blue-100 text-blue-600 p-2 rounded-xl group-hover:bg-blue-200 transition">
+            <i class="fa-solid fa-hanger text-lg"></i>
+          </div>
+          <span class="text-2xl font-bold tracking-tight text-gray-800 group-hover:text-blue-700 transition">
+            Location de Robes
+          </span>
+        </a>
 
-    <!-- Navigation (boutons arrondis, semi-transparents) -->
-    <nav class="hidden md:flex items-center gap-3 text-sm font-medium">
-      <!-- Gestionnaire (actif sur cette page) -->
-      <a href="./p.html"
-         class="px-4 py-2 rounded-full bg-blue-600 text-white shadow-md ring-2 ring-blue-500/50
-                hover:bg-blue-700 hover:ring-blue-600/70 transition-all duration-200"
-         data-route="p">
-        <i class="fa-solid fa-gear mr-1"></i> Gestionnaire
-      </a>
+        <!-- Navigation (boutons arrondis, semi-transparents) -->
+        <nav class="hidden md:flex items-center gap-3 text-sm font-medium">
+          <!-- Gestionnaire (actif sur cette page) -->
+          <a href="./p.html" class="px-4 py-2 rounded-full bg-blue-600 text-white shadow-md ring-2 ring-blue-500/50
+                hover:bg-blue-700 hover:ring-blue-600/70 transition-all duration-200" data-route="p">
+            <i class="fa-solid fa-gear mr-1"></i> Gestionnaire
+          </a>
 
-      <!-- Catalogue (inactif ici) -->
-      <a href="./catalogue.html"
-         class="px-4 py-2 rounded-full bg-blue-50/60 text-gray-700 shadow-sm
-                hover:bg-blue-100 hover:text-blue-800 transition-all duration-200"
-         data-route="catalogue">
-        <i class="fa-solid fa-book-open mr-1"></i> Catalogue
-      </a>
-    </nav>
+          <!-- Catalogue (inactif ici) -->
+          <a href="./catalogue.html" class="px-4 py-2 rounded-full bg-blue-50/60 text-gray-700 shadow-sm
+                hover:bg-blue-100 hover:text-blue-800 transition-all duration-200" data-route="catalogue">
+            <i class="fa-solid fa-book-open mr-1"></i> Catalogue
+          </a>
+        </nav>
 
-    <!-- Bouton Déconnexion -->
-    <button id="logout"
-      class="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 
+        <!-- Bouton Déconnexion -->
+        <button id="logout" class="group inline-flex items-center gap-2 rounded-full bg-gradient-to-r from-blue-500 to-blue-600 
              text-white px-4 py-2 font-medium text-sm shadow hover:shadow-lg hover:from-blue-600 hover:to-blue-700 
              transition-all duration-200 ml-2">
-      <i class="fa-solid fa-right-from-bracket group-hover:-rotate-12 transition-transform"></i>
-      <span class="hidden sm:inline">Se déconnecter</span>
-    </button>
+          <i class="fa-solid fa-right-from-bracket group-hover:-rotate-12 transition-transform"></i>
+          <span class="hidden sm:inline">Se déconnecter</span>
+        </button>
 
-  </div>
-</header>
+      </div>
+    </header>
 
 
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
       <!-- Colonne de gauche : Gestion des robes -->
-
-
       <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
 
         <div>
-          <h2 class="text-2xl font-semibold mb-4 text-gray-700">Rechercher</h2>
+          <div class="flex items-center gap-2 mb-4">
+            <div class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </div>
+            <div>
+              <h2 class="text-lg font-semibold text-slate-800">Rechercher une réservation</h2>
+            </div>
+          </div>
 
           <div class="relative mb-4">
-            <input type="search" id="reservation-search-input" placeholder="Nom, N° bon, ou nom de robe..."
-              class="w-full p-2.5 pl-10 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
-            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-gray-400 pointer-events-none"></i>
+            <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+            <input type="search" id="reservation-search-input"
+              placeholder="Bon A20, Robe sirène..."
+              class="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
+
 
           <div id="search-results-container" class="space-y-3 max-h-[80vh] overflow-y-auto pr-2">
           </div>
         </div>
+
 
       </div>
 
@@ -117,171 +120,346 @@
 
 
       <!-- Colonne de droite : Calendrier -->
-      <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
-        <div class="flex justify-between items-center mb-4">
-          <button id="prev-month" class="p-2 rounded-full hover:bg-gray-100" aria-label="Mois précédent">
-            <i class="fas fa-chevron-left text-gray-600"></i>
-          </button>
-          <h2 id="current-month" class="text-2xl font-semibold text-gray-700"></h2>
-          <button id="next-month" class="p-2 rounded-full hover:bg-gray-100" aria-label="Mois suivant">
-            <i class="fas fa-chevron-right text-gray-600"></i>
-          </button>
-        </div>
-        <div class="calendar-grid text-sm">
-          <div class="font-semibold text-center text-gray-500 py-2">Lun</div>
-          <div class="font-semibold text-center text-gray-500 py-2">Mar</div>
-          <div class="font-semibold text-center text-gray-500 py-2">Mer</div>
-          <div class="font-semibold text-center text-gray-500 py-2">Jeu</div>
-          <div class="font-semibold text-center text-gray-500 py-2">Ven</div>
-          <div class="font-semibold text-center text-gray-500 py-2">Sam</div>
-          <div class="font-semibold text-center text-gray-500 py-2">Dim</div>
-        </div>
-        <div id="calendar-body" class="calendar-grid"></div>
-        <div id="month-summary" class="mt-4 p-3 rounded-lg bg-gray-50 border text-sm text-gray-700 hidden"></div>
-      </div>
+<div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+  <!-- Barre d’actions calendrier -->
+  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+    <div class="flex items-center gap-3">
+      <button id="prev-month" class="p-2 rounded-full hover:bg-slate-100" aria-label="Mois précédent">
+        <i class="fas fa-chevron-left text-slate-600 text-sm"></i>
+      </button>
+      <h2 id="current-month" class="text-xl font-semibold text-slate-800"></h2>
+      <button id="next-month" class="p-2 rounded-full hover:bg-slate-100" aria-label="Mois suivant">
+        <i class="fas fa-chevron-right text-slate-600 text-sm"></i>
+      </button>
+    </div>
+
+  </div>
+
+  <!-- En-têtes des jours -->
+  <div class="calendar-grid text-[11px] font-medium text-slate-500 mb-1">
+    <div class="text-center py-1.5">Lun</div>
+    <div class="text-center py-1.5">Mar</div>
+    <div class="text-center py-1.5">Mer</div>
+    <div class="text-center py-1.5">Jeu</div>
+    <div class="text-center py-1.5">Ven</div>
+    <div class="text-center py-1.5">Sam</div>
+    <div class="text-center py-1.5">Dim</div>
+  </div>
+
+  <!-- Jours -->
+  <div id="calendar-body" class="calendar-grid"></div>
+
+
+
+  <!-- Résumé du mois -->
+  <div id="month-summary" class="mt-4 p-3 rounded-lg bg-gray-50 border text-sm text-gray-700 hidden"></div>
+</div>
+
+
+
     </div>
   </div>
 
   <!-- Modal -->
-  <div id="booking-modal"
-    class="modal-hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center p-4 z-50 overflow-y-auto" role="dialog"
-    aria-modal="true" aria-labelledby="booking-modal-title">
-    <div class="bg-white rounded-lg shadow-2xl p-6 w-full max-w-md my-auto">
-      <div class="flex justify-between items-center mb-4">
-        <h3 id="booking-modal-title" class="text-xl font-semibold">
-          Réservations pour le <span id="modal-date"></span>
-        </h3>
-        <button id="close-modal" class="text-gray-500 hover:text-gray-800" aria-label="Fermer la fenêtre">
-          <i class="fas fa-times fa-lg"></i>
+  <!-- Modal -->
+  <div id="booking-modal" class="modal-hidden fixed inset-0 bg-black/50 flex justify-center p-4 z-50 overflow-y-auto"
+    role="dialog" aria-modal="true" aria-labelledby="booking-modal-title">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-auto border border-slate-200">
+      <!-- En-tête -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+        <div>
+          <h3 id="booking-modal-title" class="text-lg font-semibold text-slate-900">
+            Réservations pour le <span id="modal-date" class="font-bold text-blue-600"></span>
+          </h3>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Gérez les réservations et ajoutez une nouvelle location pour cette date.
+          </p>
+        </div>
+        <button id="close-modal"
+          class="inline-flex items-center justify-center rounded-full p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+          aria-label="Fermer la fenêtre">
+          <i class="fas fa-times text-lg"></i>
         </button>
       </div>
 
-      <details id="existing-bookings" class="mb-4 rounded-lg border">
-        <summary class="list-none flex w-full items-center justify-center gap-3 px-3 py-2 cursor-pointer select-none">
-          <span class="font-semibold text-gray-700">Réservations existantes</span>
-          <i class="fa-solid fa-chevron-down text-gray-500"></i>
-        </summary>
-        <div id="existing-bookings-list" class="space-y-2 max-h-40 overflow-y-auto px-3 pb-3"></div>
-      </details>
+      <div class="px-6 py-4 space-y-5">
+        <!-- RÉSERVATIONS EXISTANTES (on laisse le <details> pour ton JS) -->
+        <details id="existing-bookings" class="mb-2 rounded-xl border border-slate-200 bg-slate-50">
+          <summary
+            class="list-none flex w-full items-center justify-between gap-3 px-4 py-2.5 cursor-pointer select-none">
+            <div class="flex items-center gap-2">
+              <span
+                class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-600 text-xs">
+                <i class="fa-solid fa-calendar-check"></i>
+              </span>
+              <span class="font-semibold text-slate-800">Réservations existantes</span>
+            </div>
+            <i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
+          </summary>
+          <div id="existing-bookings-list" class="space-y-2 max-h-40 overflow-y-auto px-4 pb-3 pt-2 text-sm"></div>
+        </details>
 
-      <div id="new-booking-section" class="border-t pt-4">
-        <h4 class="font-semibold text-gray-600 mb-2">Ajouter une réservation :</h4>
+        <!-- FORMULAIRE D’AJOUT (sans accordéons) -->
+        <div id="new-booking-section" class="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-4">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h4 class="font-semibold text-slate-800 text-sm sm:text-base">
+                Ajouter une nouvelle réservation
+              </h4>
+              <p class="text-xs text-slate-500">
+                Renseigne les infos client, les robes choisies et le paiement.
+              </p>
+            </div>
+            <span
+              class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-medium text-emerald-700">
+              <i class="fa-solid fa-circle-plus text-[10px]"></i> Nouvelle réservation
+            </span>
+          </div>
 
-        <form id="add-booking-form">
-          <input type="hidden" id="booking-date">
+          <form id="add-booking-form" class="space-y-5">
+            <input type="hidden" id="booking-date">
 
-          <!-- Sélection de robes -->
-          <details class="mb-3 rounded-lg border">
-            <summary
-              class="list-none flex w-full items-center justify-center gap-3 px-3 py-2 cursor-pointer select-none">
-              <span class="font-medium text-gray-700">Sélection de robes</span>
-              <i class="fa-solid fa-chevron-down text-gray-500"></i>
-            </summary>
-            <div class="px-3 pb-3 pt-2">
+            <!-- Bloc Sélection de robes -->
+            <section class="bg-white rounded-xl border border-slate-200 px-4 py-3.5 space-y-3 shadow-sm">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <div
+                    class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 text-sm">
+                    <i class="fa-solid fa-hanger"></i>
+                  </div>
+                  <div>
+                    <h5 class="text-sm font-semibold text-slate-800">Sélection de robes</h5>
+                    <p class="text-xs text-slate-500">Tu peux sélectionner plusieurs robes pour cette réservation.</p>
+                  </div>
+                </div>
+              </div>
+
               <div id="dress-select-container" class="relative z-20" aria-expanded="false"
                 aria-controls="dress-options-dropdown">
                 <div id="dress-select-box"
-                  class="relative flex flex-wrap gap-1 items-center w-full p-2 border rounded-md bg-white cursor-text min-h-[42px]"
-                  aria-live="polite">
-                  <span id="dress-select-placeholder" class="text-gray-500 flex-grow">Rechercher et
-                    sélectionner...</span>
-                  <input type="text" id="dress-search-input" class="flex-grow outline-none text-sm p-1"
+                  class="relative flex flex-wrap gap-1 items-center w-full px-3 py-2.5 border border-slate-200 rounded-lg bg-white cursor-text min-h-[44px] text-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition">
+                  <span id="dress-select-placeholder" class="text-slate-400 flex-grow text-xs sm:text-sm">
+                    Rechercher et sélectionner des robes...
+                  </span>
+                  <input type="text" id="dress-search-input"
+                    class="flex-grow outline-none text-xs sm:text-sm py-1 bg-transparent"
                     style="min-width:120px; display:none;" aria-label="Rechercher une robe">
                   <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
-                    <i class="fas fa-chevron-down text-gray-400"></i>
+                    <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
                   </div>
                 </div>
                 <div id="dress-options-dropdown"
-                  class="absolute z-10 w-full mt-1 bg-white border rounded-md shadow-lg max-h-40 overflow-y-auto hidden"
-                  tabindex="-1"></div>
+                  class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-40 overflow-y-auto text-sm hidden"
+                  tabindex="-1">
+                </div>
               </div>
-            </div>
-          </details>
+            </section>
 
-          <!-- Infos client -->
-          <details class="mb-3 rounded-lg border">
-            <summary
-              class="list-none flex w-full items-center justify-center gap-3 px-3 py-2 cursor-pointer select-none">
-              <span class="font-medium text-gray-700">Infos client</span>
-              <i class="fa-solid fa-chevron-down text-gray-500"></i>
-            </summary>
-            <div class="px-3 pb-3 pt-2">
-              <div class="mb-4">
-                <input type="text" id="client-name" placeholder="Nom du client" class="w-full p-2 border rounded-md"
-                  required>
-              </div>
-              <div class="grid grid-cols-2 gap-3">
-                <input type="text" id="booking-voucher" placeholder="N° du bon" class="w-full p-2 border rounded-md">
-                <input type="text" id="booking-venue" placeholder="Lieu" class="w-full p-2 border rounded-md">
-              </div>
-            </div>
-          </details>
-
-          <!-- Paiement -->
-          <details class="mb-3 rounded-lg border">
-            <summary
-              class="list-none flex w-full items-center justify-center gap-3 px-3 py-2 cursor-pointer select-none">
-              <span class="font-medium text-gray-700">Paiement</span>
-              <i class="fa-solid fa-chevron-down text-gray-500"></i>
-            </summary>
-            <div class="px-3 pb-3 pt-2">
-              <div class="flex gap-3 items-center mb-2">
-                <input type="number" id="booking-cost" placeholder="Coût total (DA)"
-                  class="flex-1 p-2 border rounded-md" step="0.01" min="0">
-                <span class="text-gray-400">→</span>
-                <input type="number" id="booking-paid" placeholder="Versé (DA)" class="flex-1 p-2 border rounded-md"
-                  step="0.01" min="0">
-              </div>
-              <input type="text" id="booking-remaining" placeholder="Reste"
-                class="w-full p-2 border rounded-md bg-gray-100 text-gray-700" readonly>
-            </div>
-          </details>
-
-          <!-- Accessoires & remarques -->
-          <details class="mb-3 rounded-lg border">
-            <summary
-              class="list-none flex w-full items-center justify-center gap-3 px-3 py-2 cursor-pointer select-none">
-              <span class="font-medium text-gray-700">Accessoires & remarques</span>
-              <i class="fa-solid fa-chevron-down text-gray-500"></i>
-            </summary>
-            <div class="px-3 pb-3 pt-2">
-              <label class="flex items-center mb-3">
-                <input type="checkbox" id="booking-accessories"
-                  class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-                <span class="ml-2 text-sm font-medium text-gray-700">Accessoires inclus ?</span>
-              </label>
-
-              <div id="accessories-details-container" class="mb-4 hidden p-4 border rounded-md bg-gray-50">
-                <input type="text" id="booking-accessories-details"
-                  placeholder="Quels accessoires ? (ex: sac, collier...)" class="w-full p-2 border rounded-md mb-3">
-                <label class="block text-sm font-medium text-gray-700 mb-1">Coût accessoires :</label>
-                <div class="flex gap-4">
-                  <label class="flex items-center">
-                    <input type="radio" name="accessories-cost" id="accessories-free" value="gratuit"
-                      class="h-4 w-4 text-blue-600 border-gray-300" checked>
-                    <span class="ml-2 text-sm text-gray-700">Gratuit</span>
-                  </label>
-                  <label class="flex items-center">
-                    <input type="radio" name="accessories-cost" id="accessories-paid" value="payant"
-                      class="h-4 w-4 text-blue-600 border-gray-300">
-                    <span class="ml-2 text-sm text-gray-700">Payant</span>
-                  </label>
+            <!-- Bloc Infos client -->
+            <section class="bg-white rounded-xl border border-slate-200 px-4 py-3.5 space-y-3 shadow-sm">
+              <div class="flex items-center gap-2">
+                <div
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-50 text-purple-600 text-sm">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+                <div>
+                  <h5 class="text-sm font-semibold text-slate-800">Infos client</h5>
+                  <p class="text-xs text-slate-500">Qui loue la robe ? Où se déroule l’évènement ?</p>
                 </div>
               </div>
 
-              <textarea id="booking-notes" placeholder="Remarques (ex: retouches, retour 18h...)" rows="2"
-                class="w-full p-2 border rounded-md"></textarea>
-            </div>
-          </details>
+              <div class="space-y-3">
+                <div>
+                  <label for="client-name" class="block text-xs font-medium text-slate-600 mb-1.5">
+                    Nom du client <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" id="client-name" placeholder="Ex : Yasmine Benali"
+                    class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required>
+                </div>
 
-          <button type="submit"
-            class="w-full bg-green-600 text-white py-2 rounded-md hover:bg-green-700 transition-colors">
-            <i class="fas fa-check mr-2"></i> <span id="booking-submit-text">Réserver</span>
-          </button>
-        </form>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label for="booking-voucher" class="block text-xs font-medium text-slate-600 mb-1.5">
+                      N° du bon
+                    </label>
+                    <input type="text" id="booking-voucher" placeholder="Ex : B-2025-014"
+                      class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  </div>
+
+                  <div>
+                    <label for="booking-venue" class="block text-xs font-medium text-slate-600 mb-1.5">
+                      Lieu de l’évènement
+                    </label>
+                    <input type="text" id="booking-venue" placeholder="Ex : Salle El Bahia"
+                      class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Bloc Paiement -->
+            <!-- Bloc Paiement -->
+            <section class="bg-white rounded-xl border border-slate-200 px-4 py-3.5 space-y-3 shadow-sm">
+              <div class="flex items-center gap-2">
+                <div
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 text-sm">
+                  <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
+                <div>
+                  <h5 class="text-sm font-semibold text-slate-800">Paiement</h5>
+                  <p class="text-xs text-slate-500">
+                    Saisis le coût, ce qui est versé, la caution éventuelle et laisse le reste se calculer.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Coût & versé -->
+              <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div class="flex-1">
+                  <label for="booking-cost" class="block text-xs font-medium text-slate-600 mb-1.5">
+                    Coût total (DA)
+                  </label>
+                  <input type="number" id="booking-cost" placeholder="0"
+                    class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    step="0.01" min="0">
+                </div>
+
+                <div class="hidden sm:flex items-center justify-center pt-6">
+                  <span class="text-slate-400 text-lg">
+                    <i class="fa-solid fa-arrow-right-long"></i>
+                  </span>
+                </div>
+
+                <div class="flex-1">
+                  <label for="booking-paid" class="block text-xs font-medium text-slate-600 mb-1.5">
+                    Versé (DA)
+                  </label>
+                  <input type="number" id="booking-paid" placeholder="0"
+                    class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    step="0.01" min="0">
+                </div>
+              </div>
+
+              <!-- Reste -->
+              <div>
+                <label for="booking-remaining" class="block text-xs font-medium text-slate-600 mb-1.5">
+                  Reste à payer
+                </label>
+                <input type="text" id="booking-remaining" placeholder="Reste"
+                  class="w-full px-3 py-2.5 rounded-lg border border-slate-100 bg-slate-50 text-sm text-slate-700"
+                  readonly>
+              </div>
+
+              <!-- Caution -->
+              <div class="mt-3 border-t pt-3 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <p class="text-xs font-medium text-slate-700">
+                    Caution
+                  </p>
+                  <div class="flex items-center gap-4 text-xs">
+                    <label class="inline-flex items-center gap-1.5">
+                      <input type="radio" name="booking-deposit" id="booking-deposit-no" value="non"
+                        class="h-3.5 w-3.5 text-emerald-500 border-slate-300" checked>
+                      <span>Non</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5">
+                      <input type="radio" name="booking-deposit" id="booking-deposit-yes" value="oui"
+                        class="h-3.5 w-3.5 text-emerald-500 border-slate-300">
+                      <span>Oui</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div id="deposit-amount-container"
+                  class="hidden rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-3 space-y-1.5">
+                  <label for="booking-deposit-amount" class="block text-xs font-medium text-emerald-800">
+                    Montant de la caution (DA)
+                  </label>
+                  <input type="number" id="booking-deposit-amount" placeholder="Ex : 5000"
+                    class="w-full px-3 py-2.5 rounded-lg border border-emerald-200 text-sm placeholder-emerald-400 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400"
+                    step="0.01" min="0">
+                </div>
+              </div>
+            </section>
+
+
+            <!-- Bloc Accessoires & Remarques -->
+            <section class="bg-white rounded-xl border border-slate-200 px-4 py-3.5 space-y-3 shadow-sm">
+              <div class="flex items-center gap-2">
+                <div
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-50 text-amber-500 text-sm">
+                  <i class="fa-solid fa-gem"></i>
+                </div>
+                <div>
+                  <h5 class="text-sm font-semibold text-slate-800">Accessoires & remarques</h5>
+                  <p class="text-xs text-slate-500">Précise les accessoires inclus et les remarques importantes.</p>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <label class="inline-flex items-center gap-2 text-sm font-medium text-slate-700">
+                  <input type="checkbox" id="booking-accessories"
+                    class="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
+                  <span>Accessoires inclus ?</span>
+                </label>
+
+                <div id="accessories-details-container"
+                  class="mb-1 hidden px-4 py-3 rounded-lg border border-amber-100 bg-amber-50 space-y-3">
+                  <div>
+                    <label for="booking-accessories-details" class="block text-xs font-medium text-amber-800 mb-1.5">
+                      Détails des accessoires
+                    </label>
+                    <input type="text" id="booking-accessories-details"
+                      placeholder="Ex : sac, collier, bijoux cheveux..."
+                      class="w-full px-3 py-2.5 rounded-lg border border-amber-200 text-sm placeholder-amber-400 focus:ring-2 focus:ring-amber-400 focus:border-amber-400">
+                  </div>
+
+                  <div>
+                    <p class="block text-xs font-medium text-amber-800 mb-1.5">
+                      Coût des accessoires
+                    </p>
+                    <div class="flex flex-wrap gap-4 text-xs">
+                      <label class="inline-flex items-center gap-2">
+                        <input type="radio" name="accessories-cost" id="accessories-free" value="gratuit"
+                          class="h-3.5 w-3.5 text-amber-500 border-amber-200" checked>
+                        <span>Gratuit</span>
+                      </label>
+                      <label class="inline-flex items-center gap-2">
+                        <input type="radio" name="accessories-cost" id="accessories-paid" value="payant"
+                          class="h-3.5 w-3.5 text-amber-500 border-amber-200">
+                        <span>Payant</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label for="booking-notes" class="block text-xs font-medium text-slate-600 mb-1.5">
+                    Remarques
+                  </label>
+                  <textarea id="booking-notes" rows="2"
+                    placeholder="Ex : retouches, heure de retour, demandes spéciales..."
+                    class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+              </div>
+            </section>
+
+            <!-- Bouton submit -->
+            <button type="submit"
+              class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-2.5 rounded-xl text-sm font-semibold shadow-md hover:from-emerald-600 hover:to-emerald-700 hover:shadow-lg active:scale-[0.99] transition">
+              <i class="fas fa-check text-sm"></i>
+              <span id="booking-submit-text">Réserver</span>
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   </div>
+
+
+
+
   <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
 
 
@@ -316,16 +494,16 @@
 
 
 
-     // se deconnecter 
+      // se deconnecter 
 
       document.getElementById('logout')?.addEventListener('click', async () => {
-  IS_LOGGING_OUT = true;
-  // optionnel: masquer l’UI immédiatemment pour éviter tout flicker
-  document.body.style.opacity = '0';
-  try { await account.deleteSession('current'); } catch (_) {}
-  // replace = pas d’historique retour
-  window.location.replace('login.html');
-});
+        IS_LOGGING_OUT = true;
+        // optionnel: masquer l’UI immédiatemment pour éviter tout flicker
+        document.body.style.opacity = '0';
+        try { await account.deleteSession('current'); } catch (_) { }
+        // replace = pas d’historique retour
+        window.location.replace('login.html');
+      });
       // -------- Utils --------
       function fromISODateLocal(iso) {
         if (!iso) return new Date();
@@ -363,6 +541,11 @@
       const bookingCost = document.getElementById('booking-cost');
       const bookingPaid = document.getElementById('booking-paid');
       const bookingRemaining = document.getElementById('booking-remaining');
+      const bookingDepositYes = document.getElementById('booking-deposit-yes');
+      const bookingDepositNo = document.getElementById('booking-deposit-no');
+      const bookingDepositAmount = document.getElementById('booking-deposit-amount');
+      const depositAmountContainer = document.getElementById('deposit-amount-container');
+
       const bookingVoucher = document.getElementById('booking-voucher');
       const bookingVenue = document.getElementById('booking-venue');
       const dressSelectContainer = document.getElementById('dress-select-container');
@@ -371,7 +554,7 @@
       const dressSearchInput = document.getElementById('dress-search-input');
       const dressOptionsDropdown = document.getElementById('dress-options-dropdown');
       const bookingSubmitText = document.getElementById('booking-submit-text');
-  
+
       const importInput = document.getElementById('import-input');
       const loadingOverlay = document.getElementById('loading-overlay');
 
@@ -448,7 +631,9 @@
           const dayBookings = bookings.filter(b => b.date.startsWith(dateStr));
 
           const dayEl = document.createElement('div');
-          dayEl.className = 'calendar-day border p-2 rounded-md bg-white hover:bg-sky-50 cursor-pointer transition-colors flex flex-col';
+          dayEl.className =
+  "calendar-day border rounded-lg bg-white shadow-sm hover:shadow-md transition-all p-2 flex flex-col cursor-pointer";
+
           dayEl.dataset.date = dateStr;
 
           const thisDate = new Date(year, month, day);
@@ -469,14 +654,18 @@
 
           if (dayBookings.length) {
             const badge = document.createElement('span');
-            badge.className = 'ml-auto text-[10px] px-1 py-1 rounded text-zinc-100 bg-red-500';
+            badge.className =
+  "ml-auto inline-flex items-center justify-center px-2 py-[2px] rounded-full bg-red-500 text-white text-[10px] font-semibold";
+
             badge.textContent = dayBookings.length;
             headerWrap.appendChild(badge);
           }
           dayEl.appendChild(headerWrap);
 
           const bookingsContainer = document.createElement('div');
-          bookingsContainer.className = 'mt-1 text-xs space-y-1 overflow-y-auto flex-1 min-h-0';
+          bookingsContainer.className =
+  "mt-1 text-[11px] space-y-1 overflow-y-auto flex-1 text-slate-700";
+
 
           dayBookings.forEach(booking => {
             const bookingEl = document.createElement('div');
@@ -499,7 +688,6 @@
         renderMonthSummary(year, month);
       }
 
-      // -------- La fonction renderDresses() a été supprimée --------
 
       // -------- Modal & Réservations --------
       let prevFocusedEl = null;
@@ -515,6 +703,10 @@
         bookingSubmitText.textContent = 'Réserver';
         addBookingForm.reset();
         newBookingSelectedDressIds = [];
+        bookingDepositNo.checked = true;
+        bookingDepositYes.checked = false;
+        depositAmountContainer.classList.add('hidden');
+        bookingDepositAmount.value = '';
         dressOptionsDropdown.classList.add('hidden');
         dressOptionsDropdown.innerHTML = '';
         dressSearchInput.value = '';
@@ -572,8 +764,17 @@
                 ${(cost > 0 || paid > 0) ? `
                   <div class="text-xs text-gray-700 pl-6 mt-1 border-t pt-1">
                     Coût: ${DAfmt.format(cost)} | Versé: ${DAfmt.format(paid)} | <strong class="${remainingClass}">Reste: ${DAfmt.format(Math.max(0, remaining))}</strong>
-                  </div>` : ''
+                  </div>
+                  ${booking.caution ? `<div class="text-[11px] text-amber-700 pl-6 mt-1 border-t">
+      Caution : <strong>${booking.cautionMontant || 0} DA</strong>
+    </div>` : ''}
+  </div>` : ''
               }
+
+
+
+
+
                 ${timestampHtml}
               </div>
               <button class="edit-booking-btn text-blue-500 hover:text-blue-700 p-1 ml-2 flex-shrink-0" data-booking-id="${booking.$id}" aria-label="Modifier la réservation">
@@ -603,15 +804,39 @@
           availableDresses.forEach(d => {
             const optionEl = document.createElement('label');
             optionEl.className = 'flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer';
+
             optionEl.dataset.name = (d.name || '').toLowerCase();
+
+            const size = d.size || "-";
+            const price = (typeof d.price === "number" && !isNaN(d.price))
+              ? `${d.price} DA`
+              : "—";
+
             optionEl.innerHTML = `
-              <input type="checkbox" name="dress-selection" value="${d.$id}" class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500">
-              <span class="ml-2 text-sm text-gray-700">${d.name || 'Robe sans nom'}</span>
-            `;
+      <input
+        type="checkbox"
+        name="dress-selection"
+        value="${d.$id}"
+        class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+      >
+
+      <div class="ml-2 flex flex-col leading-tight">
+        <span class="text-sm font-medium text-slate-800">
+          ${d.name || 'Robe sans nom'}
+        </span>
+
+        <span class="text-xs text-slate-500">
+          Taille : ${size} • ${price}
+        </span>
+      </div>
+    `;
             frag.appendChild(optionEl);
           });
           dressOptionsDropdown.appendChild(frag);
         } else {
+
+
+
           dressOptionsDropdown.innerHTML = '<p class="text-sm text-gray-500 italic p-2">Aucune robe disponible pour ce jour.</p>';
         }
 
@@ -658,6 +883,11 @@
           ? document.querySelector('input[name="accessories-cost"]:checked').value
           : '';
 
+
+        const hasDeposit = document.querySelector('input[name="booking-deposit"]:checked')?.value === 'oui';
+        const depositAmount = hasDeposit ? Math.max(0, parseFloat(bookingDepositAmount.value) || 0) : 0;
+
+
         const appwriteData = {
           dressIds: selectedDressIds,
           date: new Date(bookingDateInput.value).toISOString(),
@@ -670,6 +900,8 @@
           accessoiresCost: accessoriesCost,
           coutTotal: Math.max(0, parseFloat(bookingCost.value) || 0),
           verse: Math.max(0, parseFloat(bookingPaid.value) || 0),
+          caution: hasDeposit,
+          cautionMontant: depositAmount
         };
 
         try {
@@ -745,6 +977,23 @@
         if (newBookingSelectedDressIds.length > 0) dressSelectPlaceholder.classList.add('hidden');
 
         calculateRemaining();
+        // Caution
+        const hasDeposit = !!bookingToEdit.caution;
+        const depositValue = typeof bookingToEdit.cautionMontant === 'number'
+          ? bookingToEdit.cautionMontant
+          : 0;
+
+        if (hasDeposit) {
+          bookingDepositYes.checked = true;
+          bookingDepositNo.checked = false;
+          depositAmountContainer.classList.remove('hidden');
+          bookingDepositAmount.value = depositValue || '';
+        } else {
+          bookingDepositNo.checked = true;
+          bookingDepositYes.checked = false;
+          depositAmountContainer.classList.add('hidden');
+          bookingDepositAmount.value = '';
+        }
         bookingSubmitText.textContent = 'Modifier la réservation';
         newBookingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
         document.getElementById('client-name').focus();
@@ -923,7 +1172,9 @@
       dressOptionsDropdown.addEventListener('change', (e) => {
         if (e.target.type === 'checkbox') {
           const id = e.target.value;
-          const name = e.target.nextElementSibling.textContent;
+          const dress = dresses.find(d => d.$id === id);
+          const name = dress?.name || 'Robe';
+
           if (e.target.checked) {
             if (!newBookingSelectedDressIds.includes(id)) newBookingSelectedDressIds.push(id);
             const badge = document.createElement('span');
@@ -936,6 +1187,7 @@
             const badge = dressSelectBox.querySelector(`span[data-id="${id}"]`);
             if (badge) badge.remove();
           }
+
           if (newBookingSelectedDressIds.length > 0) {
             dressSelectPlaceholder.classList.add('hidden');
             dressSearchInput.style.display = 'block';
@@ -943,9 +1195,27 @@
             dressSelectPlaceholder.classList.remove('hidden');
             dressSearchInput.style.display = 'none';
           }
+
+          // 💰 Calcul automatique du coût total à partir des robes sélectionnées
+          let totalPrice = 0;
+          newBookingSelectedDressIds.forEach(dressId => {
+            const d = dresses.find(dr => dr.$id === dressId);
+            if (d && typeof d.price !== 'undefined') {
+              const p = parseFloat(d.price);
+              if (!isNaN(p)) totalPrice += p;
+            }
+          });
+
+          // On pré-remplit si le champ est vide/0 OU si on est en création (pas en édition)
+          if (!bookingCost.value || Number(bookingCost.value) === 0 || !editingBookingId) {
+            bookingCost.value = totalPrice > 0 ? totalPrice : '';
+            calculateRemaining(); // met à jour le "Reste"
+          }
+
           dressSearchInput.focus();
         }
       });
+
 
       document.addEventListener('click', (e) => {
         if (!dressSelectContainer.contains(e.target)) {
@@ -960,8 +1230,22 @@
         }
       });
 
-  
- 
+      // Caution : affichage / masquage du champ montant
+      document.querySelectorAll('input[name="booking-deposit"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          const hasDeposit = document.querySelector('input[name="booking-deposit"]:checked')?.value === 'oui';
+          if (hasDeposit) {
+            depositAmountContainer.classList.remove('hidden');
+          } else {
+            depositAmountContainer.classList.add('hidden');
+            bookingDepositAmount.value = '';
+          }
+        });
+      });
+
+
+
+
 
       // -------- Init (Fonction principale asynchrone) --------
       async function main() {
