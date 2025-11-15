@@ -37,50 +37,7 @@
 <body class="bg-slate-50/80">
 
     <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo & Title -->
-                <div class="flex items-center gap-3">
-                    <a href="./catalogue.html" class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg bg-blue-600 text-white grid place-items-center shadow-md">
-                            <i class="fa-solid fa-gem"></i>
-                        </div>
-                        <div>
-                            <p class="text-base font-semibold text-slate-900">Location de Robes</p>
-                            <p class="text-xs text-slate-500 -mt-1">Tableau de Bord</p>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Navigation & User -->
-                <div class="flex items-center gap-4">
-                    <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
-                        <a href="./catalogue.html"
-                            class="px-3 py-2 rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-                            <i class="fa-solid fa-book-open-reader mr-1.5"></i> Catalogue
-                        </a>
-                        <a href="./index.html"
-                            class="px-3 py-2 rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-                            <i class="fa-solid fa-calendar-days mr-1.5"></i> Calendrier
-                        </a>
-                        <a href="./dashboard.html" class="px-3 py-2 rounded-md text-blue-600 bg-blue-50">
-                            <i class="fa-solid fa-chart-line mr-1.5"></i> Dashboard
-                        </a>
-                    </nav>
-                    <div class="w-px h-6 bg-slate-200 hidden md:block"></div>
-                    <div class="relative">
-                        <button id="user-menu-button" class="flex items-center gap-2">
-                            <span id="user-name" class="text-sm font-medium text-slate-700"></span>
-                            <img id="user-avatar" class="w-8 h-8 rounded-full bg-slate-200" alt="Avatar">
-                        </button>
-                    </div>
-                    <button id="logout-btn" title="Se déconnecter" class="text-slate-500 hover:text-red-600">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
+    <header id="header-placeholder" class="bg-white shadow-sm sticky top-0 z-40">
     </header>
 
     <!-- Main Content -->
@@ -98,7 +55,7 @@
             <div class="card-skeleton"></div>
         </div>
 
-         <!-- Meilleures Robes -->
+        <!-- Meilleures Robes -->
         <section class="mt-10">
             <div class="flex items-center justify-between mb-4">
                 <div>
@@ -114,12 +71,24 @@
                     <table class="min-w-full text-sm">
                         <thead class="bg-slate-50 border-b border-slate-200">
                             <tr>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">#</th>
-                                <th class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">Robe</th>
-                                <th class="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Nb réservations</th>
-                                <th class="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Prix d'achat</th>
-                                <th class="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">Revenus</th>
-                                <th class="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">ROI</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                                    #</th>
+                                <th
+                                    class="px-4 py-3 text-left text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                                    Robe</th>
+                                <th
+                                    class="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                                    Nb réservations</th>
+                                <th
+                                    class="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                                    Prix d'achat</th>
+                                <th
+                                    class="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                                    Revenus</th>
+                                <th
+                                    class="px-4 py-3 text-right text-xs font-semibold text-slate-500 uppercase tracking-wide">
+                                    ROI</th>
                             </tr>
                         </thead>
                         <tbody id="best-dresses-body" class="divide-y divide-slate-100">
@@ -157,197 +126,175 @@
     </template>
 
 
+
+
+    <script src="./js/auth.js"></script>
+
     <script>
         // === Appwrite Init ===
-        const DB_ID = '690f560f001394b2c1a6';
-        const COL_BOOKINGS = 'bookings';
-        const COL_DRESSES = 'dresses';
-
-        const client = new Appwrite.Client()
-            .setEndpoint('https://fra.cloud.appwrite.io/v1')
-            .setProject('690f54f700273a8387b3');
-        const account = new Appwrite.Account(client);
-        const databases = new Appwrite.Databases(client);
-        const avatars = new Appwrite.Avatars(client);
-
-        // === UI Elements ===
-        const userNameEl = document.getElementById('user-name');
-        const userAvatarEl = document.getElementById('user-avatar');
-        const logoutBtn = document.getElementById('logout-btn');
-        const statsContainer = document.getElementById('stats-container');
-
-        // === Auth & User Profile ===
-        async function requireAuth() {
-            try {
-                const user = await account.get();
-                userNameEl.textContent = user.name || user.email;
-                userAvatarEl.src = avatars.getInitials(user.name || user.email).toString();
-                return user;
-            } catch (err) {
-                window.location.replace('login.html');
-                throw new Error("Redirection...");
-            }
-        }
-
-        logoutBtn.addEventListener('click', async () => {
-            await account.deleteSession('current');
-            window.location.replace('login.html');
-        });
 
 
 
+        function initPage() {
 
-        async function fetchAllDresses() {
-    let allDresses = [];
-    let lastId = null;
+            // === UI Elements ===
+            const userNameEl = document.getElementById('user-name');
+            const userAvatarEl = document.getElementById('user-avatar');
+            const logoutBtn = document.getElementById('logout-btn');
+            const statsContainer = document.getElementById('stats-container');
 
-    while (true) {
-        const queries = [Appwrite.Query.limit(100)];
-        if (lastId) {
-            queries.push(Appwrite.Query.cursorAfter(lastId));
-        }
-        const response = await databases.listDocuments(DB_ID, COL_DRESSES, queries);
-        if (response.documents.length === 0) break;
+            async function fetchAllDresses() {
+                let allDresses = [];
+                let lastId = null;
 
-        allDresses.push(...response.documents);
-        lastId = response.documents[response.documents.length - 1].$id;
-    }
+                while (true) {
+                    const queries = [Appwrite.Query.limit(100)];
+                    if (lastId) {
+                        queries.push(Appwrite.Query.cursorAfter(lastId));
+                    }
+                    const response = await databases.listDocuments(DB_ID, COL_DRESSES, queries);
+                    if (response.documents.length === 0) break;
 
-    return allDresses;
-}
-
-
-        // === Stats Calculation ===
-        async function fetchAllBookings() {
-            let allBookings = [];
-            let lastId = null;
-            while (true) {
-                const queries = [Appwrite.Query.limit(100)];
-                if (lastId) {
-                    queries.push(Appwrite.Query.cursorAfter(lastId));
+                    allDresses.push(...response.documents);
+                    lastId = response.documents[response.documents.length - 1].$id;
                 }
-                const response = await databases.listDocuments(DB_ID, COL_BOOKINGS, queries);
-                if (response.documents.length === 0) {
-                    break;
-                }
-                allBookings.push(...response.documents);
-                lastId = response.documents[response.documents.length - 1].$id;
+
+                return allDresses;
             }
-            return allBookings;
-        }
-
-        function renderStatCard(icon, title, value, colorClass) {
-            const template = document.getElementById('stat-card-template');
-            const card = template.content.cloneNode(true).firstElementChild;
-            card.querySelector('.stat-icon i').classList.add(icon);
-            colorClass.split(' ').forEach(cls => card.querySelector('.stat-icon').classList.add(cls));
-            card.querySelector('.stat-title').textContent = title;
-            card.querySelector('.stat-value').textContent = value;
-            return card;
-        }
 
 
-                // === Helpers de formatage ===
-        const formatEuro = (number) => {
-            if (!number) number = 0;
-            return number.toLocaleString('fr-FR', {
-                minimumFractionDigits: 0,
-                maximumFractionDigits: 0
-            }) + ' DA';
-        };
+            // === Stats Calculation ===
+            async function fetchAllBookings() {
+                let allBookings = [];
+                let lastId = null;
+                while (true) {
+                    const queries = [Appwrite.Query.limit(100)];
+                    if (lastId) {
+                        queries.push(Appwrite.Query.cursorAfter(lastId));
+                    }
+                    const response = await databases.listDocuments(DB_ID, COL_BOOKINGS, queries);
+                    if (response.documents.length === 0) {
+                        break;
+                    }
+                    allBookings.push(...response.documents);
+                    lastId = response.documents[response.documents.length - 1].$id;
+                }
+                return allBookings;
+            }
 
-        const formatInt = (number) => {
-            if (!number) number = 0;
-            return number.toLocaleString('fr-FR', {
-                minimumFractionDigits: 1,
-                maximumFractionDigits: 1});
-        };
+            function renderStatCard(icon, title, value, colorClass) {
+                const template = document.getElementById('stat-card-template');
+                const card = template.content.cloneNode(true).firstElementChild;
+                card.querySelector('.stat-icon i').classList.add(icon);
+                colorClass.split(' ').forEach(cls => card.querySelector('.stat-icon').classList.add(cls));
+                card.querySelector('.stat-title').textContent = title;
+                card.querySelector('.stat-value').textContent = value;
+                return card;
+            }
 
-        
 
+            // === Helpers de formatage ===
+            const formatEuro = (number) => {
+                if (!number) number = 0;
+                return number.toLocaleString('fr-FR', {
+                    minimumFractionDigits: 0,
+                    maximumFractionDigits: 0
+                }) + ' DA';
+            };
 
-                // === UI de la section "Meilleures robes" ===
-        const bestDressesBody = document.getElementById('best-dresses-body');
-
-function computeBestDresses(bookings, dressesById = {}) {
-    const map = new Map();
-
-    for (const booking of bookings) {
-      
-        const dressIds =
-            booking.dressIds || [];
-
-        if (!Array.isArray(dressIds) || dressIds.length === 0) continue;
-
-        // Si tu veux qu'une robe ne compte qu'UNE FOIS par réservation :
-        const uniqueDressIds = [...new Set(dressIds)];
-
-        uniqueDressIds.forEach((dressId) => {
-            if (!dressId) return;
-
-            // Infos depuis la collection "robes" si tu les as
-            const dressDoc = dressesById[dressId] || {};
-            const dressName =
-                dressDoc.name ||
-                `Robe_sans_nom ${dressId}`;
-
-            const purchasePrice =
-                dressDoc.purchase_price ||
-                0;
-
-            const dressPrice =
-                dressDoc.price ||
-                0;
-
-            if (!map.has(dressId)) {
-                map.set(dressId, {
-                    id: dressId,
-                    name: dressName,
-                    purchase_price: purchasePrice,
-                    nb_reservation: 0,
-                    coutTotal: 0,
-                    dress_price: dressPrice,
+            const formatInt = (number) => {
+                if (!number) number = 0;
+                return number.toLocaleString('fr-FR', {
+                    minimumFractionDigits: 1,
+                    maximumFractionDigits: 1
                 });
+            };
+
+
+
+
+            // === UI de la section "Meilleures robes" ===
+            const bestDressesBody = document.getElementById('best-dresses-body');
+
+            function computeBestDresses(bookings, dressesById = {}) {
+                const map = new Map();
+
+                for (const booking of bookings) {
+
+                    const dressIds =
+                        booking.dressIds || [];
+
+                    if (!Array.isArray(dressIds) || dressIds.length === 0) continue;
+
+                    // Si tu veux qu'une robe ne compte qu'UNE FOIS par réservation :
+                    const uniqueDressIds = [...new Set(dressIds)];
+
+                    uniqueDressIds.forEach((dressId) => {
+                        if (!dressId) return;
+
+                        // Infos depuis la collection "robes" si tu les as
+                        const dressDoc = dressesById[dressId] || {};
+                        const dressName =
+                            dressDoc.name ||
+                            `Robe_sans_nom ${dressId}`;
+
+                        const purchasePrice =
+                            dressDoc.purchase_price ||
+                            0;
+
+                        const dressPrice =
+                            dressDoc.price ||
+                            0;
+
+                        if (!map.has(dressId)) {
+                            map.set(dressId, {
+                                id: dressId,
+                                name: dressName,
+                                purchase_price: purchasePrice,
+                                nb_reservation: 0,
+                                coutTotal: 0,
+                                dress_price: dressPrice,
+                            });
+                        }
+
+                        const entry = map.get(dressId);
+                        entry.nb_reservation += 1;
+                    });
+                }
+
+                // Calcul du produit nb_reservation * prix
+                const result = Array.from(map.values()).map(dress => ({
+                    ...dress,
+                    coutTotal: dress.nb_reservation * (dress.purchase_price || 0),
+                }));
+
+                // Classement par nombre de réservations (desc)
+                result.sort((a, b) => b.nb_reservation - a.nb_reservation);
+
+                return result;
             }
 
-            const entry = map.get(dressId);
-            entry.nb_reservation += 1;
-        });
-    }
+            function renderBestDresses(dressesStats, maxRows = 10) {
+                if (!bestDressesBody) return;
 
-    // Calcul du produit nb_reservation * prix
-    const result = Array.from(map.values()).map(dress => ({
-        ...dress,
-        coutTotal: dress.nb_reservation * (dress.purchase_price || 0),
-    }));
+                bestDressesBody.innerHTML = '';
 
-    // Classement par nombre de réservations (desc)
-    result.sort((a, b) => b.nb_reservation - a.nb_reservation);
-
-    return result;
-}
-
-        function renderBestDresses(dressesStats, maxRows = 10) {
-            if (!bestDressesBody) return;
-
-            bestDressesBody.innerHTML = '';
-
-            if (!dressesStats || dressesStats.length === 0) {
-                const tr = document.createElement('tr');
-                tr.innerHTML = `
+                if (!dressesStats || dressesStats.length === 0) {
+                    const tr = document.createElement('tr');
+                    tr.innerHTML = `
                     <td colspan="5" class="px-4 py-4 text-center text-xs text-slate-500">
                         Aucune donnée de réservation disponible pour le moment.
                     </td>
                 `;
-                bestDressesBody.appendChild(tr);
-                return;
-            }
+                    bestDressesBody.appendChild(tr);
+                    return;
+                }
 
-            dressesStats.slice(0, maxRows).forEach((dress, index) => {
-                const tr = document.createElement('tr');
-                tr.className = 'hover:bg-slate-50 transition-colors';
+                dressesStats.slice(0, maxRows).forEach((dress, index) => {
+                    const tr = document.createElement('tr');
+                    tr.className = 'hover:bg-slate-50 transition-colors';
 
-                tr.innerHTML = `
+                    tr.innerHTML = `
                     <td class="px-4 py-3 text-xs text-slate-500">${index + 1}</td>
                     <td class="px-4 py-3 text-sm font-medium text-slate-800">${dress.name}</td>
                     <td class="px-4 py-3 text-sm text-slate-600 text-right">
@@ -365,15 +312,15 @@ function computeBestDresses(bookings, dressesById = {}) {
                     </td>
                 `;
 
-                bestDressesBody.appendChild(tr);
-            });
-        }
+                    bestDressesBody.appendChild(tr);
+                });
+            }
 
 
 
 
 
-        async function displayStats() {
+            async function displayStats() {
                 // 1. Afficher les squelettes de chargement
                 const skeletonTpl = document.getElementById('skeleton-template').content;
                 statsContainer.innerHTML = '';
@@ -389,60 +336,60 @@ function computeBestDresses(bookings, dressesById = {}) {
                 for (const dress of dresses) {
                     dressesById[dress.$id] = dress;
 
-            // 3. Calculer les statistiques
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
+                    // 3. Calculer les statistiques
+                    const today = new Date();
+                    today.setHours(0, 0, 0, 0);
 
-            const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
+                    const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-            let revenueToday = 0;
-            let revenueThisMonth = 0;
-            let bookingsThisMonth = 0;
+                    let revenueToday = 0;
+                    let revenueThisMonth = 0;
+                    let bookingsThisMonth = 0;
 
-            for (const booking of bookings) {
-                // booking.date est une chaîne ISO (ex: "2025-11-14T10:30:00.000+00:00")
-                // On ne garde que la partie date (YYYY-MM-DD) pour une comparaison fiable
-                const bookingDateString = booking.date.substring(0, 10);
-                const todayDateString = today.toISOString().substring(0, 10);
+                    for (const booking of bookings) {
+                        // booking.date est une chaîne ISO (ex: "2025-11-14T10:30:00.000+00:00")
+                        // On ne garde que la partie date (YYYY-MM-DD) pour une comparaison fiable
+                        const bookingDateString = booking.date.substring(0, 10);
+                        const todayDateString = today.toISOString().substring(0, 10);
 
-                // Chiffre d'affaires du jour
-                if (bookingDateString === todayDateString) {
-                    revenueToday += booking.coutTotal || 0;
+                        // Chiffre d'affaires du jour
+                        if (bookingDateString === todayDateString) {
+                            revenueToday += booking.coutTotal || 0;
+                        }
+
+                        // Pour les stats du mois, la comparaison existante est correcte
+                        const bookingDate = new Date(booking.date);
+                        if (bookingDate >= startOfMonth) {
+                            revenueThisMonth += booking.coutTotal || 0;
+                            bookingsThisMonth++;
+                        }
+                    }
+
+                    // 4. Afficher les cartes
+
+                    statsContainer.innerHTML = ''; // Vider les squelettes
+
+                    statsContainer.append(
+                        renderStatCard('fa-sack-dollar', "Chiffre d'affaires du jour", formatEuro(revenueToday), 'bg-emerald-100 text-emerald-600'),
+                        renderStatCard('fa-money-bill-trend-up', "Chiffre d'affaires (Mois)", formatEuro(revenueThisMonth), 'bg-blue-100 text-blue-600'),
+                        renderStatCard('fa-calendar-plus', 'Nouvelles réservations (Mois)', formatInt(bookingsThisMonth), 'bg-amber-100 text-amber-600')
+                    );
+
+                    // 5. Meilleures robes
+                    const bestDresses = computeBestDresses(bookings, dressesById);
+                    renderBestDresses(bestDresses);
                 }
 
-                // Pour les stats du mois, la comparaison existante est correcte
-                const bookingDate = new Date(booking.date);
-                if (bookingDate >= startOfMonth) {
-                    revenueThisMonth += booking.coutTotal || 0;
-                    bookingsThisMonth++;
-                }
+
             }
 
-            // 4. Afficher les cartes
+            // === Main Execution ===
+            async function main() {
+                await displayStats();
+            }
 
-            statsContainer.innerHTML = ''; // Vider les squelettes
-
-            statsContainer.append(
-                renderStatCard('fa-sack-dollar', "Chiffre d'affaires du jour", formatEuro(revenueToday), 'bg-emerald-100 text-emerald-600'),
-                renderStatCard('fa-money-bill-trend-up', "Chiffre d'affaires (Mois)", formatEuro(revenueThisMonth), 'bg-blue-100 text-blue-600'),
-                renderStatCard('fa-calendar-plus', 'Nouvelles réservations (Mois)', formatInt(bookingsThisMonth), 'bg-amber-100 text-amber-600')
-            );
-
-            // 5. Meilleures robes
-            const bestDresses = computeBestDresses(bookings, dressesById);
-            renderBestDresses(bestDresses);
+            main();
         }
-
-
-        }
-
-        // === Main Execution ===
-        async function main() {
-            await requireAuth();
-            await displayStats();
-        }
-
-        main();
     </script>
 
 </body>

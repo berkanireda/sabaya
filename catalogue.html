@@ -21,9 +21,7 @@
     }
   </style>
 
-  <script>
-    let IS_LOGGING_OUT = false;
-  </script>
+
 </head>
 
 
@@ -31,50 +29,7 @@
 <body class="p-4 md:p-8 text-gray-800">
 
     <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo & Title -->
-                <div class="flex items-center gap-3">
-                    <a href="./catalogue.html" class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg bg-blue-600 text-white grid place-items-center shadow-md">
-                            <i class="fa-solid fa-gem"></i>
-                        </div>
-                        <div>
-                            <p class="text-base font-semibold text-slate-900">Location de Robes</p>
-                            <p class="text-xs text-slate-500 -mt-1">Catalogue</p>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Navigation & User -->
-                <div class="flex items-center gap-4">
-                    <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
-                        <a href="./catalogue.html"
-                            class="px-3 py-2 rounded-md text-blue-600 bg-blue-50">
-                            <i class="fa-solid fa-book-open-reader mr-1.5"></i> Catalogue
-                        </a>
-                        <a href="./index.html"
-                            class="px-3 py-2 rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-                            <i class="fa-solid fa-calendar-days mr-1.5"></i> Calendrier
-                        </a>
-                        <a href="./dashboard.html" class="px-3 py-2 rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-                            <i class="fa-solid fa-chart-line mr-1.5"></i> Dashboard
-                        </a>
-                    </nav>
-                    <div class="w-px h-6 bg-slate-200 hidden md:block"></div>
-                    <div class="relative">
-                        <button id="user-menu-button" class="flex items-center gap-2">
-                            <span id="user-name" class="text-sm font-medium text-slate-700"></span>
-                            <img id="user-avatar" class="w-8 h-8 rounded-full bg-slate-200" alt="Avatar">
-                        </button>
-                    </div>
-                    <button id="logout-btn" title="Se déconnecter" class="text-slate-500 hover:text-red-600">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
+<header id="header-placeholder" class="bg-white shadow-sm sticky top-0 z-40">
     </header>
 
 
@@ -155,10 +110,17 @@
               <input type="date" id="dress-purchase-date" class="w-full p-2 border rounded-md">
             </div>
             <div>
-              <label for="dress-price" class="block text-sm font-medium text-gray-600 mb-1">Prix (DA)</label>
+              <label for="dress-price" class="block text-sm font-medium text-gray-600 mb-1">Prix location</label>
               <input type="number" id="dress-price" placeholder="Ex: 15000" class="w-full p-2 border rounded-md"
-                step="0.01" min="0">
+                step="1" min="0">
             </div>
+
+            <div>
+              <label for="dress-purchase-price" class="block text-sm font-medium text-gray-600 mb-1">Prix d'achat</label>
+              <input type="number" id="dress-purchase-price" placeholder="Ex: 15000" class="w-full p-2 border rounded-md"
+                step="1" min="0">
+            </div>
+
             <div>
               <label for="dress-reference" class="block text-sm font-medium text-gray-600 mb-1">Référence de la
                 robe</label>
@@ -291,71 +253,21 @@
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
 
-
+<script src="./js/auth.js"></script>
   <script>
 
 
 
-    /* ====== Import Appwrite (depuis le SDK chargé avant) ====== */
-    const {
-      Client,
-      Account,
-      Databases,
-      Storage,
-      ID,
-      Query
-    } = Appwrite;
-
-    /* ====== Configuration Appwrite ====== */
-    const ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
-    const PROJECT = '690f54f700273a8387b3';
-    const DB_ID = '690f560f001394b2c1a6';
-    const COL_DRESSES = 'dresses';
-    const BUCKET_DRESSES = '690f683500243ed9d576';
-
-    /* ====== Init Appwrite ====== */
-    const client = new Client();
-    client.setEndpoint(ENDPOINT).setProject(PROJECT);
-    const account = new Account(client);
-
-    // Exiger une session, sinon renvoyer à la page login
-    async function requireAuth() {
-      try {
-        await account.get(); // ok → continuer
-      } catch {
-        window.location.replace('login.html'); // pas connecté → retour login
-      }
-    }
-
-    // Lance le guard immédiatement
-    requireAuth();
-
-
-    // logout
-
-    document.getElementById('logout')?.addEventListener('click', async () => {
-      IS_LOGGING_OUT = true;
-      // optionnel: masquer l’UI immédiatemment pour éviter tout flicker
-      document.body.style.opacity = '0';
-      try { await account.deleteSession('current'); } catch (_) { }
-      // replace = pas d’historique retour
-      window.location.replace('login.html');
-    });
-
-
-
-    const databases = new Databases(client);
-    const storage = new Storage(client);
-
-
-    /* ====== Utils ====== */
+function initPage() {
+ /* ====== Utils ====== */
     const DAfmt = new Intl.NumberFormat('fr-DZ', {
       style: 'currency',
       currency: 'DZD',
       maximumFractionDigits: 2
     });
-    const itemsPerPage = 10;
 
+
+    const itemsPerPage = 10;
     /* ====== DOM ====== */
     const addDressForm = document.getElementById('add-dress-form');
     const grid = document.getElementById('catalogue-grid');
@@ -476,7 +388,7 @@
       });
     }
 
-    /* ====== Logique d'Ajout/Modification (Inchangé) ====== */
+    /* ====== Logique d'Ajout/Modification  */
     async function handleAddOrEditDress(e) {
       e.preventDefault();
       const submitBtn = e.target.querySelector('button[type="submit"]');
@@ -487,12 +399,14 @@
       const sizeEl = document.getElementById('dress-size');
       const purchaseEl = document.getElementById('dress-purchase-date');
       const priceEl = document.getElementById('dress-price');
+      const purchasepriceEl = document.getElementById('dress-purchase-price');
       const fileEl = document.getElementById('dress-image');
       const refEl = document.getElementById('dress-reference');
 
       const name = (nameEl.value || '').trim();
       const reference = (refEl.value || '').trim();
       const priceValue = parseFloat(priceEl.value) || 0;
+      const purchasepriceValue = parseFloat(purchasepriceEl.value) || 0;
       const priceString = priceValue > 0 ? DAfmt.format(priceValue) : '';
 
       if (!name) {
@@ -528,6 +442,7 @@
           size: (sizeEl.value || '').trim(),
           purchaseDate: purchaseEl.value || '',
           price: priceValue,
+          purchase_price : purchasepriceValue,
           reference: reference,
           imageUrl
           // Le champ 'nb_reservation' n'est PAS inclus ici, 
@@ -732,7 +647,7 @@
       renderPagination();
     }
 
-    /* ====== Fonctions d'Édition (Inchangées) ====== */
+    /* ====== Fonctions d'Édition ====== */
     async function startEditDress(dressId) {
       try {
         const dress = await databases.getDocument(DB_ID, COL_DRESSES, dressId);
@@ -741,6 +656,7 @@
         document.getElementById('dress-size').value = dress.size || '';
         document.getElementById('dress-purchase-date').value = dress.purchaseDate || '';
         document.getElementById('dress-price').value = dress.price ?? '';
+        document.getElementById('dress-purchase-price').value = dress.purchase_price ?? '';
         document.getElementById('dress-reference').value = dress.reference || '';
         addDressForm.dataset.existingImageUrl = dress.imageUrl || '';
 
@@ -783,13 +699,16 @@
 
 
     /* ====== Boot (MIS À JOUR - Suppression du chargement des bookings) ====== */
-    async function main() {
+ async function main() {
 
       try {
-        // On n'a plus besoin de charger 'allBookings' ici !
-        // La Fonction Appwrite s'occupe de tout.
+        // 1. ON AJOUTE L'APPEL ICI
+        await loadDressTypes(); 
+        
+        // 2. On charge le catalogue
         await renderCataloguePage(currentPage);
         renderPagination();
+
       } catch (err) {
         console.error("Erreur au chargement initial:", err);
         grid.innerHTML = `<p class="col-span-full text-center text-red-600 py-10">Erreur: ${err.message}. Vérifiez la console.</p>`;
@@ -810,7 +729,7 @@
 
 
     /* ================== Types de robe persistés (Appwrite) ================== */
-    const COL_TYPES = 'dress_types'; // <- Assure-toi que l'ID de collection est bien celui-là
+    const COL_TYPES = 'dress_types'; 
 
     function normLabel(s) {
       return (s || "").normalize("NFKC").trim().replace(/\s+/g, " ");
@@ -825,10 +744,8 @@
       // on essaie d’abord de garder “Tous les types” si présent
       const keepAll = selFilterType && selFilterType.querySelector('option[value="all"]');
       if (selDressType) selDressType.innerHTML = '';
-      if (selFilterType) selFilterType.innerHTML = keepAll ? keepAll.outerHTML : '<option value="all">Tous les types</option>';
+      if (selFilterType) selFilterType.innerHTML = keepAll ? keepAll.outerHTML : '<option value="valeur="all">Tous les types</option>';
 
-      // On peut garder quelques valeurs de base si tu veux les précréer dans la BDD.
-      // Ici on lit tout depuis la collection.
       const typesResp = await databases.listDocuments(DB_ID, COL_TYPES, [
         Query.orderAsc('name'),
         Query.limit(200)
@@ -897,37 +814,13 @@
       }
     });
 
-    /* -------- Intégration au cycle de vie existant -------- */
-    /* 1) Au démarrage, charger les types AVANT d’afficher le catalogue */
-    const _main = main; // on wrappe ta fonction main existante
-    main = async function () {
-      try {
-        await requireAuth();         // déjà chez toi
-        await loadDressTypes();      // << remplit les selects depuis Appwrite
-      } catch (e) {
-        console.error('Erreur chargement types:', e);
-      }
-      // puis on lance ton flux normal
-      await _main();
-    };
-
-    /* 2) Quand on réinitialise les filtres, on regénère la liste des types depuis la BDD */
-    if (typeof resetFilters === 'function') {
-      const _resetFilters = resetFilters;
-      resetFilters = async function () {
-        await _resetFilters();
-        await loadDressTypes();
-      };
-    }
-
-
-
-
-
+  
 
 
     // Lancement de l'application
     main();
+
+  }
   </script>
 
 

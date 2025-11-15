@@ -48,50 +48,7 @@
 <body class="p-2 md:p-8 bg-gradient-to-br from-slate-50 to-slate-100">
   <div class="max-w-7xl mx-auto">
     <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo & Title -->
-                <div class="flex items-center gap-3">
-                    <a href="./catalogue.html" class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg bg-blue-600 text-white grid place-items-center shadow-md">
-                            <i class="fa-solid fa-gem"></i>
-                        </div>
-                        <div>
-                            <p class="text-base font-semibold text-slate-900">Location de Robes</p>
-                            <p class="text-xs text-slate-500 -mt-1">Calendrier</p>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Navigation & User -->
-                <div class="flex items-center gap-4">
-                    <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
-                        <a href="./catalogue.html"
-                            class="px-3 py-2 rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-                            <i class="fa-solid fa-book-open-reader mr-1.5"></i> Catalogue
-                        </a>
-                        <a href="./index.html"
-                            class="px-3 py-2 rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-                            <i class="fa-solid fa-calendar-days mr-1.5"></i> Calendrier
-                        </a>
-                        <a href="./dashboard.html" class="px-3 py-2 rounded-md text-blue-600 bg-blue-50">
-                            <i class="fa-solid fa-chart-line mr-1.5"></i> Dashboard
-                        </a>
-                    </nav>
-                    <div class="w-px h-6 bg-slate-200 hidden md:block"></div>
-                    <div class="relative">
-                        <button id="user-menu-button" class="flex items-center gap-2">
-                            <span id="user-name" class="text-sm font-medium text-slate-700"></span>
-                            <img id="user-avatar" class="w-8 h-8 rounded-full bg-slate-200" alt="Avatar">
-                        </button>
-                    </div>
-                    <button id="logout-btn" title="Se déconnecter" class="text-slate-500 hover:text-red-600">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
+<header id="header-placeholder" class="bg-white shadow-sm sticky top-0 z-40">
     </header>
 
 
@@ -470,48 +427,13 @@
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
 
-
+<script src="./js/auth.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
 
-      // -------- Configuration Appwrite --------
-      const ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
-      const PROJECT = '690f54f700273a8387b3';
-      const DB_ID = '690f560f001394b2c1a6';
-      const COL_DRESSES = 'dresses';
-      const COL_BOOKINGS = 'bookings';
-
-      // -------- Initialisation Appwrite --------
-      const { Client, Databases, ID, Query, Account } = Appwrite;
-      const client = new Client();
-      client.setEndpoint(ENDPOINT).setProject(PROJECT);
-
-      const databases = new Databases(client);
-      const account = new Account(client);
-
-      async function requireAuth() {
-        try {
-          await account.get(); // ok → continuer
-        } catch {
-          window.location.replace('login.html'); // pas connecté → retour login
-        }
-      }
-
-      // Lance le guard immédiatement
-      requireAuth();
+    function initPage() {
 
 
 
-      // se deconnecter 
-
-      document.getElementById('logout')?.addEventListener('click', async () => {
-        IS_LOGGING_OUT = true;
-        // optionnel: masquer l’UI immédiatemment pour éviter tout flicker
-        document.body.style.opacity = '0';
-        try { await account.deleteSession('current'); } catch (_) { }
-        // replace = pas d’historique retour
-        window.location.replace('login.html');
-      });
       // -------- Utils --------
       function fromISODateLocal(iso) {
         if (!iso) return new Date();
@@ -1285,7 +1207,8 @@
 
       // Lance le chargement
       main();
-    });
+
+  };
   </script>
 
 </body>
