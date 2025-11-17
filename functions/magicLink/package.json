@@ -4,7 +4,10 @@
   "description": "Fournit un catalogue public filtré des robes disponibles.",
   "main": "src/main.js",
   "type": "module",
+  "scripts": {
+    "build": "echo 'Pas d'étape de build nécessaire, on ignore.'"
+  },
   "dependencies": {
-    "node-appwrite": "^11.1.0"
+    "node-appwrite": "^14.1.0"
   }
 }
