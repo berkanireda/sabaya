@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Robes Disponibles</title>
+  
+  <link rel="stylesheet" href="./output.css" />
+  
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc; /* bg-slate-50 */
+    }
+  </style>
+</head>
+
+<body class="p-4 md:p-8">
+
+  <header class="max-w-5xl mx-auto mb-8">
+    <div class="flex items-center gap-4">
+      <div class="w-12 h-12 rounded-lg bg-blue-600 text-white grid place-items-center shadow-md">
+        <i class="fa-solid fa-gem text-xl"></i>
+      </div>
+      <div>
+        <h1 class="text-2xl font-bold text-slate-900">Catalogue de Robes</h1>
+        <p id="page-subtitle" class="text-slate-600">Robes disponibles pour le...</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto">
+    
+    <div id="public-catalogue-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+      <div id="loading-placeholder" class="col-span-full text-center py-16 text-slate-500">
+        <i class="fas fa-spinner fa-spin fa-2x"></i>
+        <p class="mt-4">Chargement des robes disponibles...</p>
+      </div>
+    </div>
+    
+  </main>
+
+  <footer class="text-center mt-12 text-sm text-slate-400">
+    <p>Catalogue fourni par votre service de location.</p>
+  </footer>
+
+
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+
+      // --- 1. CONFIGURATION (À REMPLIR) ---
+      // IMPORTANT : Allez chercher ces IDs dans votre console Appwrite
+      const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1'; // Votre Endpoint
+      const APPWRITE_PROJECT_ID = '690f54f700273a8387b3'; // Votre Project ID
+      const PUBLIC_FUNCTION_ID = 'getPublicDresses';  // L'ID de la fonction que vous avez créée
+      // ------------------------------------
+
+
+      // --- 2. RÉFÉRENCES DOM ---
+      const grid = document.getElementById('public-catalogue-grid');
+      const loading = document.getElementById('loading-placeholder');
+      const subtitle = document.getElementById('page-subtitle');
+      const { Client, Functions } = Appwrite;
+
+      // Formatage de prix (copié de vos autres pages)
+      const DAfmt = new Intl.NumberFormat('fr-DZ', {
+        style: 'currency',
+        currency: 'DZD',
+        maximumFractionDigits: 2
+      });
+
+
+      // --- 3. LOGIQUE PRINCIPALE ---
+      try {
+        // 3a. Lire les paramètres de l'URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const userId = urlParams.get('user');
+        const date = urlParams.get('date');
+        const type = urlParams.get('type') || 'all'; // 'all' par défaut
+
+        if (!userId || !date) {
+          throw new Error("Paramètres 'user' et 'date' manquants dans l'URL.");
+        }
+
+        // Mettre à jour le sous-titre
+        const formattedDate = new Date(date).toLocaleDateString('fr-FR', {
+          day: 'numeric',
+          month: 'long',
+          year: 'numeric'
+        });
+        subtitle.textContent = `Robes disponibles pour le ${formattedDate}` + 
+                                (type !== 'all' ? ` (Type: ${type})` : '');
+
+        // 3b. Initialiser le client Appwrite (minimal)
+        const client = new Client();
+        client.setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
+        const functions = new Functions(client);
+
+        // 3c. Préparer les données à envoyer à la fonction
+        const payload = JSON.stringify({
+          userId: userId,
+          date: date,
+          type: type
+        });
+
+        // 3d. Appeler la fonction Appwrite
+        const execution = await functions.createExecution(
+          PUBLIC_FUNCTION_ID,
+          payload,
+          false // false = exécution synchrone, on attend la réponse
+        );
+
+        if (execution.status !== 'completed') {
+          throw new Error(`Erreur de la fonction : ${execution.stderr || 'Exécution échouée'}`);
+        }
+
+        const robes = JSON.parse(execution.responseBody);
+
+        // 3e. Afficher les résultats
+        loading.remove(); // Supprimer le placeholder de chargement
+
+        if (robes.length === 0) {
+          grid.innerHTML = `
+            <div class="col-span-full text-center py-16 text-slate-500">
+              <i class="fas fa-folder-open fa-2x"></i>
+              <p class="mt-4">Désolé, aucune robe de ce type n'est disponible pour cette date.</p>
+            </div>
+          `;
+          return;
+        }
+
+        // Créer et insérer les cartes des robes
+        robes.forEach(robe => {
+          const card = document.createElement('div');
+          card.className = 'bg-white rounded-lg shadow-md overflow-hidden group';
+          
+          card.innerHTML = `
+            <div class="overflow-hidden relative">
+              <img src="${robe.imageUrl || 'https://placehold.co/400x600/cccccc/ffffff?text=Robe'}"
+                   alt="${robe.name}" 
+                   class="w-full h-80 object-cover transition-transform duration-300 group-hover:scale-105">
+            </div>
+            <div class="p-4">
+              <h3 class="font-semibold text-lg truncate" title="${robe.name}">${robe.name}</h3>
+              ${robe.price ? `<p class="text-gray-700 text-sm mt-1">${DAfmt.format(robe.price)}</p>` : ''}
+              ${robe.size ? `<p class="text-gray-500 text-xs mt-1">Taille: ${robe.size}</p>` : ''}
+              ${robe.reference ? `<p class="text-gray-500 text-xs mt-1">Réf: ${robe.reference}</p>` : ''}
+            </div>
+          `;
+          grid.appendChild(card);
+        });
+
+      } catch (error) {
+        // Gérer les erreurs (URL, réseau, fonction)
+        console.error("Erreur lors du chargement du catalogue public:", error);
+        loading.remove();
+        grid.innerHTML = `
+          <div class="col-span-full text-center py-16 text-red-600 bg-red-50 rounded-lg">
+            <i class="fas fa-exclamation-triangle fa-2x"></i>
+            <p class="mt-4 font-semibold">Impossible de charger le catalogue.</p>
+            <p class="text-sm">${error.message}</p>
+          </div>
+        `;
+      }
+    });
+  </script>
+
+</body>
+</html>

@@ -156,28 +156,23 @@
 
 
 
-      <div id="filter-controls"
-        class="mb-8 p-4 bg-white rounded-xl shadow-lg border grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
+    <div id="filter-controls"
+        class="mb-8 p-6 bg-white rounded-xl shadow-lg border grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
 
         <div>
           <label for="filter-type" class="block text-sm font-medium text-gray-600 mb-1">Type de robe</label>
           <select id="filter-type" class="w-full p-2 border border-gray-300 rounded-md bg-white">
             <option value="all">Tous les types</option>
-
           </select>
         </div>
-
+        
         <div>
-          <label for="filter-price-min" class="block text-sm font-medium text-gray-600 mb-1">Prix Min (DA)</label>
-          <input type="number" id="filter-price-min" placeholder="Ex: 5000"
-            class="w-full p-2 border border-gray-300 rounded-md">
+          <label for="client-date-filter" class="block text-sm font-medium text-gray-600 mb-1">Date de disponibilité</label>
+          <input type="date" id="client-date-filter" class="w-full p-2 border border-gray-300 rounded-md">
         </div>
 
         <div>
-          <label for="filter-price-max" class="block text-sm font-medium text-gray-600 mb-1">Prix Max (DA)</label>
-          <input type="number" id="filter-price-max" placeholder="Ex: 20000"
-            class="w-full p-2 border border-gray-300 rounded-md">
-        </div>
+            </div>
 
         <div class="flex gap-2">
           <button id="filter-apply-btn"
@@ -189,8 +184,23 @@
             <i class="fas fa-undo"></i>
           </button>
         </div>
+        
+        <div class="md:col-span-4 mt-4 pt-4 border-t">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+                <div class="md:col-span-2">
+                    <label for="generated-link-display" class="block text-sm font-medium text-gray-600 mb-1">Lien pour le client</label>
+                    <input type="text" id="generated-link-display" placeholder="Cliquez sur 'Générer'..." readonly
+                           class="w-full p-2 border border-gray-200 bg-gray-50 rounded-md text-sm text-gray-500">
+                </div>
+                <div class="self-end">
+                    <button id="generate-link-btn"
+                        class="w-full bg-emerald-600 text-white py-2 px-4 rounded-md hover:bg-emerald-700 transition-colors">
+                        <i class="fas fa-link mr-2"></i>Générer le lien
+                    </button>
+                </div>
+            </div>
+        </div>
       </div>
-
 
 
 
@@ -300,6 +310,10 @@
       const addEventForm = document.getElementById('add-event-form');
       const eventDressIdInput = document.getElementById('event-dress-id');
 
+      const clientDateFilter = document.getElementById('client-date-filter');
+const generateLinkBtn = document.getElementById('generate-link-btn');
+const generatedLinkDisplay = document.getElementById('generated-link-display');
+
       /* ====== État pagination et filtres ====== */
       let currentPage = 1;
       let pageCursors = [null];
@@ -353,7 +367,7 @@
         // Vider le contenu pour le prochain chargement
         placeholder = "https://placehold.co/400x600/cccccc/ffffff?text=Chargement...";
         detailsModalImage.src = placeholder;
-  detailsModalImageMobile.src = placeholder;
+        detailsModalImageMobile.src = placeholder;
         detailsModalName.textContent = "Chargement...";
         detailsModalPrice.textContent = "";
         detailsModalType.textContent = "";
@@ -527,57 +541,88 @@
 
       /* ====== Récupération d’une page (Inchangé) ====== */
       async function fetchPage(pageIndex) {
-        // 1. Récupérer l'utilisateur
-        const user = getCurrentUser();
-        if (!user) {
-          console.warn("Aucun utilisateur, fetch annulé.");
-          return []; // Retourner un tableau vide
-        }
+      const user = getCurrentUser();
+      if (!user) return [];
 
+      // --- NOUVEAU BLOC : LOGIQUE DE DISPONIBILITÉ ---
+      let bookedDressIds = new Set();
+      
+      // Si une date est sélectionnée dans le filtre
+      if (currentFilters.date) {
+        // 1. Calculer les bornes de la journée
+        const localDate = new Date(currentFilters.date);
+        const dateStart = new Date(localDate.setHours(0, 0, 0, 0));
+        const dateEnd = new Date(localDate.setHours(23, 59, 59, 999));
+        
+        // Convertir en ISO pour la requête Appwrite
+        const dateStartISO = dateStart.toISOString();
+        const dateEndISO = dateEnd.toISOString();
 
-        const baseQueries = [];
-        // 2. AJOUTER LE FILTRE OBLIGATOIRE
-        baseQueries.push(Query.equal("userId", [user.$id]));
+        // 2. Récupérer les réservations pour ce jour
+        // (Note : ceci est une requête supplémentaire, mais nécessaire)
+        const bookingsResponse = await databases.listDocuments(
+          DB_ID,
+          COL_BOOKINGS, // Assurez-vous que COL_BOOKINGS est défini (dans auth.js)
+          [
+            Query.equal('userId', [user.$id]),
+            Query.between('date', dateStartISO, dateEndISO),
+            Query.limit(500), // Max 500 réservations par jour (ajustez si besoin)
+            Query.select(['dressIds'])
+          ]
+        );
 
-
-
-        if (currentFilters.type) {
-          baseQueries.push(Query.equal('type', currentFilters.type));
-        }
-        if (currentFilters.min != null) {
-          baseQueries.push(Query.greaterThanEqual('price', currentFilters.min));
-        }
-        if (currentFilters.max != null) {
-          baseQueries.push(Query.lessThanEqual('price', currentFilters.max));
-        }
-        baseQueries.push(Query.orderDesc('$createdAt'));
-        baseQueries.push(Query.limit(itemsPerPage));
-
-        let queries = [...baseQueries];
-
-        if (pageIndex > 1) {
-          while (pageCursors.length < pageIndex) {
-            const prevCursor = pageCursors[pageCursors.length - 1];
-            const prevQueryList = [...baseQueries];
-            if (prevCursor) {
-              prevQueryList.push(Query.cursorAfter(prevCursor));
-            }
-            const response = await databases.listDocuments(DB_ID, COL_DRESSES, prevQueryList);
-            const lastDoc = response.documents[response.documents.length - 1] || null;
-            pageCursors.push(lastDoc ? lastDoc.$id : null);
-            if (!lastDoc) break;
+        // 3. Stocker les IDs des robes déjà louées
+        bookingsResponse.documents.forEach(booking => {
+          if (booking.dressIds && Array.isArray(booking.dressIds)) {
+            booking.dressIds.forEach(id => bookedDressIds.add(id));
           }
-          const cursor = pageCursors[pageIndex - 1];
-          if (cursor) {
-            queries.push(Query.cursorAfter(cursor));
-          }
-        }
-        const response = await databases.listDocuments(DB_ID, COL_DRESSES, queries);
-        const lastDocOnPage = response.documents[response.documents.length - 1] || null;
-        pageCursors[pageIndex] = lastDocOnPage ? lastDocOnPage.$id : null;
-        return response.documents;
+        });
+      }
+      // --- FIN DU NOUVEAU BLOC ---
+
+      const baseQueries = [
+          Query.equal("userId", [user.$id]) // Filtre utilisateur
+      ];
+
+      if (currentFilters.type) {
+        baseQueries.push(Query.equal('type', currentFilters.type));
+      }
+      
+      // --- NOUVEAU FILTRE DE DISPONIBILITÉ ---
+      if (bookedDressIds.size > 0) {
+          // Exclure les robes dont l'ID est dans la liste des réservées
+          baseQueries.push(Query.notEqual('$id', Array.from(bookedDressIds)));
       }
 
+      baseQueries.push(Query.orderDesc('$createdAt'));
+      baseQueries.push(Query.limit(itemsPerPage));
+
+      let queries = [...baseQueries];
+
+      // ... (le reste de votre logique de pagination/curseur est correct) ...
+      
+      if (pageIndex > 1) {
+        while (pageCursors.length < pageIndex) {
+          const prevCursor = pageCursors[pageCursors.length - 1];
+          const prevQueryList = [...baseQueries];
+          if (prevCursor) {
+            prevQueryList.push(Query.cursorAfter(prevCursor));
+          }
+          const response = await databases.listDocuments(DB_ID, COL_DRESSES, prevQueryList);
+          const lastDoc = response.documents[response.documents.length - 1] || null;
+          pageCursors.push(lastDoc ? lastDoc.$id : null);
+          if (!lastDoc) break;
+        }
+        const cursor = pageCursors[pageIndex - 1];
+        if (cursor) {
+          queries.push(Query.cursorAfter(cursor));
+        }
+      }
+      const response = await databases.listDocuments(DB_ID, COL_DRESSES, queries);
+      const lastDocOnPage = response.documents[response.documents.length - 1] || null;
+      pageCursors[pageIndex] = lastDocOnPage ? lastDocOnPage.$id : null;
+      return response.documents;
+    }
       /* ======================================================= */
       /* ======            MODIFICATION CI-DESSOUS         ====== */
       /* ======================================================= */
@@ -691,19 +736,23 @@
 
       /* ====== Fonctions de Filtre ====== */
       async function applyFilters() {
-        const type = filterType.value;
-        const min = parseFloat(filterPriceMin.value);
-        const max = parseFloat(filterPriceMax.value);
-        currentFilters = {
-          type: type === 'all' ? null : type,
-          min: isNaN(min) ? null : min,
-          max: isNaN(max) ? null : max
-        };
-        currentPage = 1;
-        pageCursors = [null];
-        await renderCataloguePage(currentPage);
-        renderPagination();
-      }
+      const type = filterType.value;
+      // NOUVELLE LIGNE
+      const date = clientDateFilter.value; // ex: "2025-12-10" ou ""
+      
+      // Mettez à jour currentFilters
+      currentFilters = {
+        type: type === 'all' ? null : type,
+        date: date || null, // NOUVELLE LIGNE
+        min: null, // J'enlève le prix pour l'instant
+        max: null  // J'enlève le prix pour l'instant
+      };
+      
+      currentPage = 1;
+      pageCursors = [null];
+      await renderCataloguePage(currentPage);
+      renderPagination();
+    }
 
       async function resetFilters() {
         filterType.value = 'all';
@@ -828,45 +877,45 @@
       }
 
       // Nouvelle fonction "helper" pour afficher un événement
-  function createEventElement(event) {
-  const el = document.createElement('div');
-  el.className = "p-3 bg-slate-50 border rounded-lg flex items-center gap-3";
-  
-  let icon = '';
-  let title = event.type; // Par défaut, on affiche le type tel quel
+      function createEventElement(event) {
+        const el = document.createElement('div');
+        el.className = "p-3 bg-slate-50 border rounded-lg flex items-center gap-3";
 
-  switch (event.type) {
-    case 'Location':
-      icon = '<i class="fas fa-shopping-bag text-purple-500"></i>';
-      title = 'Location'; // Assure la bonne casse
-      break;
-    case 'Vente':
-      icon = '<i class="fas fa-dollar-sign text-green-600"></i>';
-      title = 'Vente';
-      break;
-    case 'Degraissage':
-      icon = '<i class="fas fa-soap text-blue-500"></i>';
-      title = 'Dégraissage';
-      break;
-    case 'Lavage':
-      icon = '<i class="fas fa-tint text-cyan-500"></i>';
-      title = 'Lavage';
-      break;
-    case 'Retouche':
-      icon = '<i class="fas fa-cut text-orange-500"></i>';
-      title = 'Retouche';
-      break;
-    case 'Réparation':
-      icon = '<i class="fas fa-tools text-yellow-600"></i>';
-      title = 'Réparation';
-      break;
-    case 'Autre':
-      icon = '<i class="fas fa-info-circle text-gray-400"></i>';
-      title = 'Autre';
-      break;
-  }
+        let icon = '';
+        let title = event.type; // Par défaut, on affiche le type tel quel
 
-  el.innerHTML = `
+        switch (event.type) {
+          case 'Location':
+            icon = '<i class="fas fa-shopping-bag text-purple-500"></i>';
+            title = 'Location'; // Assure la bonne casse
+            break;
+          case 'Vente':
+            icon = '<i class="fas fa-dollar-sign text-green-600"></i>';
+            title = 'Vente';
+            break;
+          case 'Degraissage':
+            icon = '<i class="fas fa-soap text-blue-500"></i>';
+            title = 'Dégraissage';
+            break;
+          case 'Lavage':
+            icon = '<i class="fas fa-tint text-cyan-500"></i>';
+            title = 'Lavage';
+            break;
+          case 'Retouche':
+            icon = '<i class="fas fa-cut text-orange-500"></i>';
+            title = 'Retouche';
+            break;
+          case 'Réparation':
+            icon = '<i class="fas fa-tools text-yellow-600"></i>';
+            title = 'Réparation';
+            break;
+          case 'Autre':
+            icon = '<i class="fas fa-info-circle text-gray-400"></i>';
+            title = 'Autre';
+            break;
+        }
+
+        el.innerHTML = `
     <div class="w-8 h-8 grid place-items-center rounded-full bg-white flex-shrink-0">${icon}</div>
     <div class="flex-grow">
       <div class="flex justify-between items-center">
@@ -877,8 +926,48 @@
       ${event.cost ? `<p class="text-xs font-medium text-red-600">Coût: ${DAfmt.format(event.cost)}</p>` : ''}
     </div>
   `;
-  return el;
-}
+        return el;
+      }
+
+
+
+// --- NOUVELLE FONCTION : Générer le lien public ---
+    function generatePublicLink() {
+      const user = getCurrentUser();
+      if (!user) {
+        alert("Erreur : vous n'êtes pas connecté.");
+        return;
+      }
+      
+      const type = filterType.value;
+      const date = clientDateFilter.value;
+
+      if (!date) {
+        alert("Veuillez d'abord sélectionner une date.");
+        clientDateFilter.focus();
+        return;
+      }
+
+      // 1. Obtenir la base de l'URL (ex: "https://votre-site.com/")
+      const baseUrl = window.location.origin + window.location.pathname.replace('catalogue.html', '');
+      
+      // 2. Construire le lien vers la nouvelle page
+      const publicLink = `${baseUrl}public-catalogue.html?user=${user.$id}&date=${date}&type=${type}`;
+
+      // 3. Afficher le lien
+      generatedLinkDisplay.value = publicLink;
+      
+      // (Optionnel) Copier dans le presse-papiers
+      try {
+        navigator.clipboard.writeText(publicLink);
+        alert("Lien copié dans le presse-papiers !");
+      } catch (err) {
+        console.warn("Copie auto. échouée : ", err);
+      }
+    }
+
+    // Lier la fonction au bouton
+    generateLinkBtn.addEventListener('click', generatePublicLink);
 
       /* ====== Boot (MIS À JOUR - Suppression du chargement des bookings) ====== */
       async function main() {
@@ -1037,60 +1126,60 @@
       detailsModal?.querySelectorAll('[data-close-details]').forEach(el => el.addEventListener('click', closeDetailsModal));
 
       addEventForm.addEventListener('submit', async (e) => {
-  e.preventDefault();
-  const user = getCurrentUser();
-  if (!user) return;
+        e.preventDefault();
+        const user = getCurrentUser();
+        if (!user) return;
 
-  const submitBtn = addEventForm.querySelector('button[type="submit"]');
-  submitBtn.disabled = true;
-  submitBtn.textContent = 'Ajout...';
+        const submitBtn = addEventForm.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Ajout...';
 
-  const eventData = {
-    userId: user.$id,
-    dressId: eventDressIdInput.value,
-    type: document.getElementById('event-type').value,
-    date: new Date(document.getElementById('event-date').value).toISOString(),
-    notes: document.getElementById('event-notes').value || '',
-    cost: parseFloat(document.getElementById('event-cost').value) || 0,
-  };
+        const eventData = {
+          userId: user.$id,
+          dressId: eventDressIdInput.value,
+          type: document.getElementById('event-type').value,
+          date: new Date(document.getElementById('event-date').value).toISOString(),
+          notes: document.getElementById('event-notes').value || '',
+          cost: parseFloat(document.getElementById('event-cost').value) || 0,
+        };
 
-  const permissions = [
-    Permission.read(Role.user(user.$id)),
-    Permission.update(Role.user(user.$id)),
-    Permission.delete(Role.user(user.$id))
-  ];
+        const permissions = [
+          Permission.read(Role.user(user.$id)),
+          Permission.update(Role.user(user.$id)),
+          Permission.delete(Role.user(user.$id))
+        ];
 
-  try {
-    const newEvent = await databases.createDocument(
-      DB_ID, 
-      "dress_events", // !! Mettez l'ID de votre collection d'événements
-      ID.unique(), 
-      eventData, 
-      permissions
-    );
+        try {
+          const newEvent = await databases.createDocument(
+            DB_ID,
+            "dress_events", // !! Mettez l'ID de votre collection d'événements
+            ID.unique(),
+            eventData,
+            permissions
+          );
 
-    // Rafraîchir la liste
-    const eventEl = createEventElement(newEvent);
-    // Insérer au début de la liste
-    historyList.prepend(eventEl); 
-    
-    // Vider le formulaire
-    addEventForm.reset(); 
-    // Remettre la date d'aujourd'hui par défaut
-    document.getElementById('event-date').value = new Date().toISOString().split('T')[0];
+          // Rafraîchir la liste
+          const eventEl = createEventElement(newEvent);
+          // Insérer au début de la liste
+          historyList.prepend(eventEl);
+
+          // Vider le formulaire
+          addEventForm.reset();
+          // Remettre la date d'aujourd'hui par défaut
+          document.getElementById('event-date').value = new Date().toISOString().split('T')[0];
 
 
-  } catch (error) {
-    console.error("Erreur ajout événement:", error);
-    alert("Impossible d'ajouter l'événement : " + error.message);
-  } finally {
-    submitBtn.disabled = false;
-    submitBtn.innerHTML = '<i class="fas fa-plus mr-2"></i>Ajouter à l\'historique';
-  }
-});
+        } catch (error) {
+          console.error("Erreur ajout événement:", error);
+          alert("Impossible d'ajouter l'événement : " + error.message);
+        } finally {
+          submitBtn.disabled = false;
+          submitBtn.innerHTML = '<i class="fas fa-plus mr-2"></i>Ajouter à l\'historique';
+        }
+      });
 
-// (Optionnel) Mettre la date du jour par défaut dans le formulaire d'événement
-document.getElementById('event-date').value = new Date().toISOString().split('T')[0];
+      // (Optionnel) Mettre la date du jour par défaut dans le formulaire d'événement
+      document.getElementById('event-date').value = new Date().toISOString().split('T')[0];
 
 
       // Lancement de l'application
@@ -1108,94 +1197,98 @@ document.getElementById('event-date').value = new Date().toISOString().split('T'
 
   <!-- modal carte de robe -->
 
-<div id="details-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
-  <div class="absolute inset-0 bg-black/60" data-close-details></div>
+  <div id="details-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+    <div class="absolute inset-0 bg-black/60" data-close-details></div>
 
-  <div class="relative mx-4 my-8 w-full max-w-5xl rounded-2xl bg-slate-50 shadow-2xl flex flex-col max-h-[90vh]">
-    
-    <div class="flex items-center justify-between border-b p-4 bg-white flex-shrink-0 z-10">
-      <h4 id="details-modal-title" class="text-lg font-semibold">Détails de la robe</h4>
-      <button class="p-2 rounded-full hover:bg-gray-100" title="Fermer" data-close-details>
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
+    <div class="relative mx-4 my-8 w-full max-w-5xl rounded-2xl bg-slate-50 shadow-2xl flex flex-col max-h-[90vh]">
 
-    <div class="grid grid-cols-1 md:grid-cols-2 h-full overflow-hidden">
-      
-      <div class="h-full bg-white border-r border-slate-200 p-6 hidden md:block">
-        <div class="sticky top-0 flex flex-col items-center justify-center h-full max-h-[75vh]">
-          <img id="details-modal-image" 
-               src="https://placehold.co/600x800/cccccc/ffffff?text=Chargement..." 
-               alt="Photo de la robe" 
-               class="max-w-full max-h-full w-auto h-auto object-contain rounded-lg shadow-lg">
-        </div>
+      <div class="flex items-center justify-between border-b p-4 bg-white flex-shrink-0 z-10">
+        <h4 id="details-modal-title" class="text-lg font-semibold">Détails de la robe</h4>
+        <button class="p-2 rounded-full hover:bg-gray-100" title="Fermer" data-close-details>
+          <i class="fa-solid fa-xmark"></i>
+        </button>
       </div>
 
-      <div class="w-full h-full overflow-y-auto p-6 space-y-6">
-        
-        <div class="bg-white rounded-xl shadow-md border p-5">
-          <img id="details-modal-image-mobile" 
-               src="https://placehold.co/600x800/cccccc/ffffff?text=Chargement..." 
-               alt="Photo de la robe" 
-               class="w-full h-64 object-cover rounded-lg mb-4 md:hidden">
+      <div class="grid grid-cols-1 md:grid-cols-2 h-full overflow-hidden">
 
-          <h3 id="details-modal-name" class="text-2xl font-bold text-slate-800">Chargement...</h3>
-          <p id="details-modal-price" class="text-2xl text-zinc-900 font-semibold"></p>
-          <div class="pt-3 mt-3 border-t">
-            <p id="details-modal-type" class="text-sm text-gray-600"></p>
-            <p id="details-modal-size" class="text-sm text-gray-600"></p>
-            <p id="details-modal-ref" class="text-sm text-gray-600"></p>
-            <p id="details-modal-nbres" class="text-sm text-gray-600"></p>
+        <div class="h-full bg-white border-r border-slate-200 p-6 hidden md:block">
+          <div class="sticky top-0 flex flex-col items-center justify-center h-full max-h-[75vh]">
+            <img id="details-modal-image" src="https://placehold.co/600x800/cccccc/ffffff?text=Chargement..."
+              alt="Photo de la robe" class="max-w-full max-h-full w-auto h-auto object-contain rounded-lg shadow-lg">
           </div>
         </div>
 
-        <div class="bg-white rounded-xl shadow-md border p-5">
-          <h4 class="font-semibold text-gray-800 mb-4">Historique des événements</h4>
-          <div id="details-modal-history-list" class="space-y-3 max-h-80 overflow-y-auto pr-2">
-            <p id="history-loading-placeholder" class="text-sm text-gray-500 italic">Chargement de l'historique...</p>
+        <div class="w-full h-full overflow-y-auto p-6 space-y-6">
+
+          <div class="bg-white rounded-xl shadow-md border p-5">
+            <img id="details-modal-image-mobile" src="https://placehold.co/600x800/cccccc/ffffff?text=Chargement..."
+              alt="Photo de la robe" class="w-full h-64 object-cover rounded-lg mb-4 md:hidden">
+
+            <h3 id="details-modal-name" class="text-2xl font-bold text-slate-800">Chargement...</h3>
+            <p id="details-modal-price" class="text-2xl text-zinc-900 font-semibold"></p>
+            <div class="pt-3 mt-3 border-t">
+              <p id="details-modal-type" class="text-sm text-gray-600"></p>
+              <p id="details-modal-size" class="text-sm text-gray-600"></p>
+              <p id="details-modal-ref" class="text-sm text-gray-600"></p>
+              <p id="details-modal-nbres" class="text-sm text-gray-600"></p>
+            </div>
           </div>
-        </div>
 
-        <div class="bg-white rounded-xl shadow-md border p-5">
-          <h4 class="font-semibold text-gray-800 mb-4">Ajouter un événement</h4>
-          <form id="add-event-form" class="space-y-4">
-            <input type="hidden" id="event-dress-id">
-            
-            <div>
-              <label for="event-type" class="block text-xs font-medium text-gray-600 mb-1.5">Type d'événement</label>
-              <select id="event-type" class="w-full p-2.5 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
-                <option value="Degraissage">Dégraissage</option>
-                <option value="Lavage">Lavage</option>
-                <option value="Retouche">Retouche</option>
-                <option value="Réparation">Réparation</option>
-                <option value="Autre">Autre</option>
-              </select>
+          <div class="bg-white rounded-xl shadow-md border p-5">
+            <h4 class="font-semibold text-gray-800 mb-4">Historique des événements</h4>
+            <div id="details-modal-history-list" class="space-y-3 max-h-80 overflow-y-auto pr-2">
+              <p id="history-loading-placeholder" class="text-sm text-gray-500 italic">Chargement de l'historique...</p>
             </div>
-            
-            <div class="grid grid-cols-2 gap-4">
+          </div>
+
+          <div class="bg-white rounded-xl shadow-md border p-5">
+            <h4 class="font-semibold text-gray-800 mb-4">Ajouter un événement</h4>
+            <form id="add-event-form" class="space-y-4">
+              <input type="hidden" id="event-dress-id">
+
               <div>
-                <label for="event-date" class="block text-xs font-medium text-gray-600 mb-1.5">Date</label>
-                <input type="date" id="event-date" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+                <label for="event-type" class="block text-xs font-medium text-gray-600 mb-1.5">Type d'événement</label>
+                <select id="event-type"
+                  class="w-full p-2.5 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  <option value="Degraissage">Dégraissage</option>
+                  <option value="Lavage">Lavage</option>
+                  <option value="Retouche">Retouche</option>
+                  <option value="Réparation">Réparation</option>
+                  <option value="Autre">Autre</option>
+                </select>
               </div>
+
+              <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <label for="event-date" class="block text-xs font-medium text-gray-600 mb-1.5">Date</label>
+                  <input type="date" id="event-date"
+                    class="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required>
+                </div>
+                <div>
+                  <label for="event-cost" class="block text-xs font-medium text-gray-600 mb-1.5">Coût</label>
+                  <input type="number" id="event-cost" placeholder="0"
+                    class="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                </div>
+              </div>
+
               <div>
-                <label for="event-cost" class="block text-xs font-medium text-gray-600 mb-1.5">Coût</label>
-                <input type="number" id="event-cost" placeholder="0" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <label for="event-notes" class="block text-xs font-medium text-gray-600 mb-1.5">Notes</label>
+                <textarea id="event-notes" rows="2" placeholder="Ex: Ourlet, tâche..."
+                  class="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
               </div>
-            </div>
 
-            <div>
-              <label for="event-notes" class="block text-xs font-medium text-gray-600 mb-1.5">Notes</label>
-              <textarea id="event-notes" rows="2" placeholder="Ex: Ourlet, tâche..." class="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
-            </div>
-            
-            <button type="submit"
-              class="w-full bg-blue-600 text-white py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
-              <i class="fas fa-plus mr-2"></i>Ajouter à l'historique
-            </button>
-          </form>
+              <button type="submit"
+                class="w-full bg-blue-600 text-white py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
+                <i class="fas fa-plus mr-2"></i>Ajouter à l'historique
+              </button>
+            </form>
+          </div>
+
         </div>
-
-      </div> </div> </div> </div>
+      </div>
+    </div>
+  </div>
 
 
 
