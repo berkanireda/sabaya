@@ -9,7 +9,7 @@ export default async ({ req, res, log, error }) => {
   const client = new Client()
     .setEndpoint(process.env.APPWRITE_ENDPOINT)
     .setProject(process.env.APPWRITE_PROJECT_ID)
-    .setKey(process.env.APPWRITE_API_KEY); // Clé API Admin
+    .setKey(process.env.APPWRITE_API_KEY);
 
   const database = new Databases(client);
   const DB_ID = process.env.APPWRITE_DATABASE_ID;
@@ -26,29 +26,24 @@ export default async ({ req, res, log, error }) => {
     return res.json({ error: 'Payload JSON invalide.' }, 400);
   }
 
-  const { userId, date, type } = payload;
+  // MODIFIÉ : Récupérer les nouveaux filtres
+  const { userId, date, type, size, minPrice, maxPrice } = payload;
 
   if (!userId || !date) {
     return res.json({ error: 'userId et date sont requis.' }, 400);
   }
 
   try {
-    // 3. Gestion de la date
-    // Le client envoie une date locale (ex: "2025-11-20")
+    // 3. Gestion de la date (inchangée)
     const localDate = new Date(date);
-    
-    // Créer le début du jour (local)
     const dateStart = new Date(localDate.setHours(0, 0, 0, 0));
-    // Créer la fin du jour (local)
     const dateEnd = new Date(localDate.setHours(23, 59, 59, 999));
-    
-    // Convertir en ISO pour la requête Appwrite (qui stocke en UTC)
     const dateStartISO = dateStart.toISOString();
     const dateEndISO = dateEnd.toISOString();
 
     log(`Recherche de réservations pour ${userId} entre ${dateStartISO} et ${dateEndISO}`);
 
-    // 4. Étape A : Récupérer toutes les robes DÉJÀ RÉSERVÉES ce jour-là
+    // 4. Étape A : Récupérer les robes DÉJÀ RÉSERVÉES (inchangée)
     const bookedDressIds = new Set();
     let offset = 0;
     let bookingsResponse;
@@ -59,13 +54,12 @@ export default async ({ req, res, log, error }) => {
         COL_BOOKINGS,
         [
           Query.equal('userId', [userId]),
-          Query.between('date', dateStartISO, dateEndISO), // Cible les réservations du jour
+          Query.between('date', dateStartISO, dateEndISO),
           Query.limit(100),
           Query.offset(offset),
-          Query.select(['dressIds']), // On ne veut que les IDs des robes
+          Query.select(['dressIds']),
         ]
       );
-
       bookingsResponse.documents.forEach(booking => {
         if (booking.dressIds && Array.isArray(booking.dressIds)) {
           booking.dressIds.forEach(id => bookedDressIds.add(id));
@@ -76,15 +70,34 @@ export default async ({ req, res, log, error }) => {
 
     log(`Nombre d'IDs de robes réservées trouvés: ${bookedDressIds.size}`);
 
-    // 5. Étape B : Récupérer les robes de l'utilisateur (filtrées par type)
+    // 5. Étape B : Récupérer les robes de l'utilisateur (AVEC LES NOUVEAUX FILTRES)
     const dressQueries = [
       Query.equal('userId', [userId]),
-      Query.limit(500) // Limite large, comme dans votre app
+      Query.limit(500)
     ];
     
-    if (type && type !== 'all') { // Si un type est spécifié (et n'est pas "tous")
+    // Filtre par Type
+    if (type && type !== 'all') {
       dressQueries.push(Query.equal('type', [type]));
       log(`Filtrage par type: ${type}`);
+    }
+
+    // NOUVEAU : Filtre par Taille
+    if (size) {
+      dressQueries.push(Query.equal('size', [size]));
+      log(`Filtrage par taille: ${size}`);
+    }
+
+    // NOUVEAU : Filtre par Prix Minimum
+    if (minPrice && parseFloat(minPrice) > 0) {
+      dressQueries.push(Query.greaterThanEqual('price', parseFloat(minPrice)));
+      log(`Filtrage par prix min: ${minPrice}`);
+    }
+    
+    // NOUVEAU : Filtre par Prix Maximum
+    if (maxPrice && parseFloat(maxPrice) > 0) {
+      dressQueries.push(Query.lessThanEqual('price', parseFloat(maxPrice)));
+      log(`Filtrage par prix max: ${maxPrice}`);
     }
 
     const allDressesResponse = await database.listDocuments(
@@ -93,15 +106,14 @@ export default async ({ req, res, log, error }) => {
       dressQueries
     );
 
-    // 6. Étape C : Filtrer les robes pour ne garder que les disponibles
+    // 6. Étape C : Filtrer les robes pour ne garder que les disponibles (inchangée)
     const availableDresses = allDressesResponse.documents.filter(dress => {
-      // Retourne 'true' (garde la robe) si son ID n'est PAS dans le Set des robes réservées
       return !bookedDressIds.has(dress.$id);
     });
 
-    log(`Total robes ${type}: ${allDressesResponse.total}, Robes disponibles: ${availableDresses.length}`);
+    log(`Total robes filtrées: ${allDressesResponse.total}, Robes disponibles: ${availableDresses.length}`);
 
-    // 7. Renvoyer la liste des robes disponibles
+    // 7. Renvoyer la liste des robes disponibles (inchangée)
     return res.json(availableDresses);
 
   } catch (e) {

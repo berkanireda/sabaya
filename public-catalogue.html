@@ -52,14 +52,13 @@
   </footer>
 
 
-  <script>
+<script>
     document.addEventListener('DOMContentLoaded', async () => {
 
       // --- 1. CONFIGURATION (À REMPLIR) ---
-      // IMPORTANT : Allez chercher ces IDs dans votre console Appwrite
       const APPWRITE_ENDPOINT = 'https://fra.cloud.appwrite.io/v1'; // Votre Endpoint
       const APPWRITE_PROJECT_ID = '690f54f700273a8387b3'; // Votre Project ID
-      const PUBLIC_FUNCTION_ID = '691b3502002f8210ee8b';  // L'ID de la fonction que vous avez créée
+      const PUBLIC_FUNCTION_ID = 'magicLink';  // L'ID de la fonction
       // ------------------------------------
 
 
@@ -69,7 +68,6 @@
       const subtitle = document.getElementById('page-subtitle');
       const { Client, Functions } = Appwrite;
 
-      // Formatage de prix (copié de vos autres pages)
       const DAfmt = new Intl.NumberFormat('fr-DZ', {
         style: 'currency',
         currency: 'DZD',
@@ -79,64 +77,75 @@
 
       // --- 3. LOGIQUE PRINCIPALE ---
       try {
-        // 3a. Lire les paramètres de l'URL
+        // 3a. Lire les paramètres de l'URL (MIS À JOUR)
         const urlParams = new URLSearchParams(window.location.search);
         const userId = urlParams.get('user');
         const date = urlParams.get('date');
-        const type = urlParams.get('type') || 'all'; // 'all' par défaut
+        const type = urlParams.get('type') || 'all';
+        const size = urlParams.get('size'); // NOUVEAU
+        const minPrice = urlParams.get('minPrice'); // NOUVEAU
+        const maxPrice = urlParams.get('maxPrice'); // NOUVEAU
 
         if (!userId || !date) {
           throw new Error("Paramètres 'user' et 'date' manquants dans l'URL.");
         }
 
-        // Mettre à jour le sous-titre
+        // Mettre à jour le sous-titre (MIS À JOUR)
         const formattedDate = new Date(date).toLocaleDateString('fr-FR', {
           day: 'numeric',
           month: 'long',
           year: 'numeric'
         });
-        subtitle.textContent = `Robes disponibles pour le ${formattedDate}` + 
-                                (type !== 'all' ? ` (Type: ${type})` : '');
+        
+        let subtitleText = `Robes disponibles pour le ${formattedDate}`;
+        if (type !== 'all') subtitleText += ` (Type: ${type})`;
+        if (size) subtitleText += ` (Taille: ${size})`;
+        subtitle.textContent = subtitleText;
 
-        // 3b. Initialiser le client Appwrite (minimal)
+
+        // 3b. Initialiser le client Appwrite (inchangé)
         const client = new Client();
         client.setEndpoint(APPWRITE_ENDPOINT).setProject(APPWRITE_PROJECT_ID);
         const functions = new Functions(client);
 
-        // 3c. Préparer les données à envoyer à la fonction
+        // 3c. Préparer les données à envoyer (MIS À JOUR)
         const payload = JSON.stringify({
           userId: userId,
           date: date,
-          type: type
+          type: type,
+          size: size,
+          minPrice: minPrice,
+          maxPrice: maxPrice
         });
 
-        // 3d. Appeler la fonction Appwrite
+        // 3d. Appeler la fonction Appwrite (MIS À JOUR)
         const execution = await functions.createExecution(
           PUBLIC_FUNCTION_ID,
           payload,
-          false // false = exécution synchrone, on attend la réponse
+          false
         );
 
         if (execution.status !== 'completed') {
           throw new Error(`Erreur de la fonction : ${execution.stderr || 'Exécution échouée'}`);
         }
 
-        const robes = JSON.parse(execution.responseBody);
+        // 3e. Afficher les résultats (MIS À JOUR)
+        // Utiliser .response au lieu de .responseBody
+        const robes = JSON.parse(execution.response); 
 
-        // 3e. Afficher les résultats
-        loading.remove(); // Supprimer le placeholder de chargement
+        loading.remove();
 
         if (robes.length === 0) {
           grid.innerHTML = `
             <div class="col-span-full text-center py-16 text-slate-500">
               <i class="fas fa-folder-open fa-2x"></i>
-              <p class="mt-4">Désolé, aucune robe de ce type n'est disponible pour cette date.</p>
+              <p class="mt-4">Désolé, aucune robe ne correspond à vos filtres pour cette date.</p>
             </div>
           `;
           return;
         }
 
-        // Créer et insérer les cartes des robes
+        // (Inchangé) Créer et insérer les cartes des robes
         robes.forEach(robe => {
           const card = document.createElement('div');
           card.className = 'bg-white rounded-lg shadow-md overflow-hidden group';
@@ -158,7 +167,7 @@
         });
 
       } catch (error) {
-        // Gérer les erreurs (URL, réseau, fonction)
+        // (Inchangé) Gérer les erreurs
         console.error("Erreur lors du chargement du catalogue public:", error);
         loading.remove();
         grid.innerHTML = `
