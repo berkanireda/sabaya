@@ -28,9 +28,9 @@
 
 <body class="p-4 md:p-8 text-gray-800">
 
-    <!-- Header -->
-<header id="header-placeholder" class="bg-white shadow-sm sticky top-0 z-40">
-    </header>
+  <!-- Header -->
+  <header id="header-placeholder" class="bg-white shadow-sm sticky top-0 z-40">
+  </header>
 
 
 
@@ -116,9 +116,10 @@
             </div>
 
             <div>
-              <label for="dress-purchase-price" class="block text-sm font-medium text-gray-600 mb-1">Prix d'achat</label>
-              <input type="number" id="dress-purchase-price" placeholder="Ex: 15000" class="w-full p-2 border rounded-md"
-                step="1" min="0">
+              <label for="dress-purchase-price" class="block text-sm font-medium text-gray-600 mb-1">Prix
+                d'achat</label>
+              <input type="number" id="dress-purchase-price" placeholder="Ex: 15000"
+                class="w-full p-2 border rounded-md" step="1" min="0">
             </div>
 
             <div>
@@ -253,291 +254,354 @@
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
 
-<script src="./js/auth.js"></script>
+  <script src="./js/auth.js"></script>
   <script>
 
 
 
-function initPage() {
- /* ====== Utils ====== */
-    const DAfmt = new Intl.NumberFormat('fr-DZ', {
-      style: 'currency',
-      currency: 'DZD',
-      maximumFractionDigits: 2
-    });
-
-
-    const itemsPerPage = 10;
-    /* ====== DOM ====== */
-    const addDressForm = document.getElementById('add-dress-form');
-    const grid = document.getElementById('catalogue-grid');
-    const pager = document.getElementById('pagination-controls');
-    const filterType = document.getElementById('filter-type');
-    const filterPriceMin = document.getElementById('filter-price-min');
-    const filterPriceMax = document.getElementById('filter-price-max');
-    const filterApplyBtn = document.getElementById('filter-apply-btn');
-    const filterResetBtn = document.getElementById('filter-reset-btn');
-    const formSubmitText = document.getElementById('form-submit-text');
-    const formSubmitIcon = document.getElementById('form-submit-icon');
-    const cancelEditBtn = document.getElementById('cancel-edit-btn');
-
-    /* ====== État pagination et filtres ====== */
-    let currentPage = 1;
-    let pageCursors = [null];
-    let totalShown = 0;
-    let currentFilters = {
-      type: null,
-      min: null,
-      max: null
-    };
-    let editingDressId = null;
-
-
-
-
-    // Modal Robe
-    const dressModal = document.getElementById('add-dress-modal');
-    const openAddDressBtn = document.getElementById('open-add-dress');
-    const dressModalTitle = document.getElementById('dress-modal-title');
-
-    function openDressModal() {
-      dressModal.classList.remove('hidden');
-      dressModal.classList.add('flex');
-    }
-    function closeDressModal() {
-      dressModal.classList.add('hidden');
-      dressModal.classList.remove('flex');
-    }
-    dressModal?.querySelectorAll('[data-close-dress]').forEach(el => el.addEventListener('click', closeDressModal));
-
-    // Ouvrir en mode "ajout"
-    openAddDressBtn?.addEventListener('click', () => {
-      editingDressId = null;
-      addDressForm.reset();
-      addDressForm.dataset.existingImageUrl = '';
-      dressModalTitle.textContent = 'Ajouter une nouvelle robe';
-      formSubmitText.textContent = 'Ajouter au catalogue';
-      formSubmitIcon.className = 'fas fa-plus mr-2';
-      cancelEditBtn.classList.add('hidden');
-      openDressModal();
-    });
-
-
-
-
-
-    /* ====== Compression image (Inchangé) ====== */
-    function compressImage(file, maxWidth, quality, textOverlays = {}) {
-      return new Promise((resolve, reject) => {
-        const reader = new FileReader();
-        reader.readAsDataURL(file);
-        reader.onload = (e) => {
-          const img = new Image();
-          img.src = e.target.result;
-          img.onload = () => {
-            const scale = Math.min(1, maxWidth / img.width || 1);
-            const w = Math.round(img.width * scale);
-            const h = Math.round(img.height * scale);
-            const canvas = document.createElement('canvas');
-            canvas.width = w;
-            canvas.height = h;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(img, 0, 0, w, h);
-            const { name, price, reference } = textOverlays;
-            if (name || price || reference) {
-              const fontSize = Math.round(w * 0.08); // La taille que vous aviez modifiée
-              const padding = Math.round(w * 0.04); // La taille que vous aviez modifiée
-              const lineHeight = Math.round(fontSize * 1.2);
-              ctx.font = `bold ${fontSize}px Inter, sans-serif`;
-              ctx.fillStyle = 'white';
-              ctx.strokeStyle = 'black';
-              ctx.lineWidth = Math.round(fontSize * 0.1);
-              ctx.textAlign = 'left';
-              ctx.textBaseline = 'bottom';
-              let yPos = h - padding;
-              if (price) {
-                ctx.strokeText(price, padding, yPos);
-                ctx.fillText(price, padding, yPos);
-                yPos -= lineHeight;
-              }
-              if (name) {
-                ctx.strokeText(name, padding, yPos);
-                ctx.fillText(name, padding, yPos);
-                yPos -= lineHeight;
-              }
-              if (reference) {
-                const refText = `Réf: ${reference}`;
-                ctx.strokeText(refText, padding, yPos);
-                ctx.fillText(refText, padding, yPos);
-              }
-            }
-            canvas.toBlob((blob) => {
-              if (!blob) {
-                return reject(new Error('Canvas toBlob a échoué'));
-              }
-              const compressedFile = new File([blob], file.name, {
-                type: 'image/jpeg',
-                lastModified: Date.now()
-              });
-              resolve(compressedFile);
-            }, 'image/jpeg', quality);
-          };
-          img.onerror = reject;
-        };
-        reader.onerror = reject;
+    function initPage() {
+      /* ====== Utils ====== */
+      const DAfmt = new Intl.NumberFormat('fr-DZ', {
+        style: 'currency',
+        currency: 'DZD',
+        maximumFractionDigits: 2
       });
-    }
 
-    /* ====== Logique d'Ajout/Modification  */
-    async function handleAddOrEditDress(e) {
-      e.preventDefault();
-      const submitBtn = e.target.querySelector('button[type="submit"]');
-      submitBtn.disabled = true;
 
-      const nameEl = document.getElementById('dress-name');
-      const typeEl = document.getElementById('dress-type');
-      const sizeEl = document.getElementById('dress-size');
-      const purchaseEl = document.getElementById('dress-purchase-date');
-      const priceEl = document.getElementById('dress-price');
-      const purchasepriceEl = document.getElementById('dress-purchase-price');
-      const fileEl = document.getElementById('dress-image');
-      const refEl = document.getElementById('dress-reference');
+      const itemsPerPage = 10;
+      /* ====== DOM ====== */
+      const addDressForm = document.getElementById('add-dress-form');
+      const grid = document.getElementById('catalogue-grid');
+      const pager = document.getElementById('pagination-controls');
+      const filterType = document.getElementById('filter-type');
+      const filterPriceMin = document.getElementById('filter-price-min');
+      const filterPriceMax = document.getElementById('filter-price-max');
+      const filterApplyBtn = document.getElementById('filter-apply-btn');
+      const filterResetBtn = document.getElementById('filter-reset-btn');
+      const formSubmitText = document.getElementById('form-submit-text');
+      const formSubmitIcon = document.getElementById('form-submit-icon');
+      const cancelEditBtn = document.getElementById('cancel-edit-btn');
 
-      const name = (nameEl.value || '').trim();
-      const reference = (refEl.value || '').trim();
-      const priceValue = parseFloat(priceEl.value) || 0;
-      const purchasepriceValue = parseFloat(purchasepriceEl.value) || 0;
-      const priceString = priceValue > 0 ? DAfmt.format(priceValue) : '';
 
-      if (!name) {
-        nameEl.focus();
-        submitBtn.disabled = false;
-        return;
+      // modal carte de robe
+      const detailsModal = document.getElementById('details-modal');
+      const detailsModalTitle = document.getElementById('details-modal-title');
+      const detailsModalImage = document.getElementById('details-modal-image');
+      const detailsModalImageMobile = document.getElementById('details-modal-image-mobile');
+      const detailsModalName = document.getElementById('details-modal-name');
+      const detailsModalPrice = document.getElementById('details-modal-price');
+      const detailsModalType = document.getElementById('details-modal-type');
+      const detailsModalSize = document.getElementById('details-modal-size');
+      const detailsModalRef = document.getElementById('details-modal-ref');
+      const detailsModalNbRes = document.getElementById('details-modal-nbres');
+      const historyList = document.getElementById('details-modal-history-list');
+      const historyLoading = document.getElementById('history-loading-placeholder');
+
+      const addEventForm = document.getElementById('add-event-form');
+      const eventDressIdInput = document.getElementById('event-dress-id');
+
+      /* ====== État pagination et filtres ====== */
+      let currentPage = 1;
+      let pageCursors = [null];
+      let totalShown = 0;
+      let currentFilters = {
+        type: null,
+        min: null,
+        max: null
+      };
+      let editingDressId = null;
+
+
+
+
+      // Modal Robe
+      const dressModal = document.getElementById('add-dress-modal');
+      const openAddDressBtn = document.getElementById('open-add-dress');
+      const dressModalTitle = document.getElementById('dress-modal-title');
+
+      function openDressModal() {
+        dressModal.classList.remove('hidden');
+        dressModal.classList.add('flex');
+      }
+      function closeDressModal() {
+        dressModal.classList.add('hidden');
+        dressModal.classList.remove('flex');
+      }
+      dressModal?.querySelectorAll('[data-close-dress]').forEach(el => el.addEventListener('click', closeDressModal));
+
+      // Ouvrir en mode "ajout"
+      openAddDressBtn?.addEventListener('click', () => {
+        editingDressId = null;
+        addDressForm.reset();
+        addDressForm.dataset.existingImageUrl = '';
+        dressModalTitle.textContent = 'Ajouter une nouvelle robe';
+        formSubmitText.textContent = 'Ajouter au catalogue';
+        formSubmitIcon.className = 'fas fa-plus mr-2';
+        cancelEditBtn.classList.add('hidden');
+        openDressModal();
+      });
+
+
+
+      function openDetailsModal() {
+        detailsModal.classList.remove('hidden');
+        detailsModal.classList.add('flex');
+      }
+      function closeDetailsModal() {
+        detailsModal.classList.add('hidden');
+        detailsModal.classList.remove('flex');
+        // Vider le contenu pour le prochain chargement
+        placeholder = "https://placehold.co/400x600/cccccc/ffffff?text=Chargement...";
+        detailsModalImage.src = placeholder;
+  detailsModalImageMobile.src = placeholder;
+        detailsModalName.textContent = "Chargement...";
+        detailsModalPrice.textContent = "";
+        detailsModalType.textContent = "";
+        detailsModalSize.textContent = "";
+        detailsModalRef.textContent = "";
+        detailsModalNbRes.textContent = "";
+        historyList.innerHTML = '<p id="history-loading-placeholder" class="text-sm text-gray-500 italic">Chargement de l\'historique...</p>';
       }
 
-      let imageUrl = addDressForm.dataset.existingImageUrl || '';
-      const imageFile = fileEl.files[0];
-
-      try {
-        const textOverlays = { name, price: priceString, reference };
-
-        if (imageFile) {
-          const compressedFile = await compressImage(imageFile, 1000, 0.85, textOverlays);
-          const file = await storage.createFile(BUCKET_DRESSES, ID.unique(), compressedFile);
-          imageUrl = storage.getFileView(BUCKET_DRESSES, file.$id).href;
-        }
-        else if (editingDressId && imageUrl) {
-          const response = await fetch(imageUrl);
-          const blob = await response.blob();
-          const existingFile = new File([blob], "existing_image.jpeg", { type: blob.type });
-
-          const compressedFile = await compressImage(existingFile, 1000, 0.85, textOverlays);
-          const file = await storage.createFile(BUCKET_DRESSES, ID.unique(), compressedFile);
-          imageUrl = storage.getFileView(BUCKET_DRESSES, file.$id).href;
-        }
-
-        const data = {
-          name,
-          type: typeEl.value,
-          size: (sizeEl.value || '').trim(),
-          purchaseDate: purchaseEl.value || '',
-          price: priceValue,
-          purchase_price : purchasepriceValue,
-          reference: reference,
-          imageUrl
-          // Le champ 'nb_reservation' n'est PAS inclus ici, 
-          // car il est géré uniquement par la Fonction Appwrite.
-        };
-
-        if (editingDressId) {
-          await databases.updateDocument(DB_ID, COL_DRESSES, editingDressId, data);
-        } else {
-          await databases.createDocument(DB_ID, COL_DRESSES, ID.unique(), data);
-        }
-
-        cancelEdit();
-
-        if (!editingDressId) {
-          await resetFilters();
-        } else {
-          await renderCataloguePage(currentPage);
-          renderPagination();
-        }
-
-        closeDressModal();
-
-      } catch (err) {
-        console.error('Erreur Appwrite:', err);
-        alert("Erreur lors de la sauvegarde : " + err.message);
-      } finally {
-        submitBtn.disabled = false;
+      /* ====== Compression image (Inchangé) ====== */
+      function compressImage(file, maxWidth, quality, textOverlays = {}) {
+        return new Promise((resolve, reject) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = (e) => {
+            const img = new Image();
+            img.src = e.target.result;
+            img.onload = () => {
+              const scale = Math.min(1, maxWidth / img.width || 1);
+              const w = Math.round(img.width * scale);
+              const h = Math.round(img.height * scale);
+              const canvas = document.createElement('canvas');
+              canvas.width = w;
+              canvas.height = h;
+              const ctx = canvas.getContext('2d');
+              ctx.drawImage(img, 0, 0, w, h);
+              const { name, price, reference } = textOverlays;
+              if (name || price || reference) {
+                const fontSize = Math.round(w * 0.08); // La taille que vous aviez modifiée
+                const padding = Math.round(w * 0.04); // La taille que vous aviez modifiée
+                const lineHeight = Math.round(fontSize * 1.2);
+                ctx.font = `bold ${fontSize}px Inter, sans-serif`;
+                ctx.fillStyle = 'white';
+                ctx.strokeStyle = 'black';
+                ctx.lineWidth = Math.round(fontSize * 0.1);
+                ctx.textAlign = 'left';
+                ctx.textBaseline = 'bottom';
+                let yPos = h - padding;
+                if (price) {
+                  ctx.strokeText(price, padding, yPos);
+                  ctx.fillText(price, padding, yPos);
+                  yPos -= lineHeight;
+                }
+                if (name) {
+                  ctx.strokeText(name, padding, yPos);
+                  ctx.fillText(name, padding, yPos);
+                  yPos -= lineHeight;
+                }
+                if (reference) {
+                  const refText = `Réf: ${reference}`;
+                  ctx.strokeText(refText, padding, yPos);
+                  ctx.fillText(refText, padding, yPos);
+                }
+              }
+              canvas.toBlob((blob) => {
+                if (!blob) {
+                  return reject(new Error('Canvas toBlob a échoué'));
+                }
+                const compressedFile = new File([blob], file.name, {
+                  type: 'image/jpeg',
+                  lastModified: Date.now()
+                });
+                resolve(compressedFile);
+              }, 'image/jpeg', quality);
+            };
+            img.onerror = reject;
+          };
+          reader.onerror = reject;
+        });
       }
-    }
 
-    /* ====== Récupération d’une page (Inchangé) ====== */
-    async function fetchPage(pageIndex) {
-      const baseQueries = [];
-      if (currentFilters.type) {
-        baseQueries.push(Query.equal('type', currentFilters.type));
-      }
-      if (currentFilters.min != null) {
-        baseQueries.push(Query.greaterThanEqual('price', currentFilters.min));
-      }
-      if (currentFilters.max != null) {
-        baseQueries.push(Query.lessThanEqual('price', currentFilters.max));
-      }
-      baseQueries.push(Query.orderDesc('$createdAt'));
-      baseQueries.push(Query.limit(itemsPerPage));
-
-      let queries = [...baseQueries];
-
-      if (pageIndex > 1) {
-        while (pageCursors.length < pageIndex) {
-          const prevCursor = pageCursors[pageCursors.length - 1];
-          const prevQueryList = [...baseQueries];
-          if (prevCursor) {
-            prevQueryList.push(Query.cursorAfter(prevCursor));
-          }
-          const response = await databases.listDocuments(DB_ID, COL_DRESSES, prevQueryList);
-          const lastDoc = response.documents[response.documents.length - 1] || null;
-          pageCursors.push(lastDoc ? lastDoc.$id : null);
-          if (!lastDoc) break;
-        }
-        const cursor = pageCursors[pageIndex - 1];
-        if (cursor) {
-          queries.push(Query.cursorAfter(cursor));
-        }
-      }
-      const response = await databases.listDocuments(DB_ID, COL_DRESSES, queries);
-      const lastDocOnPage = response.documents[response.documents.length - 1] || null;
-      pageCursors[pageIndex] = lastDocOnPage ? lastDocOnPage.$id : null;
-      return response.documents;
-    }
-
-    /* ======================================================= */
-    /* ======            MODIFICATION CI-DESSOUS         ====== */
-    /* ======================================================= */
-
-    /* ====== Rendu d’une page (MIS À JOUR) ====== */
-    async function renderCataloguePage(pageIndex) {
-      grid.innerHTML = '<p class="col-span-full text-center text-gray-500 py-10">Chargement...</p>';
-      if (filterApplyBtn) filterApplyBtn.disabled = true;
-      if (filterResetBtn) filterResetBtn.disabled = true;
-
-      try {
-        const dresses = await fetchPage(pageIndex);
-        if (dresses.length === 0) {
-          grid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10">Aucune robe ne correspond à ces filtres.</p>`;
-          totalShown = 0;
+      /* ====== Logique d'Ajout/Modification  */
+      async function handleAddOrEditDress(e) {
+        e.preventDefault();
+        // 1. Récupérer l'utilisateur
+        const user = getCurrentUser();
+        if (!user) {
+          alert("Erreur critique : utilisateur non connecté.");
           return;
         }
-        grid.innerHTML = '';
-        const frag = document.createDocumentFragment();
-        dresses.forEach(dress => {
-          const card = document.createElement('div');
-          card.className = 'bg-white rounded-lg shadow-md overflow-hidden group';
 
-          card.innerHTML = `
+
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+
+        const nameEl = document.getElementById('dress-name');
+        const typeEl = document.getElementById('dress-type');
+        const sizeEl = document.getElementById('dress-size');
+        const purchaseEl = document.getElementById('dress-purchase-date');
+        const priceEl = document.getElementById('dress-price');
+        const purchasepriceEl = document.getElementById('dress-purchase-price');
+        const fileEl = document.getElementById('dress-image');
+        const refEl = document.getElementById('dress-reference');
+
+        const name = (nameEl.value || '').trim();
+        const reference = (refEl.value || '').trim();
+        const priceValue = parseFloat(priceEl.value) || 0;
+        const purchasepriceValue = parseFloat(purchasepriceEl.value) || 0;
+        const priceString = priceValue > 0 ? DAfmt.format(priceValue) : '';
+
+        if (!name) {
+          nameEl.focus();
+          submitBtn.disabled = false;
+          return;
+        }
+
+        let imageUrl = addDressForm.dataset.existingImageUrl || '';
+        const imageFile = fileEl.files[0];
+
+        try {
+          const textOverlays = { name, price: priceString, reference };
+
+          if (imageFile) {
+            const compressedFile = await compressImage(imageFile, 1000, 0.85, textOverlays);
+            const file = await storage.createFile(BUCKET_DRESSES, ID.unique(), compressedFile);
+            imageUrl = storage.getFileView(BUCKET_DRESSES, file.$id).href;
+          }
+          else if (editingDressId && imageUrl) {
+            const response = await fetch(imageUrl);
+            const blob = await response.blob();
+            const existingFile = new File([blob], "existing_image.jpeg", { type: blob.type });
+
+            const compressedFile = await compressImage(existingFile, 1000, 0.85, textOverlays);
+            const file = await storage.createFile(BUCKET_DRESSES, ID.unique(), compressedFile);
+            imageUrl = storage.getFileView(BUCKET_DRESSES, file.$id).href;
+          }
+
+          const data = {
+            name,
+            type: typeEl.value,
+            size: (sizeEl.value || '').trim(),
+            purchaseDate: purchaseEl.value || '',
+            price: priceValue,
+            purchase_price: purchasepriceValue,
+            reference: reference,
+            imageUrl,
+            userId: user.$id
+            // Le champ 'nb_reservation' n'est PAS inclus ici, 
+            // car il est géré uniquement par la Fonction Appwrite.
+          };
+
+          if (editingDressId) {
+            await databases.updateDocument(DB_ID, COL_DRESSES, editingDressId, data);
+          } else {
+            const permissions = [
+              Permission.read(Role.user(user.$id)),
+              Permission.update(Role.user(user.$id)),
+              Permission.delete(Role.user(user.$id))
+            ];
+            await databases.createDocument(DB_ID, COL_DRESSES, ID.unique(), data, permissions);
+          }
+
+          cancelEdit();
+
+          if (!editingDressId) {
+            await resetFilters();
+          } else {
+            await renderCataloguePage(currentPage);
+            renderPagination();
+          }
+
+          closeDressModal();
+
+        } catch (err) {
+          console.error('Erreur Appwrite:', err);
+          alert("Erreur lors de la sauvegarde : " + err.message);
+        } finally {
+          submitBtn.disabled = false;
+        }
+      }
+
+      /* ====== Récupération d’une page (Inchangé) ====== */
+      async function fetchPage(pageIndex) {
+        // 1. Récupérer l'utilisateur
+        const user = getCurrentUser();
+        if (!user) {
+          console.warn("Aucun utilisateur, fetch annulé.");
+          return []; // Retourner un tableau vide
+        }
+
+
+        const baseQueries = [];
+        // 2. AJOUTER LE FILTRE OBLIGATOIRE
+        baseQueries.push(Query.equal("userId", [user.$id]));
+
+
+
+        if (currentFilters.type) {
+          baseQueries.push(Query.equal('type', currentFilters.type));
+        }
+        if (currentFilters.min != null) {
+          baseQueries.push(Query.greaterThanEqual('price', currentFilters.min));
+        }
+        if (currentFilters.max != null) {
+          baseQueries.push(Query.lessThanEqual('price', currentFilters.max));
+        }
+        baseQueries.push(Query.orderDesc('$createdAt'));
+        baseQueries.push(Query.limit(itemsPerPage));
+
+        let queries = [...baseQueries];
+
+        if (pageIndex > 1) {
+          while (pageCursors.length < pageIndex) {
+            const prevCursor = pageCursors[pageCursors.length - 1];
+            const prevQueryList = [...baseQueries];
+            if (prevCursor) {
+              prevQueryList.push(Query.cursorAfter(prevCursor));
+            }
+            const response = await databases.listDocuments(DB_ID, COL_DRESSES, prevQueryList);
+            const lastDoc = response.documents[response.documents.length - 1] || null;
+            pageCursors.push(lastDoc ? lastDoc.$id : null);
+            if (!lastDoc) break;
+          }
+          const cursor = pageCursors[pageIndex - 1];
+          if (cursor) {
+            queries.push(Query.cursorAfter(cursor));
+          }
+        }
+        const response = await databases.listDocuments(DB_ID, COL_DRESSES, queries);
+        const lastDocOnPage = response.documents[response.documents.length - 1] || null;
+        pageCursors[pageIndex] = lastDocOnPage ? lastDocOnPage.$id : null;
+        return response.documents;
+      }
+
+      /* ======================================================= */
+      /* ======            MODIFICATION CI-DESSOUS         ====== */
+      /* ======================================================= */
+
+      /* ====== Rendu d’une page (MIS À JOUR) ====== */
+      async function renderCataloguePage(pageIndex) {
+        grid.innerHTML = '<p class="col-span-full text-center text-gray-500 py-10">Chargement...</p>';
+        if (filterApplyBtn) filterApplyBtn.disabled = true;
+        if (filterResetBtn) filterResetBtn.disabled = true;
+
+        try {
+          const dresses = await fetchPage(pageIndex);
+          if (dresses.length === 0) {
+            grid.innerHTML = `<p class="col-span-full text-center text-gray-500 py-10">Aucune robe ne correspond à ces filtres.</p>`;
+            totalShown = 0;
+            return;
+          }
+          grid.innerHTML = '';
+          const frag = document.createDocumentFragment();
+          dresses.forEach(dress => {
+            const card = document.createElement('div');
+            card.className = 'bg-white rounded-lg shadow-md overflow-hidden group';
+
+            card.innerHTML = `
           <div class="overflow-hidden relative"> <img src="${dress.imageUrl || 'https://placehold.co/400x600/cccccc/ffffff?text=Robe'}"
                  alt="${dress.name}" class="w-full h-80 object-cover transition-transform duration-300 group-hover:scale-105">
             
@@ -551,281 +615,587 @@ function initPage() {
             ${dress.type ? `<p class="text-gray-500 text-xs">Type: ${dress.type}</p>` : ''}
             ${`<p class="text-gray-500 text-xs">Nombre de réservations: ${dress.nb_reservation}</p>`}
             
-            <button class="edit-dress-btn text-sm text-blue-600 hover:text-blue-800 font-medium mt-3" data-id="${dress.$id}">
-              <i class="fas fa-pencil-alt mr-1"></i> Modifier
-            </button>
+            <div class="flex items-center gap-4 mt-4">
+              <button class="view-details-btn text-sm bg-blue-600 text-white py-1.5 px-3 rounded-md hover:bg-blue-700" data-id="${dress.$id}">
+                <i class="fas fa-eye mr-1.5"></i> Voir
+              </button>
+              <button class="edit-dress-btn text-sm text-gray-600 hover:text-gray-900 font-medium" data-id="${dress.$id}">
+                <i class="fas fa-pencil-alt mr-1"></i> Modifier
+              </button>
+            </div>
           </div>
         `;
-          frag.appendChild(card);
-        });
-        grid.appendChild(frag);
-        totalShown = dresses.length;
-      } catch (error) {
-        console.error("Erreur lors du fetchPage:", error);
-        grid.innerHTML = `<p class="col-span-full text-center text-red-600 py-10">Erreur: ${error.message}.</p>`;
-      } finally {
-        if (filterApplyBtn) filterApplyBtn.disabled = false;
-        if (filterResetBtn) filterResetBtn.disabled = false;
+            frag.appendChild(card);
+          });
+          grid.appendChild(frag);
+          totalShown = dresses.length;
+        } catch (error) {
+          console.error("Erreur lors du fetchPage:", error);
+          grid.innerHTML = `<p class="col-span-full text-center text-red-600 py-10">Erreur: ${error.message}.</p>`;
+        } finally {
+          if (filterApplyBtn) filterApplyBtn.disabled = false;
+          if (filterResetBtn) filterResetBtn.disabled = false;
+        }
       }
-    }
 
-    /* ====== Pagination UI (Inchangé) ====== */
-    function renderPagination() {
-      pager.innerHTML = '';
-      if (pageCursors.length <= 2 && totalShown < itemsPerPage && currentPage === 1) return;
-      const prevBtn = document.createElement('button');
-      prevBtn.innerHTML = `<i class="fas fa-chevron-left"></i>`;
-      prevBtn.className = 'px-3 py-2 rounded-md border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed';
-      prevBtn.disabled = currentPage === 1;
-      prevBtn.addEventListener('click', async () => {
-        if (currentPage > 1) {
-          currentPage--;
+      /* ====== Pagination UI (Inchangé) ====== */
+      function renderPagination() {
+        pager.innerHTML = '';
+        if (pageCursors.length <= 2 && totalShown < itemsPerPage && currentPage === 1) return;
+        const prevBtn = document.createElement('button');
+        prevBtn.innerHTML = `<i class="fas fa-chevron-left"></i>`;
+        prevBtn.className = 'px-3 py-2 rounded-md border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed';
+        prevBtn.disabled = currentPage === 1;
+        prevBtn.addEventListener('click', async () => {
+          if (currentPage > 1) {
+            currentPage--;
+            await renderCataloguePage(currentPage);
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          }
+        });
+        pager.appendChild(prevBtn);
+        const makePageBtn = (n) => {
+          const b = document.createElement('button');
+          b.textContent = n;
+          b.className = (n === currentPage) ?
+            'px-3 py-2 rounded-md border bg-blue-600 text-white font-bold' :
+            'px-3 py-2 rounded-md border bg-white hover:bg-gray-50';
+          b.addEventListener('click', async () => {
+            if (n === currentPage) return;
+            currentPage = n;
+            await renderCataloguePage(currentPage);
+            renderPagination();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+          });
+          return b;
+        };
+        const start = Math.max(1, currentPage - 2);
+        const end = Math.max(currentPage + 2, start + 4);
+        for (let i = start; i <= end; i++) {
+          pager.appendChild(makePageBtn(i));
+        }
+        const nextBtn = document.createElement('button');
+        nextBtn.innerHTML = `<i class="fas fa-chevron-right"></i>`;
+        nextBtn.className = 'px-3 py-2 rounded-md border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed';
+        nextBtn.disabled = totalShown < itemsPerPage;
+        nextBtn.addEventListener('click', async () => {
+          if (nextBtn.disabled) return;
+          currentPage++;
           await renderCataloguePage(currentPage);
           renderPagination();
           window.scrollTo({ top: 0, behavior: 'smooth' });
+        });
+        pager.appendChild(nextBtn);
+      }
+
+      /* ====== Fonctions de Filtre ====== */
+      async function applyFilters() {
+        const type = filterType.value;
+        const min = parseFloat(filterPriceMin.value);
+        const max = parseFloat(filterPriceMax.value);
+        currentFilters = {
+          type: type === 'all' ? null : type,
+          min: isNaN(min) ? null : min,
+          max: isNaN(max) ? null : max
+        };
+        currentPage = 1;
+        pageCursors = [null];
+        await renderCataloguePage(currentPage);
+        renderPagination();
+      }
+
+      async function resetFilters() {
+        filterType.value = 'all';
+        filterPriceMin.value = '';
+        filterPriceMax.value = '';
+        currentFilters = { type: null, min: null, max: null };
+        currentPage = 1;
+        pageCursors = [null];
+        await renderCataloguePage(currentPage);
+        renderPagination();
+      }
+
+      /* ====== Fonctions d'Édition ====== */
+      async function startEditDress(dressId) {
+        try {
+          const dress = await databases.getDocument(DB_ID, COL_DRESSES, dressId);
+          document.getElementById('dress-name').value = dress.name || '';
+          document.getElementById('dress-type').value = dress.type || '';
+          document.getElementById('dress-size').value = dress.size || '';
+          document.getElementById('dress-purchase-date').value = dress.purchaseDate || '';
+          document.getElementById('dress-price').value = dress.price ?? '';
+          document.getElementById('dress-purchase-price').value = dress.purchase_price ?? '';
+          document.getElementById('dress-reference').value = dress.reference || '';
+          addDressForm.dataset.existingImageUrl = dress.imageUrl || '';
+
+          editingDressId = dressId;
+          dressModalTitle.textContent = 'Modifier la robe';
+          formSubmitText.textContent = 'Enregistrer les modifications';
+          formSubmitIcon.className = 'fas fa-save mr-2';
+          cancelEditBtn.classList.remove('hidden');
+
+          openDressModal();
+        } catch (error) {
+          console.error("Erreur lors du chargement de la robe:", error);
+          alert("Impossible de charger les données de la robe.");
+        }
+      }
+
+
+      function cancelEdit() {
+        editingDressId = null;
+        addDressForm.reset();
+        addDressForm.dataset.existingImageUrl = '';
+        dressModalTitle.textContent = 'Ajouter une nouvelle robe';
+        formSubmitText.textContent = 'Ajouter au catalogue';
+        formSubmitIcon.className = 'fas fa-plus mr-2';
+        cancelEditBtn.classList.add('hidden');
+        closeDressModal();
+      }
+
+
+
+
+      async function handleGridClick(e) {
+        const editBtn = e.target.closest('.edit-dress-btn');
+        const viewBtn = e.target.closest('.view-details-btn');
+
+        if (editBtn) {
+          e.preventDefault();
+          const id = editBtn.dataset.id;
+          await startEditDress(id);
+        } else if (viewBtn) {
+          e.preventDefault();
+          const id = viewBtn.dataset.id;
+          openDetailsModal();
+          loadDressDetails(id);
+        }
+      }
+
+      // Nouvelle fonction pour charger les infos et l'historique
+      async function loadDressDetails(dressId) {
+        const user = getCurrentUser();
+        if (!user) return; // Sécurité
+
+        // Mettre l'ID de la robe dans le formulaire d'ajout d'événement
+        eventDressIdInput.value = dressId;
+
+        try {
+          // Lancer les deux requêtes en parallèle
+          const [dress, history] = await Promise.all([
+            // 1. Récupérer les infos de la robe
+            databases.getDocument(DB_ID, COL_DRESSES, dressId),
+
+            // 2. Récupérer l'historique de la robe
+            databases.listDocuments(DB_ID, "dress_events", [ // !! Mettez l'ID de votre collection d'événements
+              Query.equal('userId', [user.$id]),
+              Query.equal('dressId', [dressId]),
+              Query.limit(50),
+              Query.orderDesc('date') // Trier du plus récent au plus ancien
+            ])
+          ]);
+
+          // 3. Afficher les infos de la robe
+          const imageUrl = dress.imageUrl || 'https://placehold.co/400x600/cccccc/ffffff?text=Robe';
+          detailsModalImage.src = imageUrl;
+          detailsModalImageMobile.src = imageUrl;
+          detailsModalName.textContent = dress.name;
+          detailsModalTitle.textContent = `Détails: ${dress.name}`;
+          detailsModalPrice.textContent = dress.price ? DAfmt.format(dress.price) : 'Prix non défini';
+          detailsModalType.textContent = `Type : ${dress.type || 'N/A'}`;
+          detailsModalSize.textContent = `Taille : ${dress.size || 'N/A'}`;
+          detailsModalRef.textContent = `Référence : ${dress.reference || 'N/A'}`;
+          detailsModalNbRes.textContent = `Nombre de réservations : ${dress.nb_reservation || 'N/A'}`;
+
+          // 4. Afficher l'historique
+          historyList.innerHTML = ''; // Vider le placeholder "Chargement..."
+          if (history.documents.length === 0) {
+            historyList.innerHTML = "<p class='text-sm text-gray-500 italic'>Aucun événement pour cette robe.</p>";
+          } else {
+            history.documents.forEach(event => {
+              const eventEl = createEventElement(event);
+              historyList.appendChild(eventEl);
+            });
+          }
+
+        } catch (error) {
+          console.error("Erreur de chargement des détails:", error);
+          // Afficher l'erreur dans le modal
+          detailsModalName.textContent = "Erreur";
+          historyList.innerHTML = `<p class="text-sm text-red-600">Impossible de charger les données : ${error.message}</p>`;
+        }
+      }
+
+      // Nouvelle fonction "helper" pour afficher un événement
+  function createEventElement(event) {
+  const el = document.createElement('div');
+  el.className = "p-3 bg-slate-50 border rounded-lg flex items-center gap-3";
+  
+  let icon = '';
+  let title = event.type; // Par défaut, on affiche le type tel quel
+
+  switch (event.type) {
+    case 'Location':
+      icon = '<i class="fas fa-shopping-bag text-purple-500"></i>';
+      title = 'Location'; // Assure la bonne casse
+      break;
+    case 'Vente':
+      icon = '<i class="fas fa-dollar-sign text-green-600"></i>';
+      title = 'Vente';
+      break;
+    case 'Degraissage':
+      icon = '<i class="fas fa-soap text-blue-500"></i>';
+      title = 'Dégraissage';
+      break;
+    case 'Lavage':
+      icon = '<i class="fas fa-tint text-cyan-500"></i>';
+      title = 'Lavage';
+      break;
+    case 'Retouche':
+      icon = '<i class="fas fa-cut text-orange-500"></i>';
+      title = 'Retouche';
+      break;
+    case 'Réparation':
+      icon = '<i class="fas fa-tools text-yellow-600"></i>';
+      title = 'Réparation';
+      break;
+    case 'Autre':
+      icon = '<i class="fas fa-info-circle text-gray-400"></i>';
+      title = 'Autre';
+      break;
+  }
+
+  el.innerHTML = `
+    <div class="w-8 h-8 grid place-items-center rounded-full bg-white flex-shrink-0">${icon}</div>
+    <div class="flex-grow">
+      <div class="flex justify-between items-center">
+        <span class="font-semibold text-sm">${title}</span>
+        <span class="text-xs text-gray-500">${new Date(event.date).toLocaleDateString('fr-FR')}</span>
+      </div>
+      <p class="text-sm text-gray-600">${event.notes || 'Aucun détail'}</p>
+      ${event.cost ? `<p class="text-xs font-medium text-red-600">Coût: ${DAfmt.format(event.cost)}</p>` : ''}
+    </div>
+  `;
+  return el;
+}
+
+      /* ====== Boot (MIS À JOUR - Suppression du chargement des bookings) ====== */
+      async function main() {
+
+        try {
+          // 1. ON AJOUTE L'APPEL ICI
+          await loadDressTypes();
+
+          // 2. On charge le catalogue
+          await renderCataloguePage(currentPage);
+          renderPagination();
+
+        } catch (err) {
+          console.error("Erreur au chargement initial:", err);
+          grid.innerHTML = `<p class="col-span-full text-center text-red-600 py-10">Erreur: ${err.message}. Vérifiez la console.</p>`;
+        }
+
+        // 3. On attache les événements
+        addDressForm.addEventListener('submit', handleAddOrEditDress);
+        filterApplyBtn.addEventListener('click', applyFilters);
+        filterResetBtn.addEventListener('click', resetFilters);
+        cancelEditBtn.addEventListener('click', cancelEdit);
+        grid.addEventListener('click', handleGridClick);
+      }
+
+
+
+
+
+
+
+      /* ================== Types de robe persistés (Appwrite) ================== */
+      const COL_TYPES = 'dress_types';
+
+      function normLabel(s) {
+        return (s || "").normalize("NFKC").trim().replace(/\s+/g, " ");
+      }
+
+      /* Sélecteurs à alimenter */
+      const selDressType = document.getElementById('dress-type');
+      const selFilterType = document.getElementById('filter-type');
+
+      /* Remplit #dress-type et #filter-type depuis Appwrite */
+      /* Remplit #dress-type et #filter-type depuis Appwrite */
+      async function loadDressTypes() {
+        // 1. Récupérer l'utilisateur
+        const user = getCurrentUser();
+        if (!user) {
+          console.warn("Aucun utilisateur, chargement des types annulé.");
+          return; // Quitter la fonction
+        }
+
+        // ... (votre code pour 'keepAll' est correct) ...
+        const keepAll = selFilterType && selFilterType.querySelector('option[value="all"]');
+        if (selDressType) selDressType.innerHTML = '';
+        if (selFilterType) selFilterType.innerHTML = keepAll ? keepAll.outerHTML : '<option value="all">Tous les types</option>';
+
+
+        // 2. AJOUTER LE FILTRE userId à la requête
+        const typesResp = await databases.listDocuments(DB_ID, COL_TYPES, [
+          Query.equal("userId", [user.$id]), // <-- MODIFIÉ : On ajoute le filtre
+          Query.orderAsc('name'),
+          Query.limit(200)
+        ]);
+
+        // ... (le reste de la fonction est correct) ...
+        const addOption = (selectEl, v) => {
+          const opt = new Option(v, v);
+          selectEl.add(opt);
+        };
+
+        typesResp.documents.forEach(doc => {
+          const name = (doc.name || '').trim();
+          if (!name) return;
+          if (selDressType) addOption(selDressType, name);
+          if (selFilterType && name) addOption(selFilterType, name);
+        });
+      }
+      /* Crée un type en BDD puis rafraîchit les selects et sélectionne le nouveau type */
+      async function createDressType(name) {
+        // 1. Récupérer l'utilisateur
+        const user = getCurrentUser();
+        if (!user) {
+          // Il vaut mieux lancer une erreur qui sera attrapée (catch)
+          // par le formulaire qui appelle cette fonction.
+          throw new Error("Utilisateur non connecté.");
+        }
+
+        const clean = normLabel(name);
+        if (clean.length < 2) throw new Error('Le nom doit comporter au moins 2 caractères.');
+
+        // 2. Vérifier si le type existe DÉJÀ POUR CET UTILISATEUR
+        const existing = await databases.listDocuments(DB_ID, COL_TYPES, [
+          Query.equal('name', clean),
+          Query.equal('userId', [user.$id]) // <-- MODIFIÉ : On ajoute le filtre userId
+        ]);
+
+        if (existing.total > 0) throw new Error('Ce type existe déjà.');
+
+        // 3. Préparer les données et les permissions
+        const data = {
+          name: clean,
+          userId: user.$id // <-- MODIFIÉ : On ajoute le champ userId
+        };
+
+        const permissions = [
+          Permission.read(Role.user(user.$id)),
+          Permission.update(Role.user(user.$id)),
+          Permission.delete(Role.user(user.$id))
+        ];
+
+        // 4. Créer le document avec les données ET les permissions
+        await databases.createDocument(DB_ID, COL_TYPES, ID.unique(), data, permissions);
+
+        // Cette partie est correcte
+        await loadDressTypes();
+        if (selDressType) selDressType.value = clean;
+      }
+
+
+      /* -------- Modal : interactions -------- */
+      const modal = document.getElementById('add-type-modal');
+      const openBtn = document.getElementById('open-add-type');
+      const errorEl = document.getElementById('add-type-error');
+      const formAddType = document.getElementById('add-type-form');
+      const inputNewType = document.getElementById('new-dress-type');
+
+      function openModal() {
+        modal.classList.remove('hidden'); modal.classList.add('flex');
+        setTimeout(() => inputNewType?.focus(), 0);
+      }
+      function closeModal() {
+        modal.classList.add('hidden'); modal.classList.remove('flex');
+        if (formAddType) formAddType.reset();
+        if (errorEl) { errorEl.classList.add('hidden'); errorEl.textContent = ''; }
+      }
+
+      openBtn?.addEventListener('click', openModal);
+      modal?.querySelectorAll('[data-close-modal]').forEach(el => el.addEventListener('click', closeModal));
+      window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) closeModal(); });
+
+      formAddType?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        errorEl.classList.add('hidden'); errorEl.textContent = '';
+        const value = inputNewType.value;
+        try {
+          await createDressType(value);
+          closeModal();
+        } catch (err) {
+          errorEl.textContent = err?.message || 'Une erreur est survenue.';
+          errorEl.classList.remove('hidden');
         }
       });
-      pager.appendChild(prevBtn);
-      const makePageBtn = (n) => {
-        const b = document.createElement('button');
-        b.textContent = n;
-        b.className = (n === currentPage) ?
-          'px-3 py-2 rounded-md border bg-blue-600 text-white font-bold' :
-          'px-3 py-2 rounded-md border bg-white hover:bg-gray-50';
-        b.addEventListener('click', async () => {
-          if (n === currentPage) return;
-          currentPage = n;
-          await renderCataloguePage(currentPage);
-          renderPagination();
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        });
-        return b;
-      };
-      const start = Math.max(1, currentPage - 2);
-      const end = Math.max(currentPage + 2, start + 4);
-      for (let i = start; i <= end; i++) {
-        pager.appendChild(makePageBtn(i));
-      }
-      const nextBtn = document.createElement('button');
-      nextBtn.innerHTML = `<i class="fas fa-chevron-right"></i>`;
-      nextBtn.className = 'px-3 py-2 rounded-md border bg-white hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed';
-      nextBtn.disabled = totalShown < itemsPerPage;
-      nextBtn.addEventListener('click', async () => {
-        if (nextBtn.disabled) return;
-        currentPage++;
-        await renderCataloguePage(currentPage);
-        renderPagination();
-        window.scrollTo({ top: 0, behavior: 'smooth' });
-      });
-      pager.appendChild(nextBtn);
-    }
 
-    /* ====== Fonctions de Filtre (Inchangées) ====== */
-    async function applyFilters() {
-      const type = filterType.value;
-      const min = parseFloat(filterPriceMin.value);
-      const max = parseFloat(filterPriceMax.value);
-      currentFilters = {
-        type: type === 'all' ? null : type,
-        min: isNaN(min) ? null : min,
-        max: isNaN(max) ? null : max
-      };
-      currentPage = 1;
-      pageCursors = [null];
-      await renderCataloguePage(currentPage);
-      renderPagination();
-    }
+      // Événements pour le modal de détails
+      detailsModal?.querySelectorAll('[data-close-details]').forEach(el => el.addEventListener('click', closeDetailsModal));
 
-    async function resetFilters() {
-      filterType.value = 'all';
-      filterPriceMin.value = '';
-      filterPriceMax.value = '';
-      currentFilters = { type: null, min: null, max: null };
-      currentPage = 1;
-      pageCursors = [null];
-      await renderCataloguePage(currentPage);
-      renderPagination();
-    }
+      addEventForm.addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const user = getCurrentUser();
+  if (!user) return;
 
-    /* ====== Fonctions d'Édition ====== */
-    async function startEditDress(dressId) {
-      try {
-        const dress = await databases.getDocument(DB_ID, COL_DRESSES, dressId);
-        document.getElementById('dress-name').value = dress.name || '';
-        document.getElementById('dress-type').value = dress.type || '';
-        document.getElementById('dress-size').value = dress.size || '';
-        document.getElementById('dress-purchase-date').value = dress.purchaseDate || '';
-        document.getElementById('dress-price').value = dress.price ?? '';
-        document.getElementById('dress-purchase-price').value = dress.purchase_price ?? '';
-        document.getElementById('dress-reference').value = dress.reference || '';
-        addDressForm.dataset.existingImageUrl = dress.imageUrl || '';
+  const submitBtn = addEventForm.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  submitBtn.textContent = 'Ajout...';
 
-        editingDressId = dressId;
-        dressModalTitle.textContent = 'Modifier la robe';
-        formSubmitText.textContent = 'Enregistrer les modifications';
-        formSubmitIcon.className = 'fas fa-save mr-2';
-        cancelEditBtn.classList.remove('hidden');
+  const eventData = {
+    userId: user.$id,
+    dressId: eventDressIdInput.value,
+    type: document.getElementById('event-type').value,
+    date: new Date(document.getElementById('event-date').value).toISOString(),
+    notes: document.getElementById('event-notes').value || '',
+    cost: parseFloat(document.getElementById('event-cost').value) || 0,
+  };
 
-        openDressModal();
-      } catch (error) {
-        console.error("Erreur lors du chargement de la robe:", error);
-        alert("Impossible de charger les données de la robe.");
-      }
-    }
+  const permissions = [
+    Permission.read(Role.user(user.$id)),
+    Permission.update(Role.user(user.$id)),
+    Permission.delete(Role.user(user.$id))
+  ];
+
+  try {
+    const newEvent = await databases.createDocument(
+      DB_ID, 
+      "dress_events", // !! Mettez l'ID de votre collection d'événements
+      ID.unique(), 
+      eventData, 
+      permissions
+    );
+
+    // Rafraîchir la liste
+    const eventEl = createEventElement(newEvent);
+    // Insérer au début de la liste
+    historyList.prepend(eventEl); 
+    
+    // Vider le formulaire
+    addEventForm.reset(); 
+    // Remettre la date d'aujourd'hui par défaut
+    document.getElementById('event-date').value = new Date().toISOString().split('T')[0];
 
 
-    function cancelEdit() {
-      editingDressId = null;
-      addDressForm.reset();
-      addDressForm.dataset.existingImageUrl = '';
-      dressModalTitle.textContent = 'Ajouter une nouvelle robe';
-      formSubmitText.textContent = 'Ajouter au catalogue';
-      formSubmitIcon.className = 'fas fa-plus mr-2';
-      cancelEditBtn.classList.add('hidden');
-      closeDressModal();
-    }
-
-
-
-
-    async function handleGridClick(e) {
-      const editBtn = e.target.closest('.edit-dress-btn');
-      if (editBtn) {
-        e.preventDefault();
-        const id = editBtn.dataset.id;
-        await startEditDress(id);
-      }
-    }
-
-
-    /* ====== Boot (MIS À JOUR - Suppression du chargement des bookings) ====== */
- async function main() {
-
-      try {
-        // 1. ON AJOUTE L'APPEL ICI
-        await loadDressTypes(); 
-        
-        // 2. On charge le catalogue
-        await renderCataloguePage(currentPage);
-        renderPagination();
-
-      } catch (err) {
-        console.error("Erreur au chargement initial:", err);
-        grid.innerHTML = `<p class="col-span-full text-center text-red-600 py-10">Erreur: ${err.message}. Vérifiez la console.</p>`;
-      }
-
-      // 3. On attache les événements
-      addDressForm.addEventListener('submit', handleAddOrEditDress);
-      filterApplyBtn.addEventListener('click', applyFilters);
-      filterResetBtn.addEventListener('click', resetFilters);
-      cancelEditBtn.addEventListener('click', cancelEdit);
-      grid.addEventListener('click', handleGridClick);
-    }
-
-
-
-
-
-
-
-    /* ================== Types de robe persistés (Appwrite) ================== */
-    const COL_TYPES = 'dress_types'; 
-
-    function normLabel(s) {
-      return (s || "").normalize("NFKC").trim().replace(/\s+/g, " ");
-    }
-
-    /* Sélecteurs à alimenter */
-    const selDressType = document.getElementById('dress-type');
-    const selFilterType = document.getElementById('filter-type');
-
-    /* Remplit #dress-type et #filter-type depuis Appwrite */
-    async function loadDressTypes() {
-      // on essaie d’abord de garder “Tous les types” si présent
-      const keepAll = selFilterType && selFilterType.querySelector('option[value="all"]');
-      if (selDressType) selDressType.innerHTML = '';
-      if (selFilterType) selFilterType.innerHTML = keepAll ? keepAll.outerHTML : '<option value="valeur="all">Tous les types</option>';
-
-      const typesResp = await databases.listDocuments(DB_ID, COL_TYPES, [
-        Query.orderAsc('name'),
-        Query.limit(200)
-      ]);
-      const addOption = (selectEl, v) => {
-        const opt = new Option(v, v);
-        selectEl.add(opt);
-      };
-
-      typesResp.documents.forEach(doc => {
-        const name = (doc.name || '').trim();
-        if (!name) return;
-        if (selDressType) addOption(selDressType, name);
-        if (selFilterType && name) addOption(selFilterType, name);
-      });
-    }
-
-    /* Crée un type en BDD puis rafraîchit les selects et sélectionne le nouveau type */
-    async function createDressType(name) {
-      const clean = normLabel(name);
-      if (clean.length < 2) throw new Error('Le nom doit comporter au moins 2 caractères.');
-
-      // Vérif côté client (cas-insensitive)
-      const existing = await databases.listDocuments(DB_ID, COL_TYPES, [
-        Query.equal('name', clean)
-      ]);
-      if (existing.total > 0) throw new Error('Ce type existe déjà.');
-
-      await databases.createDocument(DB_ID, COL_TYPES, ID.unique(), { name: clean });
-
-      await loadDressTypes();
-      if (selDressType) selDressType.value = clean;
-    }
-
-    /* -------- Modal : interactions -------- */
-    const modal = document.getElementById('add-type-modal');
-    const openBtn = document.getElementById('open-add-type');
-    const errorEl = document.getElementById('add-type-error');
-    const formAddType = document.getElementById('add-type-form');
-    const inputNewType = document.getElementById('new-dress-type');
-
-    function openModal() {
-      modal.classList.remove('hidden'); modal.classList.add('flex');
-      setTimeout(() => inputNewType?.focus(), 0);
-    }
-    function closeModal() {
-      modal.classList.add('hidden'); modal.classList.remove('flex');
-      if (formAddType) formAddType.reset();
-      if (errorEl) { errorEl.classList.add('hidden'); errorEl.textContent = ''; }
-    }
-
-    openBtn?.addEventListener('click', openModal);
-    modal?.querySelectorAll('[data-close-modal]').forEach(el => el.addEventListener('click', closeModal));
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape' && modal && !modal.classList.contains('hidden')) closeModal(); });
-
-    formAddType?.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      errorEl.classList.add('hidden'); errorEl.textContent = '';
-      const value = inputNewType.value;
-      try {
-        await createDressType(value);
-        closeModal();
-      } catch (err) {
-        errorEl.textContent = err?.message || 'Une erreur est survenue.';
-        errorEl.classList.remove('hidden');
-      }
-    });
-
-  
-
-
-    // Lancement de l'application
-    main();
-
+  } catch (error) {
+    console.error("Erreur ajout événement:", error);
+    alert("Impossible d'ajouter l'événement : " + error.message);
+  } finally {
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fas fa-plus mr-2"></i>Ajouter à l\'historique';
   }
+});
+
+// (Optionnel) Mettre la date du jour par défaut dans le formulaire d'événement
+document.getElementById('event-date').value = new Date().toISOString().split('T')[0];
+
+
+      // Lancement de l'application
+      main();
+
+    }
   </script>
 
 
 
 
+
+
+  <!-- modals -->
+
+  <!-- modal carte de robe -->
+
+<div id="details-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+  <div class="absolute inset-0 bg-black/60" data-close-details></div>
+
+  <div class="relative mx-4 my-8 w-full max-w-5xl rounded-2xl bg-slate-50 shadow-2xl flex flex-col max-h-[90vh]">
+    
+    <div class="flex items-center justify-between border-b p-4 bg-white flex-shrink-0 z-10">
+      <h4 id="details-modal-title" class="text-lg font-semibold">Détails de la robe</h4>
+      <button class="p-2 rounded-full hover:bg-gray-100" title="Fermer" data-close-details>
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <div class="grid grid-cols-1 md:grid-cols-2 h-full overflow-hidden">
+      
+      <div class="h-full bg-white border-r border-slate-200 p-6 hidden md:block">
+        <div class="sticky top-0 flex flex-col items-center justify-center h-full max-h-[75vh]">
+          <img id="details-modal-image" 
+               src="https://placehold.co/600x800/cccccc/ffffff?text=Chargement..." 
+               alt="Photo de la robe" 
+               class="max-w-full max-h-full w-auto h-auto object-contain rounded-lg shadow-lg">
+        </div>
+      </div>
+
+      <div class="w-full h-full overflow-y-auto p-6 space-y-6">
+        
+        <div class="bg-white rounded-xl shadow-md border p-5">
+          <img id="details-modal-image-mobile" 
+               src="https://placehold.co/600x800/cccccc/ffffff?text=Chargement..." 
+               alt="Photo de la robe" 
+               class="w-full h-64 object-cover rounded-lg mb-4 md:hidden">
+
+          <h3 id="details-modal-name" class="text-2xl font-bold text-slate-800">Chargement...</h3>
+          <p id="details-modal-price" class="text-2xl text-zinc-900 font-semibold"></p>
+          <div class="pt-3 mt-3 border-t">
+            <p id="details-modal-type" class="text-sm text-gray-600"></p>
+            <p id="details-modal-size" class="text-sm text-gray-600"></p>
+            <p id="details-modal-ref" class="text-sm text-gray-600"></p>
+            <p id="details-modal-nbres" class="text-sm text-gray-600"></p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md border p-5">
+          <h4 class="font-semibold text-gray-800 mb-4">Historique des événements</h4>
+          <div id="details-modal-history-list" class="space-y-3 max-h-80 overflow-y-auto pr-2">
+            <p id="history-loading-placeholder" class="text-sm text-gray-500 italic">Chargement de l'historique...</p>
+          </div>
+        </div>
+
+        <div class="bg-white rounded-xl shadow-md border p-5">
+          <h4 class="font-semibold text-gray-800 mb-4">Ajouter un événement</h4>
+          <form id="add-event-form" class="space-y-4">
+            <input type="hidden" id="event-dress-id">
+            
+            <div>
+              <label for="event-type" class="block text-xs font-medium text-gray-600 mb-1.5">Type d'événement</label>
+              <select id="event-type" class="w-full p-2.5 border border-gray-300 rounded-lg bg-white text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                <option value="Degraissage">Dégraissage</option>
+                <option value="Lavage">Lavage</option>
+                <option value="Retouche">Retouche</option>
+                <option value="Réparation">Réparation</option>
+                <option value="Autre">Autre</option>
+              </select>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                <label for="event-date" class="block text-xs font-medium text-gray-600 mb-1.5">Date</label>
+                <input type="date" id="event-date" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500" required>
+              </div>
+              <div>
+                <label for="event-cost" class="block text-xs font-medium text-gray-600 mb-1.5">Coût</label>
+                <input type="number" id="event-cost" placeholder="0" class="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+              </div>
+            </div>
+
+            <div>
+              <label for="event-notes" class="block text-xs font-medium text-gray-600 mb-1.5">Notes</label>
+              <textarea id="event-notes" rows="2" placeholder="Ex: Ourlet, tâche..." class="w-full p-2.5 border border-gray-300 rounded-lg text-sm focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+            </div>
+            
+            <button type="submit"
+              class="w-full bg-blue-600 text-white py-2.5 px-4 rounded-lg hover:bg-blue-700 transition-colors text-sm font-semibold">
+              <i class="fas fa-plus mr-2"></i>Ajouter à l'historique
+            </button>
+          </form>
+        </div>
+
+      </div> </div> </div> </div>
 
 
 

@@ -1,5 +1,6 @@
 // contenu de js/auth.js
 
+let currentSessionUser = null;
 /* ====== Configuration Appwrite (Partagée) ====== */
 const ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
 const PROJECT = '690f54f700273a8387b3';
@@ -10,7 +11,7 @@ const BUCKET_DRESSES = '690f683500243ed9d576'; // Ajouté depuis catalogue.html
 const COL_TYPES = 'dress_types'; // Ajouté depuis catalogue.html
 
 /* ====== Init Appwrite (Partagée) ====== */
-const { Client, Databases, ID, Query, Account, Storage, Avatars } = Appwrite;
+const { Client, Databases, ID, Query, Account, Storage, Avatars, Permission, Role } = Appwrite;
 const client = new Client();
 client.setEndpoint(ENDPOINT).setProject(PROJECT);
 
@@ -23,7 +24,7 @@ const avatars = new Avatars(client); // Ajouté pour Dashboard.html
 let IS_LOGGING_OUT = false;
 
 /* ====== Logique du Header (Chargement, Auth, Navigation) ====== */
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
     // 1. Définir le titre spécifique de la page
     const pageTitles = {
         'index.html': 'Calendrier',
@@ -34,11 +35,11 @@ document.addEventListener('DOMContentLoaded', () => {
     const pageTitle = pageTitles[currentPath] || 'Gestion';
 
     // 2. Lancer le chargement du header
-    loadHeaderAndAuth(pageTitle);
+    await loadHeaderAndAuth(pageTitle);
 
     // 3. (Optionnel) Exécuter la fonction d'initialisation spécifique à la page si elle existe
     // Cela permet de garder ton code de page propre.
-    if (typeof initPage === 'function') {
+if (currentSessionUser && typeof initPage === 'function') {
         initPage();
     }
 });
@@ -90,9 +91,12 @@ async function loadHeaderAndAuth(pageTitle) {
 
         // D. Gérer l'authentification (vérification + affichage infos)
         try {
-            const user = await account.get();
-            if (userNameEl) userNameEl.textContent = user.name || user.email;
-            if (userAvatarEl) userAvatarEl.src = avatars.getInitials(user.name || user.email).toString();
+            // ON STOCKE L'UTILISATEUR CONNECTÉ
+            currentSessionUser = await account.get(); 
+            
+            if (userNameEl) userNameEl.textContent = currentSessionUser.name || currentSessionUser.email;
+            if (userAvatarEl) userAvatarEl.src = avatars.getInitials(currentSessionUser.name || currentSessionUser.email).toString();
+        
         } catch (err) {
             // Si on n'est pas sur login.html et qu'on n'est pas en train de se déconnecter
             if (!IS_LOGGING_OUT && currentPath !== 'login.html') {
@@ -104,4 +108,12 @@ async function loadHeaderAndAuth(pageTitle) {
         console.error('Erreur lors du chargement du header:', err);
         headerPlaceholder.innerHTML = '<div class="p-4 text-center text-red-600">Erreur de chargement du header.</div>';
     }
+
+
+
+}
+
+
+function getCurrentUser() {
+    return currentSessionUser;
 }
