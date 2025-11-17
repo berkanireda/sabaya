@@ -48,50 +48,7 @@
 <body class="p-2 md:p-8 bg-gradient-to-br from-slate-50 to-slate-100">
   <div class="max-w-7xl mx-auto">
     <!-- Header -->
-    <header class="bg-white shadow-sm sticky top-0 z-40">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="flex items-center justify-between h-16">
-                <!-- Logo & Title -->
-                <div class="flex items-center gap-3">
-                    <a href="./catalogue.html" class="flex items-center gap-3">
-                        <div class="w-9 h-9 rounded-lg bg-blue-600 text-white grid place-items-center shadow-md">
-                            <i class="fa-solid fa-gem"></i>
-                        </div>
-                        <div>
-                            <p class="text-base font-semibold text-slate-900">Location de Robes</p>
-                            <p class="text-xs text-slate-500 -mt-1">Calendrier</p>
-                        </div>
-                    </a>
-                </div>
-
-                <!-- Navigation & User -->
-                <div class="flex items-center gap-4">
-                    <nav class="hidden md:flex items-center gap-2 text-sm font-medium">
-                        <a href="./catalogue.html"
-                            class="px-3 py-2 rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-                            <i class="fa-solid fa-book-open-reader mr-1.5"></i> Catalogue
-                        </a>
-                        <a href="./index.html"
-                            class="px-3 py-2 rounded-md text-slate-600 hover:bg-slate-100 hover:text-slate-900">
-                            <i class="fa-solid fa-calendar-days mr-1.5"></i> Calendrier
-                        </a>
-                        <a href="./dashboard.html" class="px-3 py-2 rounded-md text-blue-600 bg-blue-50">
-                            <i class="fa-solid fa-chart-line mr-1.5"></i> Dashboard
-                        </a>
-                    </nav>
-                    <div class="w-px h-6 bg-slate-200 hidden md:block"></div>
-                    <div class="relative">
-                        <button id="user-menu-button" class="flex items-center gap-2">
-                            <span id="user-name" class="text-sm font-medium text-slate-700"></span>
-                            <img id="user-avatar" class="w-8 h-8 rounded-full bg-slate-200" alt="Avatar">
-                        </button>
-                    </div>
-                    <button id="logout-btn" title="Se déconnecter" class="text-slate-500 hover:text-red-600">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
+    <header id="header-placeholder" class="bg-white shadow-sm sticky top-0 z-40">
     </header>
 
 
@@ -111,8 +68,7 @@
 
           <div class="relative mb-4">
             <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-            <input type="search" id="reservation-search-input"
-              placeholder="Bon A20, Robe sirène..."
+            <input type="search" id="reservation-search-input" placeholder="Bon A20, Robe sirène..."
               class="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
           </div>
 
@@ -128,40 +84,40 @@
 
 
       <!-- Colonne de droite : Calendrier -->
-<div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
-  <!-- Barre d’actions calendrier -->
-  <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-    <div class="flex items-center gap-3">
-      <button id="prev-month" class="p-2 rounded-full hover:bg-slate-100" aria-label="Mois précédent">
-        <i class="fas fa-chevron-left text-slate-600 text-sm"></i>
-      </button>
-      <h2 id="current-month" class="text-xl font-semibold text-slate-800"></h2>
-      <button id="next-month" class="p-2 rounded-full hover:bg-slate-100" aria-label="Mois suivant">
-        <i class="fas fa-chevron-right text-slate-600 text-sm"></i>
-      </button>
-    </div>
+      <div class="lg:col-span-2 bg-white p-6 rounded-xl shadow-lg">
+        <!-- Barre d’actions calendrier -->
+        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+          <div class="flex items-center gap-3">
+            <button id="prev-month" class="p-2 rounded-full hover:bg-slate-100" aria-label="Mois précédent">
+              <i class="fas fa-chevron-left text-slate-600 text-sm"></i>
+            </button>
+            <h2 id="current-month" class="text-xl font-semibold text-slate-800"></h2>
+            <button id="next-month" class="p-2 rounded-full hover:bg-slate-100" aria-label="Mois suivant">
+              <i class="fas fa-chevron-right text-slate-600 text-sm"></i>
+            </button>
+          </div>
 
-  </div>
+        </div>
 
-  <!-- En-têtes des jours -->
-  <div class="calendar-grid text-[11px] font-medium text-slate-500 mb-1">
-    <div class="text-center py-1.5">Lun</div>
-    <div class="text-center py-1.5">Mar</div>
-    <div class="text-center py-1.5">Mer</div>
-    <div class="text-center py-1.5">Jeu</div>
-    <div class="text-center py-1.5">Ven</div>
-    <div class="text-center py-1.5">Sam</div>
-    <div class="text-center py-1.5">Dim</div>
-  </div>
+        <!-- En-têtes des jours -->
+        <div class="calendar-grid text-[11px] font-medium text-slate-500 mb-1">
+          <div class="text-center py-1.5">Lun</div>
+          <div class="text-center py-1.5">Mar</div>
+          <div class="text-center py-1.5">Mer</div>
+          <div class="text-center py-1.5">Jeu</div>
+          <div class="text-center py-1.5">Ven</div>
+          <div class="text-center py-1.5">Sam</div>
+          <div class="text-center py-1.5">Dim</div>
+        </div>
 
-  <!-- Jours -->
-  <div id="calendar-body" class="calendar-grid"></div>
+        <!-- Jours -->
+        <div id="calendar-body" class="calendar-grid"></div>
 
 
 
-  <!-- Résumé du mois -->
-  <div id="month-summary" class="mt-4 p-3 rounded-lg bg-gray-50 border text-sm text-gray-700 hidden"></div>
-</div>
+        <!-- Résumé du mois -->
+        <div id="month-summary" class="mt-4 p-3 rounded-lg bg-gray-50 border text-sm text-gray-700 hidden"></div>
+      </div>
 
 
 
@@ -330,7 +286,7 @@
                   </label>
                   <input type="number" id="booking-cost" placeholder="0"
                     class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    step="0.01" min="0">
+                    step="1" min="0">
                 </div>
 
                 <div class="hidden sm:flex items-center justify-center pt-6">
@@ -345,7 +301,7 @@
                   </label>
                   <input type="number" id="booking-paid" placeholder="0"
                     class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    step="0.01" min="0">
+                    step="1" min="0">
                 </div>
               </div>
 
@@ -386,7 +342,7 @@
                   </label>
                   <input type="number" id="booking-deposit-amount" placeholder="Ex : 5000"
                     class="w-full px-3 py-2.5 rounded-lg border border-emerald-200 text-sm placeholder-emerald-400 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400"
-                    step="0.01" min="0">
+                    step="1" min="0">
                 </div>
               </div>
             </section>
@@ -470,48 +426,13 @@
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
 
-
+  <script src="./js/auth.js"></script>
   <script>
-    document.addEventListener('DOMContentLoaded', () => {
 
-      // -------- Configuration Appwrite --------
-      const ENDPOINT = 'https://fra.cloud.appwrite.io/v1';
-      const PROJECT = '690f54f700273a8387b3';
-      const DB_ID = '690f560f001394b2c1a6';
-      const COL_DRESSES = 'dresses';
-      const COL_BOOKINGS = 'bookings';
-
-      // -------- Initialisation Appwrite --------
-      const { Client, Databases, ID, Query, Account } = Appwrite;
-      const client = new Client();
-      client.setEndpoint(ENDPOINT).setProject(PROJECT);
-
-      const databases = new Databases(client);
-      const account = new Account(client);
-
-      async function requireAuth() {
-        try {
-          await account.get(); // ok → continuer
-        } catch {
-          window.location.replace('login.html'); // pas connecté → retour login
-        }
-      }
-
-      // Lance le guard immédiatement
-      requireAuth();
+    function initPage() {
 
 
 
-      // se deconnecter 
-
-      document.getElementById('logout')?.addEventListener('click', async () => {
-        IS_LOGGING_OUT = true;
-        // optionnel: masquer l’UI immédiatemment pour éviter tout flicker
-        document.body.style.opacity = '0';
-        try { await account.deleteSession('current'); } catch (_) { }
-        // replace = pas d’historique retour
-        window.location.replace('login.html');
-      });
       // -------- Utils --------
       function fromISODateLocal(iso) {
         if (!iso) return new Date();
@@ -640,7 +561,7 @@
 
           const dayEl = document.createElement('div');
           dayEl.className =
-  "calendar-day border rounded-lg bg-white shadow-sm hover:shadow-md transition-all p-2 flex flex-col cursor-pointer";
+            "calendar-day border rounded-lg bg-white shadow-sm hover:shadow-md transition-all p-2 flex flex-col cursor-pointer";
 
           dayEl.dataset.date = dateStr;
 
@@ -663,7 +584,7 @@
           if (dayBookings.length) {
             const badge = document.createElement('span');
             badge.className =
-  "ml-auto inline-flex items-center justify-center px-2 py-[2px] rounded-full bg-red-500 text-white text-[10px] font-semibold";
+              "ml-auto inline-flex items-center justify-center px-2 py-[2px] rounded-full bg-red-500 text-white text-[10px] font-semibold";
 
             badge.textContent = dayBookings.length;
             headerWrap.appendChild(badge);
@@ -672,7 +593,7 @@
 
           const bookingsContainer = document.createElement('div');
           bookingsContainer.className =
-  "mt-1 text-[11px] space-y-1 overflow-y-auto flex-1 text-slate-700";
+            "mt-1 text-[11px] space-y-1 overflow-y-auto flex-1 text-slate-700";
 
 
           dayBookings.forEach(booking => {
@@ -869,79 +790,145 @@
         if (prevFocusedEl && typeof prevFocusedEl.focus === 'function') prevFocusedEl.focus();
       }
 
-      async function handleBookingSubmit(e) {
-        e.preventDefault();
-        const submitBtn = e.target.querySelector('button[type="submit"]');
-        submitBtn.disabled = true;
-        bookingSubmitText.textContent = editingBookingId ? 'Modification...' : 'Réservation...';
+     async function handleBookingSubmit(e) {
+  e.preventDefault();
 
-        const selectedDressIds = newBookingSelectedDressIds.slice();
-        const clientName = (document.getElementById('client-name').value || '').trim();
+  const user = getCurrentUser();
+  if (!user) {
+    alert("Erreur critique : utilisateur non connecté.");
+    return;
+  }
 
-        if (!clientName) {
-          document.getElementById('client-name').focus();
-          submitBtn.disabled = false;
-          bookingSubmitText.textContent = editingBookingId ? 'Modifier la réservation' : 'Réserver';
-          return;
-        }
+  const submitBtn = e.target.querySelector('button[type="submit"]');
+  submitBtn.disabled = true;
+  bookingSubmitText.textContent = editingBookingId ? 'Modification...' : 'Réservation...';
 
-        dressSelectBox.classList.remove('border-red-500');
+  const selectedDressIds = newBookingSelectedDressIds.slice();
+  const clientName = (document.getElementById('client-name').value || '').trim();
+  const bookingDateISO = new Date(bookingDateInput.value).toISOString();
 
-        const accessoriesCost = bookingAccessories.checked
-          ? document.querySelector('input[name="accessories-cost"]:checked').value
-          : '';
+  if (!clientName) {
+    document.getElementById('client-name').focus();
+    submitBtn.disabled = false;
+    bookingSubmitText.textContent = editingBookingId ? 'Modifier la réservation' : 'Réserver';
+    return;
+  }
 
+  dressSelectBox.classList.remove('border-red-500');
 
-        const hasDeposit = document.querySelector('input[name="booking-deposit"]:checked')?.value === 'oui';
-        const depositAmount = hasDeposit ? Math.max(0, parseFloat(bookingDepositAmount.value) || 0) : 0;
+  const accessoriesCost = bookingAccessories.checked
+    ? document.querySelector('input[name="accessories-cost"]:checked').value
+    : '';
 
+  const hasDeposit = document.querySelector('input[name="booking-deposit"]:checked')?.value === 'oui';
+  const depositAmount = hasDeposit ? Math.max(0, parseFloat(bookingDepositAmount.value) || 0) : 0;
 
-        const appwriteData = {
-          dressIds: selectedDressIds,
-          date: new Date(bookingDateInput.value).toISOString(),
-          clientName: clientName,
-          voucherNumber: (bookingVoucher.value || '').trim(),
-          venue: (bookingVenue.value || '').trim(),
-          remarque: (bookingNotes.value || '').trim(),
-          accessoires: bookingAccessories.checked,
-          accessoiresDetails: bookingAccessories.checked ? (bookingAccessoriesDetails.value || '').trim() : '',
-          accessoiresCost: accessoriesCost,
-          coutTotal: Math.max(0, parseFloat(bookingCost.value) || 0),
-          verse: Math.max(0, parseFloat(bookingPaid.value) || 0),
-          caution: hasDeposit,
-          cautionMontant: depositAmount
+  // Prépare les données pour la réservation
+  const appwriteData = {
+    dressIds: selectedDressIds,
+    date: bookingDateISO,
+    clientName: clientName,
+    voucherNumber: (bookingVoucher.value || '').trim(),
+    venue: (bookingVenue.value || '').trim(),
+    remarque: (bookingNotes.value || '').trim(),
+    accessoires: bookingAccessories.checked,
+    accessoiresDetails: bookingAccessories.checked ? (bookingAccessoriesDetails.value || '').trim() : '',
+    accessoiresCost: accessoriesCost,
+    coutTotal: Math.max(0, parseFloat(bookingCost.value) || 0),
+    verse: Math.max(0, parseFloat(bookingPaid.value) || 0),
+    caution: hasDeposit,
+    cautionMontant: depositAmount,
+    userId: user.$id
+  };
+
+  try {
+    // ## CAS 1 : MODIFICATION D'UNE RÉSERVATION EXISTANTE ##
+    if (editingBookingId) {
+      if (newBookingSelectedDressIds.length === 0) {
+        const originalBooking = bookings.find(b => b.$id === editingBookingId);
+        appwriteData.dressIds = originalBooking.dressIds || [];
+      }
+      const updatedDoc = await databases.updateDocument(DB_ID, COL_BOOKINGS, editingBookingId, appwriteData);
+      const index = bookings.findIndex(b => b.$id === editingBookingId);
+      if (index > -1) {
+        bookings[index] = updatedDoc;
+      }
+      
+      // TODO (Optionnel) : Gérer les événements de location
+      // Si les robes ou la date ont changé, il faudrait mettre à jour les
+      // documents "dress_events" correspondants. C'est plus complexe.
+      // Pour l'instant, on ne fait rien, mais gardez-le en tête.
+
+    // ## CAS 2 : CRÉATION D'UNE NOUVELLE RÉSERVATION ##
+    } else {
+      appwriteData.reservationTimestamp = new Date().toISOString();
+
+      // Prépare les permissions pour la nouvelle réservation
+      const bookingPermissions = [
+        Permission.read(Role.user(user.$id)),
+        Permission.update(Role.user(user.$id)),
+        Permission.delete(Role.user(user.$id))
+      ];
+
+      // Crée le document de réservation
+      const newDoc = await databases.createDocument(
+        DB_ID,
+        COL_BOOKINGS,
+        ID.unique(),
+        appwriteData,
+        bookingPermissions // Ajout des permissions
+      );
+      
+      bookings.push(newDoc);
+
+      // --- AJOUT DE L'ÉVÉNEMENT DANS L'HISTORIQUE ---
+      // Prépare les permissions pour les documents d'événement
+      const eventPermissions = [
+        Permission.read(Role.user(user.$id)),
+        Permission.update(Role.user(user.$id)),
+        Permission.delete(Role.user(user.$id))
+      ];
+      
+      // Crée un événement "Location" pour chaque robe sélectionnée
+      for (const dressId of selectedDressIds) {
+        const eventData = {
+          userId: user.$id,
+          dressId: dressId,
+          date: bookingDateISO,
+          type: 'Location', // <-- Utilise votre type enuméré
+          notes: `Client: ${clientName}` + (appwriteData.voucherNumber ? ` (Bon: ${appwriteData.voucherNumber})` : ''),
+          bookingId: newDoc.$id // Lie l'événement à la réservation
         };
-
+        
+        // On crée l'événement.
+        // On utilise "await" pour s'assurer qu'ils sont créés avant de fermer,
+        // mais on ne gère pas les erreurs ici pour ne pas bloquer l'utilisateur.
+        // (Une meilleure gestion des erreurs pourrait être ajoutée plus tard)
         try {
-          if (editingBookingId) {
-            if (newBookingSelectedDressIds.length === 0) {
-              const originalBooking = bookings.find(b => b.$id === editingBookingId);
-              appwriteData.dressIds = originalBooking.dressIds || [];
-            }
-            const updatedDoc = await databases.updateDocument(DB_ID, COL_BOOKINGS, editingBookingId, appwriteData);
-            const index = bookings.findIndex(b => b.$id === editingBookingId);
-            if (index > -1) {
-              bookings[index] = updatedDoc;
-            }
-          } else {
-            appwriteData.reservationTimestamp = new Date().toISOString();
-            const newDoc = await databases.createDocument(DB_ID, COL_BOOKINGS, ID.unique(), appwriteData);
-            bookings.push(newDoc);
-          }
-
-          closeModal();
-          generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
-          handleSearch({ target: searchInput }); // Rafraîchir la recherche
-          accessoriesDetailsContainer.classList.add('hidden');
-
-        } catch (error) {
-          console.error("Erreur Appwrite:", error);
-          alert("Erreur lors de la sauvegarde: " + error.message);
-        } finally {
-          submitBtn.disabled = false;
+          await databases.createDocument(DB_ID, "dress_events", ID.unique(), eventData, eventPermissions);
+        } catch (eventError) {
+          console.error(`Impossible de créer l'événement pour la robe ${dressId}:`, eventError);
+          // On n'alerte pas l'utilisateur, la réservation a fonctionné.
         }
       }
+      // --- FIN DE L'AJOUT D'ÉVÉNEMENT ---
+    }
 
+    // Réinitialisation de l'interface
+    closeModal();
+    generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+    handleSearch({ target: searchInput }); // Rafraîchir la recherche
+    accessoriesDetailsContainer.classList.add('hidden');
+
+  } catch (error) {
+    console.error("Erreur Appwrite lors de la sauvegarde:", error);
+    alert("Erreur lors de la sauvegarde: " + error.message);
+  } finally {
+    submitBtn.disabled = false;
+    // Remettre le texte initial
+    bookingSubmitText.textContent = editingBookingId ? 'Modifier la réservation' : 'Réserver';
+  }
+}
       function startEditBooking(bookingId) {
         const bookingToEdit = bookings.find(b => b.$id === bookingId);
         if (!bookingToEdit) return;
@@ -1258,12 +1245,22 @@
       // -------- Init (Fonction principale asynchrone) --------
       async function main() {
         if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+
+        // 1. Récupérer l'utilisateur
+        const user = getCurrentUser();
+        if (!user) {
+          if (loadingOverlay) loadingOverlay.classList.add('hidden');
+          console.error("Utilisateur non trouvé, chargement annulé.");
+          return;
+        }
+
+
         try {
 
           // !! On charge TOUJOURS les robes, même si on ne les affiche pas
           const [dressesResponse, bookingsResponse] = await Promise.all([
-            databases.listDocuments(DB_ID, COL_DRESSES, [Query.limit(500)]),
-            databases.listDocuments(DB_ID, COL_BOOKINGS, [Query.limit(5000)])
+            databases.listDocuments(DB_ID, COL_DRESSES, [Query.limit(500), Query.equal("userId", [user.$id])]),
+            databases.listDocuments(DB_ID, COL_BOOKINGS, [Query.limit(5000), Query.equal("userId", [user.$id])])
           ]);
           dresses = dressesResponse.documents;
           bookings = bookingsResponse.documents;
@@ -1285,7 +1282,8 @@
 
       // Lance le chargement
       main();
-    });
+
+    };
   </script>
 
 </body>
