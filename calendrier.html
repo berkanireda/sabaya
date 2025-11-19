@@ -1,0 +1,1372 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Gestionnaire de Location de Robes</title>
+  <link rel="stylesheet" href="./output.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f8fafc;
+    }
+
+    .calendar-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 4px;
+    }
+
+    .calendar-day {
+      min-height: 120px;
+    }
+
+    .modal-hidden {
+      display: none;
+    }
+
+    input[type=number]::-webkit-inner-spin-button,
+    input[type=number]::-webkit-outer-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    input[type=number] {
+      -moz-appearance: textfield;
+    }
+
+    .fa-chevron-down:before {
+      content: "\f078";
+      margin-left: 5px;
+    }
+  </style>
+</head>
+
+
+<body class="bg-slate-50 h-screen w-full flex overflow-hidden">
+
+  <!-- Header -->
+  <aside id="sidebar-placeholder" class="w-64 h-full flex-shrink-0">
+    <div class="h-full bg-white shadow-lg grid place-items-center">
+      <i class="fas fa-spinner fa-spin text-blue-600 text-2xl"></i>
+    </div>
+  </aside>
+
+
+  <div class="flex-1 h-full overflow-y-auto py-8 px-6">
+    <main>
+   <div class="grid grid-cols-1 lg:grid-cols-4 gap-8"> 
+    <!-- Colonne de gauche : Recherche (25%) -->
+    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
+
+      <div>
+        <div class="flex items-center gap-2 mb-4">
+          <div class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+            <i class="fa-solid fa-magnifying-glass"></i>
+          </div>
+          <h2 class="text-lg font-semibold text-slate-800">Rechercher</h2>
+        </div>
+
+        <div class="relative mb-4">
+          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+          <input type="search" id="reservation-search-input" placeholder="Bon A20, Robe sirène..."
+            class="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+        </div>
+
+        <div id="search-results-container" class="space-y-3 max-h-[80vh] overflow-y-auto pr-2"></div>
+      </div>
+
+    </div>
+
+
+    <!-- Colonne de droite : Calendrier (75%) -->
+    <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-lg">
+
+      <!-- Barre d’actions -->
+      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+        <div class="flex items-center gap-3">
+          <button id="prev-month" class="p-2 rounded-full hover:bg-slate-100">
+            <i class="fas fa-chevron-left text-slate-600 text-sm"></i>
+          </button>
+
+          <h2 id="current-month" class="text-xl font-semibold text-slate-800"></h2>
+
+          <button id="next-month" class="p-2 rounded-full hover:bg-slate-100">
+            <i class="fas fa-chevron-right text-slate-600 text-sm"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- En-têtes -->
+      <div class="calendar-grid text-[11px] font-medium text-slate-500 mb-1">
+        <div class="text-center py-1.5">Lun</div>
+        <div class="text-center py-1.5">Mar</div>
+        <div class="text-center py-1.5">Mer</div>
+        <div class="text-center py-1.5">Jeu</div>
+        <div class="text-center py-1.5">Ven</div>
+        <div class="text-center py-1.5">Sam</div>
+        <div class="text-center py-1.5">Dim</div>
+      </div>
+
+      <div id="calendar-body" class="calendar-grid"></div>
+
+      <div id="month-summary" class="mt-4 p-3 rounded-lg bg-gray-50 border text-sm text-gray-700 hidden"></div>
+    </div>
+</div>
+
+    </main>
+  </div>
+
+
+  <!-- Modal -->
+  <!-- Modal -->
+  <div id="booking-modal" class="modal-hidden fixed inset-0 bg-black/50 flex justify-center p-4 z-50 overflow-y-auto"
+    role="dialog" aria-modal="true" aria-labelledby="booking-modal-title">
+    <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-auto border border-slate-200">
+      <!-- En-tête -->
+      <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
+        <div>
+          <h3 id="booking-modal-title" class="text-lg font-semibold text-slate-900">
+            Réservations pour le <span id="modal-date" class="font-bold text-blue-600"></span>
+          </h3>
+          <p class="text-xs text-slate-500 mt-0.5">
+            Gérez les réservations et ajoutez une nouvelle location pour cette date.
+          </p>
+        </div>
+        <button id="close-modal"
+          class="inline-flex items-center justify-center rounded-full p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+          aria-label="Fermer la fenêtre">
+          <i class="fas fa-times text-lg"></i>
+        </button>
+      </div>
+
+      <div class="px-6 py-4 space-y-5">
+        <!-- RÉSERVATIONS EXISTANTES (on laisse le <details> pour ton JS) -->
+        <details id="existing-bookings" class="mb-2 rounded-xl border border-slate-200 bg-slate-50">
+          <summary
+            class="list-none flex w-full items-center justify-between gap-3 px-4 py-2.5 cursor-pointer select-none">
+            <div class="flex items-center gap-2">
+              <span
+                class="inline-flex h-6 w-6 items-center justify-center rounded-full bg-blue-100 text-blue-600 text-xs">
+                <i class="fa-solid fa-calendar-check"></i>
+              </span>
+              <span class="font-semibold text-slate-800">Réservations existantes</span>
+            </div>
+            <i class="fa-solid fa-chevron-down text-slate-400 text-xs"></i>
+          </summary>
+          <div id="existing-bookings-list" class="space-y-2 max-h-40 overflow-y-auto px-4 pb-3 pt-2 text-sm"></div>
+        </details>
+
+        <!-- FORMULAIRE D’AJOUT (sans accordéons) -->
+        <div id="new-booking-section" class="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-4">
+          <div class="flex items-center justify-between mb-3">
+            <div>
+              <h4 class="font-semibold text-slate-800 text-sm sm:text-base">
+                Ajouter une nouvelle réservation
+              </h4>
+              <p class="text-xs text-slate-500">
+                Renseigne les infos client, les robes choisies et le paiement.
+              </p>
+            </div>
+            <span
+              class="inline-flex items-center gap-1 rounded-full bg-emerald-100 px-3 py-1 text-[11px] font-medium text-emerald-700">
+              <i class="fa-solid fa-circle-plus text-[10px]"></i> Nouvelle réservation
+            </span>
+          </div>
+
+          <form id="add-booking-form" class="space-y-5">
+            <input type="hidden" id="booking-date">
+
+            <!-- Bloc Sélection de robes -->
+            <section class="bg-white rounded-xl border border-slate-200 px-4 py-3.5 space-y-3 shadow-sm">
+              <div class="flex items-center justify-between gap-2">
+                <div class="flex items-center gap-2">
+                  <div
+                    class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600 text-sm">
+                    <i class="fa-solid fa-hanger"></i>
+                  </div>
+                  <div>
+                    <h5 class="text-sm font-semibold text-slate-800">Sélection de robes</h5>
+                    <p class="text-xs text-slate-500">Tu peux sélectionner plusieurs robes pour cette réservation.</p>
+                  </div>
+                </div>
+              </div>
+
+              <div id="dress-select-container" class="relative z-20" aria-expanded="false"
+                aria-controls="dress-options-dropdown">
+                <div id="dress-select-box"
+                  class="relative flex flex-wrap gap-1 items-center w-full px-3 py-2.5 border border-slate-200 rounded-lg bg-white cursor-text min-h-[44px] text-sm focus-within:ring-2 focus-within:ring-blue-500 focus-within:border-blue-500 transition">
+                  <span id="dress-select-placeholder" class="text-slate-400 flex-grow text-xs sm:text-sm">
+                    Rechercher et sélectionner des robes...
+                  </span>
+                  <input type="text" id="dress-search-input"
+                    class="flex-grow outline-none text-xs sm:text-sm py-1 bg-transparent"
+                    style="min-width:120px; display:none;" aria-label="Rechercher une robe">
+                  <div class="absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none">
+                    <i class="fas fa-chevron-down text-slate-400 text-xs"></i>
+                  </div>
+                </div>
+                <div id="dress-options-dropdown"
+                  class="absolute z-10 w-full mt-1 bg-white border border-slate-200 rounded-lg shadow-lg max-h-40 overflow-y-auto text-sm hidden"
+                  tabindex="-1">
+                </div>
+              </div>
+            </section>
+
+            <!-- Bloc Infos client -->
+            <section class="bg-white rounded-xl border border-slate-200 px-4 py-3.5 space-y-3 shadow-sm">
+              <div class="flex items-center gap-2">
+                <div
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-purple-50 text-purple-600 text-sm">
+                  <i class="fa-solid fa-user"></i>
+                </div>
+                <div>
+                  <h5 class="text-sm font-semibold text-slate-800">Infos client</h5>
+                  <p class="text-xs text-slate-500">Qui loue la robe ? Où se déroule l’évènement ?</p>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <div>
+                  <label for="client-name" class="block text-xs font-medium text-slate-600 mb-1.5">
+                    Nom du client <span class="text-red-500">*</span>
+                  </label>
+                  <input type="text" id="client-name" placeholder="Ex : Yasmine Benali"
+                    class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    required>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                  <div>
+                    <label for="booking-voucher" class="block text-xs font-medium text-slate-600 mb-1.5">
+                      N° du bon
+                    </label>
+                    <input type="text" id="booking-voucher" placeholder="Ex : B-2025-014"
+                      class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  </div>
+
+                  <div>
+                    <label for="booking-venue" class="block text-xs font-medium text-slate-600 mb-1.5">
+                      Lieu de l’évènement
+                    </label>
+                    <input type="text" id="booking-venue" placeholder="Ex : Salle El Bahia"
+                      class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+                  </div>
+                </div>
+              </div>
+            </section>
+
+            <!-- Bloc Paiement -->
+            <!-- Bloc Paiement -->
+            <section class="bg-white rounded-xl border border-slate-200 px-4 py-3.5 space-y-3 shadow-sm">
+              <div class="flex items-center gap-2">
+                <div
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-emerald-50 text-emerald-600 text-sm">
+                  <i class="fa-solid fa-money-bill-wave"></i>
+                </div>
+                <div>
+                  <h5 class="text-sm font-semibold text-slate-800">Paiement</h5>
+                  <p class="text-xs text-slate-500">
+                    Saisis le coût, ce qui est versé, la caution éventuelle et laisse le reste se calculer.
+                  </p>
+                </div>
+              </div>
+
+              <!-- Coût & versé -->
+              <div class="flex flex-col sm:flex-row sm:items-center gap-3">
+                <div class="flex-1">
+                  <label for="booking-cost" class="block text-xs font-medium text-slate-600 mb-1.5">
+                    Coût total (DA)
+                  </label>
+                  <input type="number" id="booking-cost" placeholder="0"
+                    class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    step="1" min="0">
+                </div>
+
+                <div class="hidden sm:flex items-center justify-center pt-6">
+                  <span class="text-slate-400 text-lg">
+                    <i class="fa-solid fa-arrow-right-long"></i>
+                  </span>
+                </div>
+
+                <div class="flex-1">
+                  <label for="booking-paid" class="block text-xs font-medium text-slate-600 mb-1.5">
+                    Versé (DA)
+                  </label>
+                  <input type="number" id="booking-paid" placeholder="0"
+                    class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                    step="1" min="0">
+                </div>
+              </div>
+
+              <!-- Reste -->
+              <div>
+                <label for="booking-remaining" class="block text-xs font-medium text-slate-600 mb-1.5">
+                  Reste à payer
+                </label>
+                <input type="text" id="booking-remaining" placeholder="Reste"
+                  class="w-full px-3 py-2.5 rounded-lg border border-slate-100 bg-slate-50 text-sm text-slate-700"
+                  readonly>
+              </div>
+
+              <!-- Caution -->
+              <div class="mt-3 border-t pt-3 space-y-3">
+                <div class="flex items-center justify-between gap-2">
+                  <p class="text-xs font-medium text-slate-700">
+                    Caution
+                  </p>
+                  <div class="flex items-center gap-4 text-xs">
+                    <label class="inline-flex items-center gap-1.5">
+                      <input type="radio" name="booking-deposit" id="booking-deposit-no" value="non"
+                        class="h-3.5 w-3.5 text-emerald-500 border-slate-300" checked>
+                      <span>Non</span>
+                    </label>
+                    <label class="inline-flex items-center gap-1.5">
+                      <input type="radio" name="booking-deposit" id="booking-deposit-yes" value="oui"
+                        class="h-3.5 w-3.5 text-emerald-500 border-slate-300">
+                      <span>Oui</span>
+                    </label>
+                  </div>
+                </div>
+
+                <div id="deposit-amount-container"
+                  class="hidden rounded-lg border border-emerald-100 bg-emerald-50 px-3 py-3 space-y-1.5">
+                  <label for="booking-deposit-amount" class="block text-xs font-medium text-emerald-800">
+                    Montant de la caution (DA)
+                  </label>
+                  <input type="number" id="booking-deposit-amount" placeholder="Ex : 5000"
+                    class="w-full px-3 py-2.5 rounded-lg border border-emerald-200 text-sm placeholder-emerald-400 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400"
+                    step="1" min="0">
+                </div>
+              </div>
+            </section>
+
+
+            <!-- Bloc Accessoires & Remarques -->
+            <section class="bg-white rounded-xl border border-slate-200 px-4 py-3.5 space-y-3 shadow-sm">
+              <div class="flex items-center gap-2">
+                <div
+                  class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-amber-50 text-amber-500 text-sm">
+                  <i class="fa-solid fa-gem"></i>
+                </div>
+                <div>
+                  <h5 class="text-sm font-semibold text-slate-800">Accessoires & remarques</h5>
+                  <p class="text-xs text-slate-500">Précise les accessoires inclus et les remarques importantes.</p>
+                </div>
+              </div>
+
+              <div class="space-y-3">
+                <label class="inline-flex items-center gap-2 text-sm font-medium text-slate-700">
+                  <input type="checkbox" id="booking-accessories"
+                    class="h-4 w-4 text-blue-600 border-slate-300 rounded focus:ring-blue-500">
+                  <span>Accessoires inclus ?</span>
+                </label>
+
+                <div id="accessories-details-container"
+                  class="mb-1 hidden px-4 py-3 rounded-lg border border-amber-100 bg-amber-50 space-y-3">
+                  <div>
+                    <label for="booking-accessories-details" class="block text-xs font-medium text-amber-800 mb-1.5">
+                      Détails des accessoires
+                    </label>
+                    <input type="text" id="booking-accessories-details"
+                      placeholder="Ex : sac, collier, bijoux cheveux..."
+                      class="w-full px-3 py-2.5 rounded-lg border border-amber-200 text-sm placeholder-amber-400 focus:ring-2 focus:ring-amber-400 focus:border-amber-400">
+                  </div>
+
+                  <div>
+                    <p class="block text-xs font-medium text-amber-800 mb-1.5">
+                      Coût des accessoires
+                    </p>
+                    <div class="flex flex-wrap gap-4 text-xs">
+                      <label class="inline-flex items-center gap-2">
+                        <input type="radio" name="accessories-cost" id="accessories-free" value="gratuit"
+                          class="h-3.5 w-3.5 text-amber-500 border-amber-200" checked>
+                        <span>Gratuit</span>
+                      </label>
+                      <label class="inline-flex items-center gap-2">
+                        <input type="radio" name="accessories-cost" id="accessories-paid" value="payant"
+                          class="h-3.5 w-3.5 text-amber-500 border-amber-200">
+                        <span>Payant</span>
+                      </label>
+                    </div>
+                  </div>
+                </div>
+
+                <div>
+                  <label for="booking-notes" class="block text-xs font-medium text-slate-600 mb-1.5">
+                    Remarques
+                  </label>
+                  <textarea id="booking-notes" rows="2"
+                    placeholder="Ex : retouches, heure de retour, demandes spéciales..."
+                    class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"></textarea>
+                </div>
+              </div>
+            </section>
+
+            <!-- Bouton submit -->
+            <button type="submit"
+              class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-2.5 rounded-xl text-sm font-semibold shadow-md hover:from-emerald-600 hover:to-emerald-700 hover:shadow-lg active:scale-[0.99] transition">
+              <i class="fas fa-check text-sm"></i>
+              <span id="booking-submit-text">Réserver</span>
+            </button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+
+
+
+  <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
+
+  <script src="./js/auth.js"></script>
+  <script>
+
+    function initPage() {
+
+
+
+      // -------- Utils --------
+
+      function getStatusClass(status) {
+        switch (status) {
+          case 'En attente': return 'bg-slate-400 text-slate-50 border-blue-200';
+          case 'Retiré': return 'bg-blue-100 text-blue-700 border-blue-200';
+          case 'Rendu': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+          case 'Annulé': return 'bg-red-100 text-red-700 border-red-200';
+          default: return 'bg-slate-100 text-slate-700 border-slate-200'; // en attente
+        }
+      }
+
+
+      function fromISODateLocal(iso) {
+        if (!iso) return new Date();
+        const [y, m, d] = iso.split('T')[0].split('-').map(Number);
+        return new Date(y, m - 1, d);
+      }
+      const DAfmt = new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 2 });
+
+      // -------- State (chargé depuis Appwrite) --------
+      let currentDate = new Date();
+      // !! IMPORTANT: On garde 'dresses' pour la recherche et les modales
+      let dresses = [];
+      let bookings = [];
+
+      // 'selectedDressId' a été supprimé
+      let newBookingSelectedDressIds = [];
+      let editingBookingId = null;
+
+      // -------- DOM refs --------
+      const calendarBody = document.getElementById('calendar-body');
+      const currentMonthEl = document.getElementById('current-month');
+      // 'dressListEl' et 'showAllBtn' ont été supprimés
+      const monthSummary = document.getElementById('month-summary');
+      const modal = document.getElementById('booking-modal');
+      const closeModalBtn = document.getElementById('close-modal');
+      const modalDateEl = document.getElementById('modal-date');
+      const bookingDateInput = document.getElementById('booking-date');
+      const addBookingForm = document.getElementById('add-booking-form');
+      const existingBookingsList = document.getElementById('existing-bookings-list');
+      const newBookingSection = document.getElementById('new-booking-section');
+      const bookingNotes = document.getElementById('booking-notes');
+      const bookingAccessories = document.getElementById('booking-accessories');
+      const accessoriesDetailsContainer = document.getElementById('accessories-details-container');
+      const bookingAccessoriesDetails = document.getElementById('booking-accessories-details');
+      const bookingCost = document.getElementById('booking-cost');
+      const bookingPaid = document.getElementById('booking-paid');
+      const bookingRemaining = document.getElementById('booking-remaining');
+      const bookingDepositYes = document.getElementById('booking-deposit-yes');
+      const bookingDepositNo = document.getElementById('booking-deposit-no');
+      const bookingDepositAmount = document.getElementById('booking-deposit-amount');
+      const depositAmountContainer = document.getElementById('deposit-amount-container');
+
+      const bookingVoucher = document.getElementById('booking-voucher');
+      const bookingVenue = document.getElementById('booking-venue');
+      const dressSelectContainer = document.getElementById('dress-select-container');
+      const dressSelectBox = document.getElementById('dress-select-box');
+      const dressSelectPlaceholder = document.getElementById('dress-select-placeholder');
+      const dressSearchInput = document.getElementById('dress-search-input');
+      const dressOptionsDropdown = document.getElementById('dress-options-dropdown');
+      const bookingSubmitText = document.getElementById('booking-submit-text');
+
+      const importInput = document.getElementById('import-input');
+      const loadingOverlay = document.getElementById('loading-overlay');
+
+      // -------- DOM REFS POUR LA RECHERCHE (Conservés) --------
+      const searchInput = document.getElementById('reservation-search-input');
+      const searchResultsContainer = document.getElementById('search-results-container');
+
+      // -------- Helpers UI --------
+      function calculateRemaining() {
+        const cost = Math.max(0, parseFloat(bookingCost.value) || 0);
+        const paid = Math.max(0, parseFloat(bookingPaid.value) || 0);
+        const remaining = cost - paid;
+        const abs = Math.abs(remaining);
+        bookingRemaining.value = `${DAfmt.format(abs)}${remaining < 0 ? ' (trop-perçu)' : ''}`;
+      }
+
+      async function renderMonthSummary(year, month) {
+        const ym = `${year}-${String(month + 1).padStart(2, '0')}`;
+        let count = 0, encaisse = 0, reste = 0;
+        bookings.forEach(b => {
+          const bookingDate = b.date.split('T')[0];
+          if (bookingDate.startsWith(ym)) {
+            count += 1;
+            const cost = parseFloat(b.coutTotal) || 0;
+            const paid = parseFloat(b.verse) || 0;
+            encaisse += paid;
+            reste += Math.max(0, cost - paid);
+          }
+        });
+        let user;
+        try {
+          user = await account.get();
+        } catch {
+          console.warn("Aucun utilisateur connecté");
+        }
+
+        // ✅ Vérifie si c’est l’utilisateur autorisé
+        const ADMIN_EMAIL = "rbekani@gmail.com"; // <-- mets ton email Appwrite ici
+
+        if (user && user.email === ADMIN_EMAIL) {
+          // Affiche le résumé uniquement pour cet utilisateur
+          monthSummary.classList.remove('hidden');
+          monthSummary.innerHTML = `
+      <div class="flex flex-wrap gap-4">
+        <div><span class="font-semibold">Réservations :</span> ${count}</div>
+        <div><span class="font-semibold">Encaissé :</span> ${DAfmt.format(encaisse)}</div>
+        <div><span class="font-semibold">Reste à encaisser :</span> ${DAfmt.format(reste)}</div>
+      </div>
+    `;
+        } else {
+          // Masque la section pour les autres
+          monthSummary.classList.add('hidden');
+          monthSummary.innerHTML = '';
+        }
+      }
+
+      // -------- Calendrier --------
+      function generateCalendar(year, month) {
+        currentMonthEl.textContent = new Date(year, month, 1)
+          .toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
+
+        const firstDay = new Date(year, month, 1).getDay();
+        const daysInMonth = new Date(year, month + 1, 0).getDate();
+        const offset = (firstDay === 0) ? 6 : firstDay - 1;
+
+        const frag = document.createDocumentFragment();
+        for (let i = 0; i < offset; i++) frag.appendChild(document.createElement('div'));
+
+        const today = new Date();
+        today.setHours(0, 0, 0, 0);
+
+        for (let day = 1; day <= daysInMonth; day++) {
+          const dateStr = `${year}-${String(month + 1).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+          const dayBookings = bookings.filter(b => b.date.startsWith(dateStr));
+
+          const dayEl = document.createElement('div');
+          dayEl.className =
+            "calendar-day border rounded-lg bg-white shadow-sm hover:shadow-md transition-all p-2 flex flex-col cursor-pointer";
+
+          dayEl.dataset.date = dateStr;
+
+          const thisDate = new Date(year, month, day);
+          thisDate.setHours(0, 0, 0, 0);
+          const isPast = thisDate < today;
+          const isToday = thisDate.getTime() === today.getTime();
+
+          const numberSpan = document.createElement('span');
+          numberSpan.className = 'font-semibold';
+          if (isToday) {
+            numberSpan.className += ' bg-blue-600 text-white rounded-full w-7 h-7 inline-flex items-center justify-center';
+          }
+          numberSpan.textContent = String(day);
+
+          const headerWrap = document.createElement('div');
+          headerWrap.className = 'flex items-center gap-2';
+          headerWrap.appendChild(numberSpan);
+
+          if (dayBookings.length) {
+            const badge = document.createElement('span');
+            badge.className =
+              "ml-auto inline-flex items-center justify-center px-2 py-[2px] rounded-full bg-red-500 text-white text-[10px] font-semibold";
+
+            badge.textContent = dayBookings.length;
+            headerWrap.appendChild(badge);
+          }
+          dayEl.appendChild(headerWrap);
+
+          const bookingsContainer = document.createElement('div');
+          bookingsContainer.className =
+            "mt-1 text-[11px] space-y-1 overflow-y-auto flex-1 text-slate-700";
+
+
+          dayBookings.forEach(booking => {
+            const bookingEl = document.createElement('div');
+            bookingEl.className = 'p-1 bg-blue-100 text-blue-800 rounded-md truncate';
+            let labelText = booking.clientName || 'Réservation';
+            if (booking.voucherNumber) labelText = `[${booking.voucherNumber}] ${labelText}`;
+            bookingEl.textContent = labelText;
+
+            // La logique de filtrage 'if (selectedDressId)' a été supprimée
+
+            bookingsContainer.appendChild(bookingEl);
+          });
+
+          if (isPast && !isToday) dayEl.classList.add('opacity-70');
+          dayEl.appendChild(bookingsContainer);
+          frag.appendChild(dayEl);
+        }
+        calendarBody.innerHTML = '';
+        calendarBody.appendChild(frag);
+        renderMonthSummary(year, month);
+      }
+
+
+      // -------- Modal & Réservations --------
+      let prevFocusedEl = null;
+
+      function openModal(date) {
+        editingBookingId = null;
+        prevFocusedEl = document.activeElement;
+        modal.classList.remove('modal-hidden');
+        bookingDateInput.value = date;
+        modalDateEl.textContent = fromISODateLocal(date).toLocaleDateString('fr-FR', { weekday: 'long', day: 'numeric', month: 'long' });
+
+        // Reset form
+        bookingSubmitText.textContent = 'Réserver';
+        addBookingForm.reset();
+        newBookingSelectedDressIds = [];
+        bookingDepositNo.checked = true;
+        bookingDepositYes.checked = false;
+        depositAmountContainer.classList.add('hidden');
+        bookingDepositAmount.value = '';
+        dressOptionsDropdown.classList.add('hidden');
+        dressOptionsDropdown.innerHTML = '';
+        dressSearchInput.value = '';
+        dressSearchInput.style.display = 'none';
+        [...dressSelectBox.querySelectorAll('span[data-id]')].forEach(b => b.remove());
+        dressSelectPlaceholder.classList.remove('hidden');
+        dressSelectBox.classList.remove('border-red-500');
+        accessoriesDetailsContainer.classList.add('hidden');
+        bookingAccessories.checked = false;
+        document.getElementById('accessories-free').checked = true;
+        calculateRemaining();
+
+        const bookingsForDay = bookings
+          .filter(b => b.date.startsWith(date))
+          .sort((a, b) => (a.reservationTimestamp || '').localeCompare(b.reservationTimestamp || ''));
+
+        const existingBookingsBox = document.getElementById('existing-bookings');
+        existingBookingsList.innerHTML = '';
+
+        if (bookingsForDay.length > 0) {
+          existingBookingsBox.open = true;
+          const frag = document.createDocumentFragment();
+          bookingsForDay.forEach(booking => {
+            // !! On utilise toujours 'dresses' ici
+            const bookedDresses = dresses.filter(d => Array.isArray(booking.dressIds) && booking.dressIds.includes(d.$id));
+            const dressNames = bookedDresses.map(d => d.name).join(', ') || 'Robe(s) supprimée(s)';
+            const wrap = document.createElement('div');
+            wrap.className = 'bg-gray-100 p-2 rounded';
+            const cost = parseFloat(booking.coutTotal) || 0;
+            const paid = parseFloat(booking.verse) || 0;
+            const remaining = cost - paid;
+            const remainingClass = remaining > 0 ? 'text-red-600 font-semibold' : 'text-green-600';
+            let accessoriesHtml = '';
+            if (booking.accessoires) {
+              let text = `Accessoires: ${booking.accessoiresDetails || 'Oui'}`;
+              if (booking.accessoiresCost === 'payant') text += ' <span class="font-semibold text-red-600">(Payant)</span>';
+              else if (booking.accessoiresCost === 'gratuit') text += ' <span class="text-green-600">(Gratuit)</span>';
+              accessoriesHtml = `<div class="text-xs text-blue-700 pl-6">${text}</div>`;
+            }
+            let notesHtml = booking.remarque ? `<div class="text-xs text-gray-600 pl-6 italic">Note: ${booking.remarque}</div>` : '';
+            let timestampHtml = '';
+            if (booking.reservationTimestamp) {
+              const d = new Date(booking.reservationTimestamp);
+              const formatted = d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
+              timestampHtml = `<div class="text-xs text-gray-500 pl-6 mt-1 italic">Réservé le: ${formatted}</div>`;
+            }
+
+            const currentStatus = booking.status || 'En attente';
+            const statusClass = getStatusClass(currentStatus);
+
+
+wrap.innerHTML = `
+            <div class="flex justify-between items-start gap-3">
+              <div class="flex-grow">
+                
+                <div class="flex flex-wrap justify-between items-start gap-2 mb-1">
+                    <span class="text-sm text-slate-800">
+                        <i class="fas fa-tshirt text-slate-400 mr-1.5"></i>
+                        <strong>${dressNames}</strong> - ${booking.clientName}
+                    </span>
+
+                    <select class="booking-status-select text-[11px] font-bold py-1 px-2 rounded-md border cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors ${statusClass}" 
+                            data-booking-id="${booking.$id}">
+                        <option value="en attente" ${currentStatus === 'en attente' ? 'selected' : ''}>En attente</option>
+                        <option value="retiré" ${currentStatus === 'retiré' ? 'selected' : ''}>Retiré</option>
+                        <option value="rendu" ${currentStatus === 'rendu' ? 'selected' : ''}>Rendu</option>
+                        <option value="annulé" ${currentStatus === 'annulé' ? 'selected' : ''}>Annulé</option>
+                    </select>
+                </div>
+
+                ${booking.voucherNumber ? `<div class="text-xs text-gray-600 pl-6">Bon N°: <strong>${booking.voucherNumber}</strong></div>` : ''}
+                ${booking.venue ? `<div class="text-xs text-gray-600 pl-6">Lieu: ${booking.venue}</div>` : ''}
+                ${accessoriesHtml}
+                ${notesHtml}
+                
+                ${(cost > 0 || paid > 0) ? `
+                  <div class="text-xs text-gray-700 pl-6 mt-1 border-t border-slate-200 pt-1">
+                    Coût: ${DAfmt.format(cost)} | Versé: ${DAfmt.format(paid)} | <strong class="${remainingClass}">Reste: ${DAfmt.format(Math.max(0, remaining))}</strong>
+                  </div>
+                  ${booking.caution ? `<div class="text-[11px] text-amber-700 pl-6 mt-1 border-t border-slate-200 pt-1 flex items-center gap-1">
+                    <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Caution : <strong>${booking.cautionMontant || 0} DA</strong>
+                  </div>` : ''}
+                </div>` : ''}
+
+                ${timestampHtml}
+              </div>
+
+ <div class="flex items-center gap-2 mt-2">
+
+  <button 
+    class="edit-booking-btn h-8 w-8 flex items-center justify-center 
+           rounded-full bg-white/70 backdrop-blur-sm 
+           border border-slate-300/50 shadow-sm 
+           text-blue-600 hover:bg-blue-50/60 transition-all duration-200"
+    data-booking-id="${booking.$id}">
+    <i class="fas fa-pen text-[13px]"></i>
+  </button>
+
+  <button 
+    class="delete-booking-btn h-8 w-8 flex items-center justify-center 
+           rounded-full bg-white/70 backdrop-blur-sm 
+           border border-slate-300/50 shadow-sm 
+           text-red-500 hover:bg-red-50/60 transition-all duration-200"
+    data-booking-id="${booking.$id}">
+    <i class="fas fa-trash text-[13px]"></i>
+  </button>
+
+</div>
+
+            </div>
+          `;
+            frag.appendChild(wrap);
+          });
+          existingBookingsList.appendChild(frag);
+        } else {
+          existingBookingsList.innerHTML = '<p class="text-gray-500 italic">Aucune réservation pour ce jour.</p>';
+        }
+
+        // !! On utilise toujours 'dresses' ici
+        const bookedDressIds = bookingsForDay.flatMap(b => (Array.isArray(b.dressIds) ? b.dressIds : []));
+        const availableDresses = dresses.filter(d => !bookedDressIds.includes(d.$id));
+        dressOptionsDropdown.innerHTML = '';
+
+        newBookingSection.style.display = 'block';
+
+        if (availableDresses.length > 0) {
+          const frag = document.createDocumentFragment();
+          availableDresses.forEach(d => {
+            const optionEl = document.createElement('label');
+            optionEl.className = 'flex items-center p-2 hover:bg-gray-100 rounded cursor-pointer';
+
+            optionEl.dataset.name = (d.name || '').toLowerCase();
+
+            const size = d.size || "-";
+            const price = (typeof d.price === "number" && !isNaN(d.price))
+              ? `${d.price} DA`
+              : "—";
+
+            optionEl.innerHTML = `
+      <input
+        type="checkbox"
+        name="dress-selection"
+        value="${d.$id}"
+        class="h-4 w-4 text-blue-600 border-gray-300 rounded focus:ring-blue-500"
+      >
+
+      <div class="ml-2 flex flex-col leading-tight">
+        <span class="text-sm font-medium text-slate-800">
+          ${d.name || 'Robe sans nom'}
+        </span>
+
+        <span class="text-xs text-slate-500">
+          Taille : ${size} • ${price}
+        </span>
+      </div>
+    `;
+            frag.appendChild(optionEl);
+          });
+          dressOptionsDropdown.appendChild(frag);
+        } else {
+
+
+
+          dressOptionsDropdown.innerHTML = '<p class="text-sm text-gray-500 italic p-2">Aucune robe disponible pour ce jour.</p>';
+        }
+
+        const onKeydown = (e) => {
+          if (e.key === 'Escape') closeModal();
+          if (e.key === 'Tab') {
+            const focusableElements = modal.querySelectorAll('button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])');
+            const firstElement = focusableElements[0];
+            const lastElement = focusableElements[focusableElements.length - 1];
+            if (e.shiftKey) {
+              if (document.activeElement === firstElement) { lastElement.focus(); e.preventDefault(); }
+            } else {
+              if (document.activeElement === lastElement) { firstElement.focus(); e.preventDefault(); }
+            }
+          }
+        };
+        modal.addEventListener('keydown', onKeydown);
+      }
+
+      function closeModal() {
+        modal.classList.add('modal-hidden');
+        if (prevFocusedEl && typeof prevFocusedEl.focus === 'function') prevFocusedEl.focus();
+      }
+
+      async function handleBookingSubmit(e) {
+        e.preventDefault();
+
+        const user = getCurrentUser();
+        if (!user) {
+          alert("Erreur critique : utilisateur non connecté.");
+          return;
+        }
+
+        const submitBtn = e.target.querySelector('button[type="submit"]');
+        submitBtn.disabled = true;
+        bookingSubmitText.textContent = editingBookingId ? 'Modification...' : 'Réservation...';
+
+        const selectedDressIds = newBookingSelectedDressIds.slice();
+        const clientName = (document.getElementById('client-name').value || '').trim();
+        const bookingDateISO = new Date(bookingDateInput.value).toISOString();
+
+        if (!clientName) {
+          document.getElementById('client-name').focus();
+          submitBtn.disabled = false;
+          bookingSubmitText.textContent = editingBookingId ? 'Modifier la réservation' : 'Réserver';
+          return;
+        }
+
+        dressSelectBox.classList.remove('border-red-500');
+
+        const accessoriesCost = bookingAccessories.checked
+          ? document.querySelector('input[name="accessories-cost"]:checked').value
+          : '';
+
+        const hasDeposit = document.querySelector('input[name="booking-deposit"]:checked')?.value === 'oui';
+        const depositAmount = hasDeposit ? Math.max(0, parseFloat(bookingDepositAmount.value) || 0) : 0;
+
+        // Prépare les données pour la réservation
+        const appwriteData = {
+          dressIds: selectedDressIds,
+          date: bookingDateISO,
+          clientName: clientName,
+          voucherNumber: (bookingVoucher.value || '').trim(),
+          venue: (bookingVenue.value || '').trim(),
+          remarque: (bookingNotes.value || '').trim(),
+          accessoires: bookingAccessories.checked,
+          accessoiresDetails: bookingAccessories.checked ? (bookingAccessoriesDetails.value || '').trim() : '',
+          accessoiresCost: accessoriesCost,
+          coutTotal: Math.max(0, parseFloat(bookingCost.value) || 0),
+          verse: Math.max(0, parseFloat(bookingPaid.value) || 0),
+          caution: hasDeposit,
+          cautionMontant: depositAmount,
+          userId: user.$id
+        };
+
+        try {
+          // ## CAS 1 : MODIFICATION D'UNE RÉSERVATION EXISTANTE ##
+          if (editingBookingId) {
+            if (newBookingSelectedDressIds.length === 0) {
+              const originalBooking = bookings.find(b => b.$id === editingBookingId);
+              appwriteData.dressIds = originalBooking.dressIds || [];
+            }
+            const updatedDoc = await databases.updateDocument(DB_ID, COL_BOOKINGS, editingBookingId, appwriteData);
+            const index = bookings.findIndex(b => b.$id === editingBookingId);
+            if (index > -1) {
+              bookings[index] = updatedDoc;
+            }
+
+            // TODO (Optionnel) : Gérer les événements de location
+            // Si les robes ou la date ont changé, il faudrait mettre à jour les
+            // documents "dress_events" correspondants. C'est plus complexe.
+            // Pour l'instant, on ne fait rien, mais gardez-le en tête.
+
+            // ## CAS 2 : CRÉATION D'UNE NOUVELLE RÉSERVATION ##
+          } else {
+            appwriteData.reservationTimestamp = new Date().toISOString();
+
+            // Prépare les permissions pour la nouvelle réservation
+            const bookingPermissions = [
+              Permission.read(Role.user(user.$id)),
+              Permission.update(Role.user(user.$id)),
+              Permission.delete(Role.user(user.$id))
+            ];
+
+            // Crée le document de réservation
+            const newDoc = await databases.createDocument(
+              DB_ID,
+              COL_BOOKINGS,
+              ID.unique(),
+              appwriteData,
+              bookingPermissions // Ajout des permissions
+            );
+
+            bookings.push(newDoc);
+
+            // --- AJOUT DE L'ÉVÉNEMENT DANS L'HISTORIQUE ---
+            // Prépare les permissions pour les documents d'événement
+            const eventPermissions = [
+              Permission.read(Role.user(user.$id)),
+              Permission.update(Role.user(user.$id)),
+              Permission.delete(Role.user(user.$id))
+            ];
+
+            // Crée un événement "Location" pour chaque robe sélectionnée
+            for (const dressId of selectedDressIds) {
+              const eventData = {
+                userId: user.$id,
+                dressId: dressId,
+                date: bookingDateISO,
+                type: 'Location', // <-- Utilise votre type enuméré
+                notes: `Client: ${clientName}` + (appwriteData.voucherNumber ? ` (Bon: ${appwriteData.voucherNumber})` : ''),
+                bookingId: newDoc.$id // Lie l'événement à la réservation
+              };
+
+              // On crée l'événement.
+              // On utilise "await" pour s'assurer qu'ils sont créés avant de fermer,
+              // mais on ne gère pas les erreurs ici pour ne pas bloquer l'utilisateur.
+              // (Une meilleure gestion des erreurs pourrait être ajoutée plus tard)
+              try {
+                await databases.createDocument(DB_ID, "dress_events", ID.unique(), eventData, eventPermissions);
+              } catch (eventError) {
+                console.error(`Impossible de créer l'événement pour la robe ${dressId}:`, eventError);
+                // On n'alerte pas l'utilisateur, la réservation a fonctionné.
+              }
+            }
+            // --- FIN DE L'AJOUT D'ÉVÉNEMENT ---
+          }
+
+          // Réinitialisation de l'interface
+          closeModal();
+          generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+          handleSearch({ target: searchInput }); // Rafraîchir la recherche
+          accessoriesDetailsContainer.classList.add('hidden');
+
+        } catch (error) {
+          console.error("Erreur Appwrite lors de la sauvegarde:", error);
+          alert("Erreur lors de la sauvegarde: " + error.message);
+        } finally {
+          submitBtn.disabled = false;
+          // Remettre le texte initial
+          bookingSubmitText.textContent = editingBookingId ? 'Modifier la réservation' : 'Réserver';
+        }
+      }
+      function startEditBooking(bookingId) {
+        const bookingToEdit = bookings.find(b => b.$id === bookingId);
+        if (!bookingToEdit) return;
+
+        editingBookingId = bookingId;
+
+        document.getElementById('client-name').value = bookingToEdit.clientName || '';
+        bookingVoucher.value = bookingToEdit.voucherNumber || '';
+        bookingVenue.value = bookingToEdit.venue || '';
+        bookingCost.value = bookingToEdit.coutTotal || '';
+        bookingPaid.value = bookingToEdit.verse || '';
+        bookingNotes.value = bookingToEdit.remarque || '';
+
+        bookingAccessories.checked = bookingToEdit.accessoires || false;
+        if (bookingAccessories.checked) {
+          accessoriesDetailsContainer.classList.remove('hidden');
+          bookingAccessoriesDetails.value = bookingToEdit.accessoiresDetails || '';
+          if (bookingToEdit.accessoiresCost === 'payant') {
+            document.getElementById('accessories-paid').checked = true;
+          } else {
+            document.getElementById('accessories-free').checked = true;
+          }
+        } else {
+          accessoriesDetailsContainer.classList.add('hidden');
+        }
+
+        newBookingSelectedDressIds = [...(bookingToEdit.dressIds || [])];
+        [...dressSelectBox.querySelectorAll('span[data-id]')].forEach(b => b.remove());
+
+        newBookingSelectedDressIds.forEach(id => {
+          // !! On utilise toujours 'dresses' ici
+          const dress = dresses.find(d => d.$id === id);
+          if (dress) {
+            const badge = document.createElement('span');
+            badge.className = 'bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5';
+            badge.dataset.id = id;
+            badge.innerHTML = `${dress.name} <button type="button" class="remove-dress-badge font-bold text-blue-600 hover:text-blue-800" data-id="${id}">&times;</button>`;
+            dressSelectBox.insertBefore(badge, dressSearchInput);
+          }
+        });
+        if (newBookingSelectedDressIds.length > 0) dressSelectPlaceholder.classList.add('hidden');
+
+        calculateRemaining();
+        // Caution
+        const hasDeposit = !!bookingToEdit.caution;
+        const depositValue = typeof bookingToEdit.cautionMontant === 'number'
+          ? bookingToEdit.cautionMontant
+          : 0;
+
+        if (hasDeposit) {
+          bookingDepositYes.checked = true;
+          bookingDepositNo.checked = false;
+          depositAmountContainer.classList.remove('hidden');
+          bookingDepositAmount.value = depositValue || '';
+        } else {
+          bookingDepositNo.checked = true;
+          bookingDepositYes.checked = false;
+          depositAmountContainer.classList.add('hidden');
+          bookingDepositAmount.value = '';
+        }
+        bookingSubmitText.textContent = 'Modifier la réservation';
+        newBookingSection.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        document.getElementById('client-name').focus();
+        document.getElementById('existing-bookings').open = false;
+      }
+
+      // -------- FONCTIONS DE RECHERCHE (Conservées) --------
+      function handleSearch(e) {
+        const term = e.target.value.toLowerCase().trim();
+
+        if (term.length < 2) {
+          searchResultsContainer.innerHTML = '';
+          return;
+        }
+
+        const matches = bookings.filter(booking => {
+          if (booking.clientName.toLowerCase().includes(term)) return true;
+          if (booking.voucherNumber && booking.voucherNumber.toLowerCase().includes(term)) return true;
+          if (Array.isArray(booking.dressIds)) {
+            // !! On utilise toujours 'dresses' ici
+            return booking.dressIds.some(dressId => {
+              const dress = dresses.find(d => d.$id === dressId);
+              return dress && dress.name.toLowerCase().includes(term);
+            });
+          }
+          return false;
+        });
+
+        matches.sort((a, b) => new Date(b.date) - new Date(a.date));
+        renderSearchResults(matches);
+      }
+
+      function renderSearchResults(matches) {
+        if (matches.length === 0) {
+          searchResultsContainer.innerHTML = '<p class="text-gray-500 italic px-2">Aucun résultat trouvé.</p>';
+          return;
+        }
+
+        const frag = document.createDocumentFragment();
+        matches.forEach(booking => {
+          // !! On utilise toujours 'dresses' ici
+          const bookedDresses = dresses.filter(d => Array.isArray(booking.dressIds) && booking.dressIds.includes(d.$id));
+          const dressNames = bookedDresses.map(d => d.name).join(', ') || 'Aucune robe';
+          const bookingDate = fromISODateLocal(booking.date).toLocaleDateString('fr-FR', { day: '2-digit', month: '2-digit', year: 'numeric' });
+
+          const wrap = document.createElement('div');
+          wrap.className = 'bg-gray-50 p-3 rounded-lg border border-gray-200';
+          wrap.innerHTML = `
+          <div class="flex justify-between items-start">
+            <div class="flex-grow min-w-0">
+              <span class="font-semibold text-blue-800">${bookingDate}</span>
+              <div class="text-sm font-medium truncate" title="${booking.clientName}">${booking.clientName}</div>
+              <div class="text-xs text-gray-600 truncate" title="${dressNames}">${dressNames}</div>
+              ${booking.voucherNumber ? `<div class="text-xs text-gray-500">Bon N°: <strong>${booking.voucherNumber}</strong></div>` : ''}
+            </div>
+            <button class="edit-booking-btn text-blue-500 hover:text-blue-700 p-1 ml-2 flex-shrink-0" data-booking-id="${booking.$id}" aria-label="Modifier">
+              <i class="fas fa-pencil-alt"></i>
+            </button>
+            <button class="delete-booking-btn text-red-500 hover:text-red-700 p-1 ml-2 flex-shrink-0" data-booking-id="${booking.$id}" aria-label="Supprimer">
+              <i class="fas fa-trash-alt"></i>
+            </button>
+          </div>
+        `;
+          frag.appendChild(wrap);
+        });
+        searchResultsContainer.innerHTML = '';
+        searchResultsContainer.appendChild(frag);
+      }
+
+      async function handleBookingActionClick(e) {
+        const deleteBtn = e.target.closest('.delete-booking-btn');
+        const editBtn = e.target.closest('.edit-booking-btn');
+
+        if (editBtn) {
+          const bookingIdToEdit = editBtn.dataset.bookingId;
+          const bookingToEdit = bookings.find(b => b.$id === bookingIdToEdit);
+          if (!bookingToEdit) return;
+
+          openModal(bookingToEdit.date.split('T')[0]);
+          startEditBooking(bookingIdToEdit);
+        }
+        else if (deleteBtn) {
+          const bookingIdToDelete = deleteBtn.dataset.bookingId;
+          const bookingToDelete = bookings.find(b => b.$id === bookingIdToDelete);
+          if (!bookingToDelete) return;
+
+          const dateStr = fromISODateLocal(bookingToDelete.date).toLocaleDateString('fr-FR');
+          const ok = confirm(`Supprimer la réservation de ${bookingToDelete.clientName} du ${dateStr} ?`);
+          if (!ok) return;
+
+          try {
+            await databases.deleteDocument(DB_ID, COL_BOOKINGS, bookingIdToDelete);
+            bookings = bookings.filter(b => b.$id !== bookingIdToDelete);
+
+            generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+            handleSearch({ target: searchInput }); // Rafraîchir la liste de recherche
+
+            const dateCourte = bookingToDelete.date.split('T')[0];
+            if (!modal.classList.contains('modal-hidden') && bookingDateInput.value === dateCourte) {
+              openModal(dateCourte);
+            }
+          } catch (error) {
+            console.error("Erreur lors de la suppression:", error);
+            alert("Erreur: " + error.message);
+          }
+        }
+      }
+
+      // -------- Events --------
+      document.getElementById('prev-month').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() - 1);
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      });
+      document.getElementById('next-month').addEventListener('click', () => {
+        currentDate.setMonth(currentDate.getMonth() + 1);
+        generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+      });
+      modal.addEventListener('click', (e) => {
+        if (e.target === modal || e.target.closest('#close-modal')) closeModal();
+      });
+
+      addBookingForm.addEventListener('submit', handleBookingSubmit);
+      bookingAccessories.addEventListener('change', () => {
+        if (bookingAccessories.checked) accessoriesDetailsContainer.classList.remove('hidden');
+        else { accessoriesDetailsContainer.classList.add('hidden'); bookingAccessoriesDetails.value = ''; }
+      });
+
+      bookingCost.addEventListener('input', calculateRemaining);
+      bookingPaid.addEventListener('input', calculateRemaining);
+
+      calendarBody.addEventListener('click', (e) => {
+        const dayEl = e.target.closest('.calendar-day');
+        if (dayEl && dayEl.dataset.date) openModal(dayEl.dataset.date);
+      });
+
+      // Les écouteurs pour 'dressListEl' et 'showAllBtn' ont été supprimés
+
+      // --- Gestionnaire de changement de statut ---
+      existingBookingsList.addEventListener('change', async (e) => {
+        if (e.target.classList.contains('booking-status-select')) {
+          const selectEl = e.target;
+          const bookingId = selectEl.dataset.bookingId;
+          const newStatus = selectEl.value;
+
+          // 1. Mise à jour visuelle immédiate (couleur)
+          // On retire toutes les anciennes classes de couleur et on met la nouvelle
+          selectEl.className = `booking-status-select text-[11px] font-bold py-1 px-2 rounded-md border cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors ${getStatusClass(newStatus)}`;
+
+          // 2. Désactiver temporairement pour éviter le spam
+          selectEl.disabled = true;
+
+          try {
+            // 3. Sauvegarde dans Appwrite
+            await databases.updateDocument(DB_ID, COL_BOOKINGS, bookingId, {
+              status: newStatus
+            });
+
+            // 4. Mettre à jour l'état local (pour que le calendrier reste cohérent sans recharger)
+            const localBooking = bookings.find(b => b.$id === bookingId);
+            if (localBooking) {
+              localBooking.status = newStatus;
+            }
+            
+            console.log(`Statut mis à jour : ${newStatus}`);
+
+          } catch (error) {
+            console.error("Erreur mise à jour statut:", error);
+            alert("Impossible de changer le statut (vérifiez votre connexion).");
+            // En cas d'erreur, on pourrait recharger la liste, mais ici on laisse l'utilisateur réessayer
+          } finally {
+            selectEl.disabled = false;
+          }
+        }
+      });
+
+
+      existingBookingsList.addEventListener('click', handleBookingActionClick);
+      searchResultsContainer.addEventListener('click', handleBookingActionClick);
+      searchInput.addEventListener('input', handleSearch);
+
+      // --- Sélecteur multi-robes ---
+      dressSelectBox.addEventListener('click', (e) => {
+        if (e.target.classList.contains('remove-dress-badge')) {
+          e.stopPropagation();
+          const id = e.target.dataset.id;
+          newBookingSelectedDressIds = newBookingSelectedDressIds.filter(x => x !== id);
+          e.target.parentElement.remove();
+          const checkbox = dressOptionsDropdown.querySelector(`input[value="${id}"]`);
+          if (checkbox) checkbox.checked = false;
+          if (newBookingSelectedDressIds.length === 0) {
+            dressSelectPlaceholder.classList.remove('hidden');
+            dressSearchInput.style.display = 'none';
+          }
+        } else if (e.target.id === 'dress-search-input') {
+          e.stopPropagation();
+          dressOptionsDropdown.classList.remove('hidden');
+          dressSelectContainer.setAttribute('aria-expanded', 'true');
+        } else {
+          dressOptionsDropdown.classList.remove('hidden');
+          dressSelectContainer.setAttribute('aria-expanded', 'true');
+          dressSelectPlaceholder.classList.add('hidden');
+          dressSearchInput.style.display = 'block';
+          dressSearchInput.focus();
+        }
+      });
+
+      dressSearchInput.addEventListener('keyup', () => {
+        const filter = dressSearchInput.value.toLowerCase();
+        dressOptionsDropdown.querySelectorAll('label').forEach(option => {
+          const name = option.dataset.name || '';
+          option.style.display = name.includes(filter) ? 'flex' : 'none';
+        });
+      });
+
+      dressOptionsDropdown.addEventListener('change', (e) => {
+        if (e.target.type === 'checkbox') {
+          const id = e.target.value;
+          const dress = dresses.find(d => d.$id === id);
+          const name = dress?.name || 'Robe';
+
+          if (e.target.checked) {
+            if (!newBookingSelectedDressIds.includes(id)) newBookingSelectedDressIds.push(id);
+            const badge = document.createElement('span');
+            badge.className = 'bg-blue-100 text-blue-800 text-xs font-medium px-2.5 py-0.5 rounded-full flex items-center gap-1.5';
+            badge.dataset.id = id;
+            badge.innerHTML = `${name} <button type="button" class="remove-dress-badge font-bold text-blue-600 hover:text-blue-800" data-id="${id}">&times;</button>`;
+            dressSelectBox.insertBefore(badge, dressSearchInput);
+          } else {
+            newBookingSelectedDressIds = newBookingSelectedDressIds.filter(x => x !== id);
+            const badge = dressSelectBox.querySelector(`span[data-id="${id}"]`);
+            if (badge) badge.remove();
+          }
+
+          if (newBookingSelectedDressIds.length > 0) {
+            dressSelectPlaceholder.classList.add('hidden');
+            dressSearchInput.style.display = 'block';
+          } else {
+            dressSelectPlaceholder.classList.remove('hidden');
+            dressSearchInput.style.display = 'none';
+          }
+
+          // 💰 Calcul automatique du coût total à partir des robes sélectionnées
+          let totalPrice = 0;
+          newBookingSelectedDressIds.forEach(dressId => {
+            const d = dresses.find(dr => dr.$id === dressId);
+            if (d && typeof d.price !== 'undefined') {
+              const p = parseFloat(d.price);
+              if (!isNaN(p)) totalPrice += p;
+            }
+          });
+
+          // On pré-remplit si le champ est vide/0 OU si on est en création (pas en édition)
+          if (!bookingCost.value || Number(bookingCost.value) === 0 || !editingBookingId) {
+            bookingCost.value = totalPrice > 0 ? totalPrice : '';
+            calculateRemaining(); // met à jour le "Reste"
+          }
+
+          dressSearchInput.focus();
+        }
+      });
+
+
+      document.addEventListener('click', (e) => {
+        if (!dressSelectContainer.contains(e.target)) {
+          dressOptionsDropdown.classList.add('hidden');
+          dressSelectContainer.setAttribute('aria-expanded', 'false');
+        }
+      });
+      dressOptionsDropdown.addEventListener('keydown', (e) => {
+        if (e.key === 'Tab') {
+          dressOptionsDropdown.classList.add('hidden');
+          dressSelectContainer.setAttribute('aria-expanded', 'false');
+        }
+      });
+
+      // Caution : affichage / masquage du champ montant
+      document.querySelectorAll('input[name="booking-deposit"]').forEach(radio => {
+        radio.addEventListener('change', () => {
+          const hasDeposit = document.querySelector('input[name="booking-deposit"]:checked')?.value === 'oui';
+          if (hasDeposit) {
+            depositAmountContainer.classList.remove('hidden');
+          } else {
+            depositAmountContainer.classList.add('hidden');
+            bookingDepositAmount.value = '';
+          }
+        });
+      });
+
+
+
+
+
+      // -------- Init (Fonction principale asynchrone) --------
+      async function main() {
+        if (loadingOverlay) loadingOverlay.classList.remove('hidden');
+
+        // 1. Récupérer l'utilisateur
+        const user = getCurrentUser();
+        if (!user) {
+          if (loadingOverlay) loadingOverlay.classList.add('hidden');
+          console.error("Utilisateur non trouvé, chargement annulé.");
+          return;
+        }
+
+
+        try {
+
+          // !! On charge TOUJOURS les robes, même si on ne les affiche pas
+          const [dressesResponse, bookingsResponse] = await Promise.all([
+            databases.listDocuments(DB_ID, COL_DRESSES, [Query.limit(500), Query.equal("userId", [user.$id])]),
+            databases.listDocuments(DB_ID, COL_BOOKINGS, [Query.limit(5000), Query.equal("userId", [user.$id])])
+          ]);
+          dresses = dressesResponse.documents;
+          bookings = bookingsResponse.documents;
+
+          // renderDresses() a été supprimé
+          generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
+        } catch (error) {
+          console.error("Impossible de charger les données Appwrite:", error);
+          document.body.innerHTML = `<div class="p-4 m-4 rounded-lg bg-red-100 text-red-800 border border-red-300">
+            <h3 class="font-bold">Erreur critique</h3>
+            <p>Impossible de charger les données depuis Appwrite.</p>
+            <p class="text-sm mt-2">Détails: ${error.message}</p>
+            <p class="text-sm mt-2">Vérifie ta configuration et les permissions de tes collections.</pre>
+        </div>`;
+        } finally {
+          if (loadingOverlay) loadingOverlay.classList.add('hidden');
+        }
+      }
+
+      // Lance le chargement
+      main();
+
+    };
+  </script>
+
+</body>
+
+</html>

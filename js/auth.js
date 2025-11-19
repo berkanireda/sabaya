@@ -49,7 +49,7 @@ if (currentSessionUser && typeof initPage === 'function') {
  * @param {string} pageTitle - Le sous-titre à afficher dans le header
  */
 async function loadHeaderAndAuth(pageTitle) {
-    const headerPlaceholder = document.getElementById('header-placeholder');
+    const headerPlaceholder = document.getElementById('sidebar-placeholder');
     if (!headerPlaceholder) return;
 
     try {

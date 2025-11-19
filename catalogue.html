@@ -26,209 +26,243 @@
 
 
 
-<body class="p-4 md:p-8 text-gray-800">
+<body class="bg-slate-50 h-screen  w-full flex overflow-hidden">
 
   <!-- Header -->
-  <header id="header-placeholder" class="bg-white shadow-sm sticky top-0 z-40">
-  </header>
-
-
-
-
-  <main>
-    <div class="max-w-7xl mx-auto">
-      <!-- Cartes d'actions -->
-      <section id="action-cards" class="max-w-7xl mx-auto mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <!-- Carte : Ajouter un type de robe -->
-        <button id="open-add-type"
-          class="group relative overflow-hidden rounded-2xl border bg-white shadow-lg p-5 text-left hover:shadow-xl transition">
-          <div class="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-blue-50 group-hover:scale-125 transition">
-          </div>
-          <div class="relative z-10 flex items-center gap-4">
-            <div class="grid h-12 w-12 place-items-center rounded-xl bg-blue-100 text-blue-700">
-              <i class="fa-solid fa-tags text-xl"></i>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Catalogue</p>
-              <h3 class="text-lg font-semibold">Ajouter un type de robe</h3>
-            </div>
-          </div>
-          <p class="relative z-10 mt-3 text-sm text-gray-600">Crée un nouveau type de robes.</p>
-        </button>
-
-        <!-- Carte : Ajouter une nouvelle robe -->
-        <button id="open-add-dress"
-          class="group relative overflow-hidden rounded-2xl border bg-white shadow-lg p-5 text-left hover:shadow-xl transition">
-          <div
-            class="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-emerald-100 group-hover:scale-125 transition">
-          </div>
-          <div class="relative z-10 flex items-center gap-4">
-            <div class="grid h-12 w-12 place-items-center rounded-xl bg-emerald-100 text-emerald-700">
-              <i class="fa-solid fa-circle-plus text-xl"></i>
-            </div>
-            <div>
-              <p class="text-sm text-gray-500">Catalogue</p>
-              <h3 class="text-lg font-semibold">Ajouter une nouvelle robe</h3>
-            </div>
-          </div>
-          <p class="relative z-10 mt-3 text-sm text-gray-600">Ouvre un formulaire dans une fenêtre modale.</p>
-        </button>
-      </section>
-
-
-
-
-
-      <!-- Modal : Ajouter / Modifier une robe -->
-      <div id="add-dress-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
-        <div class="absolute inset-0 bg-black/40" data-close-dress></div>
-
-        <div class="relative mx-4 w-full max-w-3xl rounded-2xl bg-white shadow-2xl">
-          <div class="flex items-center justify-between border-b p-4">
-            <h4 id="dress-modal-title" class="text-lg font-semibold">Ajouter une nouvelle robe</h4>
-            <button class="p-2 rounded-md hover:bg-gray-100" title="Fermer" data-close-dress>
-              <i class="fa-solid fa-xmark"></i>
-            </button>
-          </div>
-
-          <form id="add-dress-form" class="p-6 grid md:grid-cols-2 gap-x-6 gap-y-4">
-            <div>
-              <label for="dress-name" class="block text-sm font-medium text-gray-600 mb-1">Nom de la robe</label>
-              <input type="text" id="dress-name" placeholder="Ex: Robe de Soirée Rouge"
-                class="w-full p-2 border rounded-md" required>
-            </div>
-            <div>
-              <label for="dress-type" class="block text-sm font-medium text-gray-600 mb-1">Type</label>
-              <select id="dress-type" class="w-full p-2 border rounded-md bg-white"></select>
-            </div>
-            <div>
-              <label for="dress-size" class="block text-sm font-medium text-gray-600 mb-1">Taille</label>
-              <input type="text" id="dress-size" placeholder="Ex: 38, M, Standard" class="w-full p-2 border rounded-md">
-            </div>
-            <div>
-              <label for="dress-purchase-date" class="block text-sm font-medium text-gray-600 mb-1">Date d'achat</label>
-              <input type="date" id="dress-purchase-date" class="w-full p-2 border rounded-md">
-            </div>
-            <div>
-              <label for="dress-price" class="block text-sm font-medium text-gray-600 mb-1">Prix location</label>
-              <input type="number" id="dress-price" placeholder="Ex: 15000" class="w-full p-2 border rounded-md"
-                step="1" min="0">
-            </div>
-
-            <div>
-              <label for="dress-purchase-price" class="block text-sm font-medium text-gray-600 mb-1">Prix
-                d'achat</label>
-              <input type="number" id="dress-purchase-price" placeholder="Ex: 15000"
-                class="w-full p-2 border rounded-md" step="1" min="0">
-            </div>
-
-            <div>
-              <label for="dress-reference" class="block text-sm font-medium text-gray-600 mb-1">Référence de la
-                robe</label>
-              <input type="text" id="dress-reference" placeholder="Ex: RSR-001" class="w-full p-2 border rounded-md">
-            </div>
-            <div class="md:col-span-2">
-              <label for="dress-image" class="block text-sm font-medium text-gray-600 mb-1">Photo (laisser vide pour ne
-                pas changer)</label>
-              <input type="file" id="dress-image"
-                class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
-                accept="image/*">
-            </div>
-
-            <div class="md:col-span-2 mt-2 flex gap-4">
-              <button type="submit"
-                class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
-                <i id="form-submit-icon" class="fas fa-plus mr-2"></i>
-                <span id="form-submit-text">Ajouter au catalogue</span>
-              </button>
-              <button type="button" id="cancel-edit-btn"
-                class="hidden border border-gray-300 bg-white text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition-colors"
-                data-close-dress>Annuler</button>
-            </div>
-          </form>
-        </div>
-      </div>
-
-
-
-
-
-
-
-
- <div id="filter-controls"
-        class="mb-8 p-6 bg-white rounded-xl shadow-lg border">
-        
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
-          
-          <div>
-            <label for="filter-type" class="block text-sm font-medium text-gray-600 mb-1">Type de robe</label>
-            <select id="filter-type" class="w-full p-2 border border-gray-300 rounded-md bg-white">
-              <option value="all">Tous les types</option>
-            </select>
-          </div>
-          
-          <div>
-            <label for="filter-size" class="block text-sm font-medium text-gray-600 mb-1">Taille</label>
-            <input type="text" id="filter-size" placeholder="Ex: 38, M..." class="w-full p-2 border border-gray-300 rounded-md">
-          </div>
-
-          <div>
-            <label for="client-date-filter" class="block text-sm font-medium text-gray-600 mb-1">Date de disponibilité</label>
-            <input type="date" id="client-date-filter" class="w-full p-2 border border-gray-300 rounded-md">
-          </div>
-
-          <div>
-            <label for="filter-price-min" class="block text-sm font-medium text-gray-600 mb-1">Prix Min (DA)</label>
-            <input type="number" id="filter-price-min" placeholder="5000" class="w-full p-2 border border-gray-300 rounded-md">
-          </div>
-
-          <div>
-            <label for="filter-price-max" class="block text-sm font-medium text-gray-600 mb-1">Prix Max (DA)</label>
-            <input type="number" id="filter-price-max" placeholder="20000" class="w-full p-2 border border-gray-300 rounded-md">
-          </div>
-
-          <div class="flex gap-2">
-            <button id="filter-apply-btn"
-              class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
-              <i class="fas fa-filter mr-2"></i>Filtrer
-            </button>
-            <button id="filter-reset-btn" title="Réinitialiser"
-              class="p-2 border bg-gray-100 text-gray-600 rounded-md hover:bg-gray-200 transition-colors">
-              <i class="fas fa-undo"></i>
-            </button>
-          </div>
-        </div>
-        
-        <div class="md:col-span-4 mt-6 pt-4 border-t">
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div class="md:col-span-2">
-                    <label for="generated-link-display" class="block text-sm font-medium text-gray-600 mb-1">Lien pour le client</label>
-                    <input type="text" id="generated-link-display" placeholder="Remplissez les filtres et cliquez sur 'Générer'..." readonly
-                           class="w-full p-2 border border-gray-200 bg-gray-50 rounded-md text-sm text-gray-500">
-                </div>
-                <div class="self-end">
-                    <button id="generate-link-btn"
-                        class="w-full bg-emerald-600 text-white py-2 px-4 rounded-md hover:bg-emerald-700 transition-colors">
-                        <i class="fas fa-link mr-2"></i>Générer le lien
-                    </button>
-                </div>
-            </div>
-        </div>
-      </div>
-
-
-
-
-
-
-      <div id="catalogue-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
-      </div>
-      <div id="pagination-controls" class="flex justify-center items-center gap-2 mt-8">
-      </div>
+  <aside id="sidebar-placeholder" class="w-64 h-full flex-shrink-0">
+    <div class="h-full bg-white shadow-lg grid place-items-center">
+      <i class="fas fa-spinner fa-spin text-blue-600 text-2xl"></i>
     </div>
-  </main>
+  </aside>
 
+
+
+  <div class="flex-1 h-full overflow-y-auto py-8 px-6">
+    <main>
+      <div class="max-w-7xl mx-auto">
+        <!-- Cartes d'actions -->
+        <section id="action-cards" class="max-w-7xl mx-auto mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <!-- Carte : Ajouter un type de robe -->
+          <button id="open-add-type"
+            class="group relative overflow-hidden rounded-2xl border bg-white shadow-lg p-5 text-left hover:shadow-xl transition">
+            <div class="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-blue-50 group-hover:scale-125 transition">
+            </div>
+            <div class="relative z-10 flex items-center gap-4">
+              <div class="grid h-12 w-12 place-items-center rounded-xl bg-blue-100 text-blue-700">
+                <i class="fa-solid fa-tags text-xl"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Catalogue</p>
+                <h3 class="text-lg font-semibold">Ajouter un type de robe</h3>
+              </div>
+            </div>
+            <p class="relative z-10 mt-3 text-sm text-gray-600">Crée un nouveau type de robes.</p>
+          </button>
+
+          <!-- Carte : Ajouter une nouvelle robe -->
+          <button id="open-add-dress"
+            class="group relative overflow-hidden rounded-2xl border bg-white shadow-lg p-5 text-left hover:shadow-xl transition">
+            <div
+              class="absolute -right-10 -top-10 h-28 w-28 rounded-full bg-emerald-100 group-hover:scale-125 transition">
+            </div>
+            <div class="relative z-10 flex items-center gap-4">
+              <div class="grid h-12 w-12 place-items-center rounded-xl bg-emerald-100 text-emerald-700">
+                <i class="fa-solid fa-circle-plus text-xl"></i>
+              </div>
+              <div>
+                <p class="text-sm text-gray-500">Catalogue</p>
+                <h3 class="text-lg font-semibold">Ajouter une nouvelle robe</h3>
+              </div>
+            </div>
+            <p class="relative z-10 mt-3 text-sm text-gray-600">Ouvre un formulaire dans une fenêtre modale.</p>
+          </button>
+        </section>
+
+
+
+
+
+        <!-- Modal : Ajouter / Modifier une robe -->
+        <div id="add-dress-modal" class="fixed inset-0 z-50 hidden items-center justify-center">
+          <div class="absolute inset-0 bg-black/40" data-close-dress></div>
+
+          <div class="relative mx-4 w-full max-w-3xl rounded-2xl bg-white shadow-2xl">
+            <div class="flex items-center justify-between border-b p-4">
+              <h4 id="dress-modal-title" class="text-lg font-semibold">Ajouter une nouvelle robe</h4>
+              <button class="p-2 rounded-md hover:bg-gray-100" title="Fermer" data-close-dress>
+                <i class="fa-solid fa-xmark"></i>
+              </button>
+            </div>
+
+            <form id="add-dress-form" class="p-6 grid md:grid-cols-2 gap-x-6 gap-y-4">
+              <div>
+                <label for="dress-name" class="block text-sm font-medium text-gray-600 mb-1">Nom de la robe</label>
+                <input type="text" id="dress-name" placeholder="Ex: Robe de Soirée Rouge"
+                  class="w-full p-2 border rounded-md" required>
+              </div>
+              <div>
+                <label for="dress-type" class="block text-sm font-medium text-gray-600 mb-1">Type</label>
+                <select id="dress-type" class="w-full p-2 border rounded-md bg-white"></select>
+              </div>
+              <div>
+                <label for="dress-size" class="block text-sm font-medium text-gray-600 mb-1">Taille</label>
+                <input type="text" id="dress-size" placeholder="Ex: 38, M, Standard"
+                  class="w-full p-2 border rounded-md">
+              </div>
+              <div>
+                <label for="dress-purchase-date" class="block text-sm font-medium text-gray-600 mb-1">Date
+                  d'achat</label>
+                <input type="date" id="dress-purchase-date" class="w-full p-2 border rounded-md">
+              </div>
+              <div>
+                <label for="dress-price" class="block text-sm font-medium text-gray-600 mb-1">Prix location</label>
+                <input type="number" id="dress-price" placeholder="Ex: 15000" class="w-full p-2 border rounded-md"
+                  step="1" min="0">
+              </div>
+
+              <div>
+                <label for="dress-purchase-price" class="block text-sm font-medium text-gray-600 mb-1">Prix
+                  d'achat</label>
+                <input type="number" id="dress-purchase-price" placeholder="Ex: 15000"
+                  class="w-full p-2 border rounded-md" step="1" min="0">
+              </div>
+
+              <div>
+                <label for="dress-reference" class="block text-sm font-medium text-gray-600 mb-1">Référence de la
+                  robe</label>
+                <input type="text" id="dress-reference" placeholder="Ex: RSR-001" class="w-full p-2 border rounded-md">
+              </div>
+              <div class="md:col-span-2">
+                <label for="dress-image" class="block text-sm font-medium text-gray-600 mb-1">Photo (laisser vide pour
+                  ne
+                  pas changer)</label>
+                <input type="file" id="dress-image"
+                  class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100"
+                  accept="image/*">
+              </div>
+
+              <div class="md:col-span-2 mt-2 flex gap-4">
+                <button type="submit"
+                  class="flex-1 bg-blue-600 text-white py-2 px-4 rounded-md hover:bg-blue-700 transition-colors">
+                  <i id="form-submit-icon" class="fas fa-plus mr-2"></i>
+                  <span id="form-submit-text">Ajouter au catalogue</span>
+                </button>
+                <button type="button" id="cancel-edit-btn"
+                  class="hidden border border-gray-300 bg-white text-gray-700 py-2 px-4 rounded-md hover:bg-gray-50 transition-colors"
+                  data-close-dress>Annuler</button>
+              </div>
+            </form>
+          </div>
+        </div>
+
+
+
+
+
+
+
+
+<div id="filter-controls" class="mb-4 p-3 bg-white/80 rounded-lg border border-slate-200 shadow-sm backdrop-blur-sm">
+
+  <div class="grid grid-cols-1 md:grid-cols-5 gap-3 items-end">
+
+    <!-- Type -->
+    <div>
+      <label class="block text-[11px] font-medium text-slate-600 mb-1 uppercase tracking-wide">
+        Type
+      </label>
+      <select id="filter-type"
+        class="w-full px-2.5 py-1.5 border border-slate-300 rounded-md bg-white text-sm focus:ring-1 focus:ring-blue-500">
+        <option value="all">Tous</option>
+      </select>
+    </div>
+
+    <!-- Taille -->
+    <div>
+      <label class="block text-[11px] font-medium text-slate-600 mb-1 uppercase tracking-wide">
+        Taille
+      </label>
+      <input id="filter-size" type="text" placeholder="38, M…"
+        class="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-sm focus:ring-1 focus:ring-blue-500">
+    </div>
+
+    <!-- Date -->
+    <div>
+      <label class="block text-[11px] font-medium text-slate-600 mb-1 uppercase tracking-wide">
+        Date
+      </label>
+      <input id="client-date-filter" type="date"
+        class="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-sm focus:ring-1 focus:ring-blue-500">
+    </div>
+
+    <!-- Min -->
+    <div>
+      <label class="block text-[11px] font-medium text-slate-600 mb-1 uppercase tracking-wide">
+        Min (DA)
+      </label>
+      <input id="filter-price-min" type="number" placeholder="5000"
+        class="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-sm focus:ring-1 focus:ring-blue-500">
+    </div>
+
+    <!-- Max -->
+    <div>
+      <label class="block text-[11px] font-medium text-slate-600 mb-1 uppercase tracking-wide">
+        Max (DA)
+      </label>
+      <input id="filter-price-max" type="number" placeholder="20000"
+        class="w-full px-2.5 py-1.5 border border-slate-300 rounded-md text-sm focus:ring-1 focus:ring-blue-500">
+    </div>
+  </div>
+
+  <!-- Ligne des boutons -->
+  <div class="flex justify-end gap-2 mt-3 pt-2 border-t border-slate-200">
+
+    <!-- Reset -->
+    <button id="filter-reset-btn"
+      class="px-2.5 py-1.5 text-xs border border-slate-300 text-slate-600 rounded-full bg-white hover:bg-slate-50 hover:border-slate-400 transition-colors inline-flex items-center gap-1.5">
+      <i class="fas fa-undo text-[11px]"></i>
+      Reset
+    </button>
+
+    <!-- Appliquer -->
+    <button id="filter-apply-btn"
+      class="px-3.5 py-1.5 text-xs font-semibold rounded-full bg-slate-900 text-white hover:bg-slate-800 transition-colors inline-flex items-center gap-1.5 shadow-sm">
+      <i class="fas fa-filter text-[11px]"></i>
+      Appliquer
+    </button>
+
+    <!-- Générer (plus intéressant visuellement) -->
+    <button id="generate-link-btn"
+      class="px-4 py-1.5 text-xs font-semibold rounded-full 
+             bg-gradient-to-r from-emerald-500 to-teal-500 text-white shadow-sm
+             hover:shadow-md hover:from-emerald-600 hover:to-teal-600
+             transition-all inline-flex items-center gap-2">
+      <span class="inline-flex h-5 w-5 items-center justify-center rounded-full bg-white/20">
+        <i class="fas fa-link text-[11px]"></i>
+      </span>
+      Générer lien
+    </button>
+  </div>
+
+  <!-- Champ lien invisible -->
+  <input id="generated-link-display" type="text" readonly class="hidden">
+</div>
+
+
+
+
+
+
+
+
+
+        <div id="catalogue-grid" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6">
+        </div>
+        <div id="pagination-controls" class="flex justify-center items-center gap-2 mt-8">
+        </div>
+      </div>
+    </main>
+  </div>
 
 
 
@@ -308,7 +342,7 @@
       const cancelEditBtn = document.getElementById('cancel-edit-btn');
 
       const filterSize = document.getElementById('filter-size');
- 
+
 
 
       // modal carte de robe
@@ -329,8 +363,8 @@
       const eventDressIdInput = document.getElementById('event-dress-id');
 
       const clientDateFilter = document.getElementById('client-date-filter');
-const generateLinkBtn = document.getElementById('generate-link-btn');
-const generatedLinkDisplay = document.getElementById('generated-link-display');
+      const generateLinkBtn = document.getElementById('generate-link-btn');
+      const generatedLinkDisplay = document.getElementById('generated-link-display');
 
       /* ====== État pagination et filtres ====== */
       let currentPage = 1;
@@ -558,85 +592,96 @@ const generatedLinkDisplay = document.getElementById('generated-link-display');
       }
 
       /* ====== Récupération d’une page (Inchangé) ====== */
-      async function fetchPage(pageIndex) {
-        const user = getCurrentUser();
+     // 1. Variable globale pour stocker les IDs des robes louées (pour l'affichage des étiquettes)
+    let rentedDressIdsForBadge = new Set(); 
+
+    // 2. Fonction de récupération mise à jour
+    async function fetchPage(pageIndex) {
+      const user = getCurrentUser();
       if (!user) return [];
 
-      let bookedDressIds = new Set();
+      const baseQueries = [Query.equal("userId", [user.$id])];
+
+      // --- Filtres classiques ---
+      if (currentFilters.type) baseQueries.push(Query.equal('type', currentFilters.type));
+      if (currentFilters.size) baseQueries.push(Query.equal('size', currentFilters.size));
+      if (currentFilters.min) baseQueries.push(Query.greaterThanEqual('price', currentFilters.min));
+      if (currentFilters.max) baseQueries.push(Query.lessThanEqual('price', currentFilters.max));
+
+      // --- Logique de Disponibilité (POUR LES ÉTIQUETTES) ---
+      rentedDressIdsForBadge.clear(); // On remet à zéro la liste des "en location"
+
+      let dateToCheck = null;
       
+      // Cas A : Le client a mis une date (Filtre strict)
       if (currentFilters.date) {
-        const localDate = new Date(currentFilters.date);
-        const dateStart = new Date(localDate.setHours(0, 0, 0, 0));
-        const dateEnd = new Date(localDate.setHours(23, 59, 59, 999));
-        const dateStartISO = dateStart.toISOString();
-        const dateEndISO = dateEnd.toISOString();
-
-        const bookingsResponse = await databases.listDocuments(
-          DB_ID,
-          COL_BOOKINGS,
-          [
-            Query.equal('userId', [user.$id]),
-            Query.between('date', dateStartISO, dateEndISO),
-            Query.limit(500),
-            Query.select(['dressIds'])
-          ]
-        );
-
-        bookingsResponse.documents.forEach(booking => {
-          if (booking.dressIds && Array.isArray(booking.dressIds)) {
-            booking.dressIds.forEach(id => bookedDressIds.add(id));
-          }
-        });
+          dateToCheck = new Date(currentFilters.date);
+      } 
+      // Cas B : Page par défaut (Pas de date -> On vérifie "Aujourd'hui" pour l'étiquette)
+      else {
+          dateToCheck = new Date();
       }
 
-      const baseQueries = [
-          Query.equal("userId", [user.$id])
-      ];
+      // Calculer le début et la fin de la journée (Minuit -> 23h59)
+      const dateStart = new Date(dateToCheck.setHours(0, 0, 0, 0));
+      const dateEnd = new Date(dateToCheck.setHours(23, 59, 59, 999));
 
-      if (currentFilters.type) {
-        baseQueries.push(Query.equal('type', currentFilters.type));
-      }
-      // NOUVEAU : Ajouter les filtres size et prix
-      if (currentFilters.size) {
-        baseQueries.push(Query.equal('size', currentFilters.size));
-      }
-      if (currentFilters.min) {
-        baseQueries.push(Query.greaterThanEqual('price', currentFilters.min));
-      }
-      if (currentFilters.max) {
-        baseQueries.push(Query.lessThanEqual('price', currentFilters.max));
-      }
-      
-      if (bookedDressIds.size > 0) {
-          baseQueries.push(Query.notEqual('$id', Array.from(bookedDressIds)));
+      // On demande à Appwrite : "Quelles robes sont prises entre ces deux heures ?"
+      try {
+          const bookingsResponse = await databases.listDocuments(
+            DB_ID,
+            COL_BOOKINGS,
+            [
+              Query.equal('userId', [user.$id]),
+              Query.between('date', dateStart.toISOString(), dateEnd.toISOString()),
+              Query.limit(500),
+              Query.select(['dressIds']) // On récupère juste les IDs pour aller vite
+            ]
+          );
+
+          // On remplit notre liste des robes "occupées" ce jour-là
+          bookingsResponse.documents.forEach(booking => {
+            if (booking.dressIds && Array.isArray(booking.dressIds)) {
+              booking.dressIds.forEach(id => rentedDressIdsForBadge.add(id));
+            }
+          });
+
+      } catch (err) {
+          console.error("Erreur chargement réservations:", err);
       }
 
+      // --- Filtrage Strict (UNIQUEMENT si une date est choisie) ---
+      // Si on cherche pour une date précise, on CACHE les robes louées.
+      // Si on est sur la page par défaut, on les LAISSE (pour voir l'étiquette "En location")
+      if (currentFilters.date && rentedDressIdsForBadge.size > 0) {
+          baseQueries.push(Query.notEqual('$id', Array.from(rentedDressIdsForBadge)));
+      }
+
+      // --- Pagination & Tri ---
       baseQueries.push(Query.orderDesc('$createdAt'));
       baseQueries.push(Query.limit(itemsPerPage));
 
       let queries = [...baseQueries];
 
-      // ... (le reste de votre logique de pagination/curseur est inchangée) ...
+      // Gestion du curseur (inchangée)
       if (pageIndex > 1) {
         while (pageCursors.length < pageIndex) {
           const prevCursor = pageCursors[pageCursors.length - 1];
           const prevQueryList = [...baseQueries];
-          if (prevCursor) {
-            prevQueryList.push(Query.cursorAfter(prevCursor));
-          }
-          const response = await databases.listDocuments(DB_ID, COL_DRESSES, prevQueryList);
-          const lastDoc = response.documents[response.documents.length - 1] || null;
-          pageCursors.push(lastDoc ? lastDoc.$id : null);
-          if (!lastDoc) break;
+          if (prevCursor) prevQueryList.push(Query.cursorAfter(prevCursor));
+          const resp = await databases.listDocuments(DB_ID, COL_DRESSES, prevQueryList);
+          const last = resp.documents[resp.documents.length - 1] || null;
+          pageCursors.push(last ? last.$id : null);
+          if (!last) break;
         }
         const cursor = pageCursors[pageIndex - 1];
-        if (cursor) {
-          queries.push(Query.cursorAfter(cursor));
-        }
+        if (cursor) queries.push(Query.cursorAfter(cursor));
       }
+
       const response = await databases.listDocuments(DB_ID, COL_DRESSES, queries);
       const lastDocOnPage = response.documents[response.documents.length - 1] || null;
       pageCursors[pageIndex] = lastDocOnPage ? lastDocOnPage.$id : null;
+      
       return response.documents;
     }
       /* ======================================================= */
@@ -644,7 +689,160 @@ const generatedLinkDisplay = document.getElementById('generated-link-display');
       /* ======================================================= */
 
       /* ====== Rendu d’une page (MIS À JOUR) ====== */
-      async function renderCataloguePage(pageIndex) {
+async function renderCataloguePage(pageIndex) {
+  setLoadingState(true);
+
+  try {
+    const dresses = await fetchPage(pageIndex);
+
+    if (!Array.isArray(dresses) || dresses.length === 0) {
+      grid.innerHTML = `
+        <p class="col-span-full text-center text-gray-500 py-10">
+          Aucune robe ne correspond à ces critères.
+        </p>`;
+      totalShown = 0;
+      return;
+    }
+
+    const fragment = document.createDocumentFragment();
+
+    for (const dress of dresses) {
+      fragment.appendChild(createDressCard(dress));
+    }
+
+    grid.innerHTML = '';
+    grid.appendChild(fragment);
+    totalShown = dresses.length;
+
+  } catch (error) {
+    console.error('Erreur renderCataloguePage:', error);
+    grid.innerHTML = `
+      <p class="col-span-full text-center text-red-600 py-10">
+        Erreur: ${error.message}.
+      </p>`;
+  } finally {
+    setLoadingState(false);
+  }
+}
+
+/**
+ * Active/désactive l’état de chargement du catalogue
+ */
+function setLoadingState(isLoading) {
+  if (isLoading) {
+    grid.innerHTML = `
+      <div class="col-span-full flex justify-center py-20">
+        <i class="fas fa-spinner fa-spin text-3xl text-blue-600"></i>
+      </div>`;
+  }
+
+  if (filterApplyBtn) filterApplyBtn.disabled = isLoading;
+  if (filterResetBtn) filterResetBtn.disabled = isLoading;
+}
+
+/**
+ * Retourne le HTML du badge en fonction des filtres et de l’état de location
+ */
+function getBadgeHtml(dress) {
+  // Cas 1 : Filtre de date activé -> tout ce qui est affiché est forcément "Disponible"
+  if (currentFilters.date) {
+    return `
+      <span class="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 shadow-sm border border-emerald-200">
+        <i class="fas fa-check-circle"></i> En Stock
+      </span>`;
+  }
+
+  // Cas 2 : Page par défaut -> on vérifie si c'est loué AUJOURD'HUI
+  if (rentedDressIdsForBadge.has(dress.$id)) {
+    return `
+      <span class="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 shadow-sm border border-amber-200">
+        <i class="fas fa-clock"></i> En location
+      </span>`;
+  }
+
+  // Cas 3 : Page par défaut et pas louée aujourd'hui -> "Disponible"
+  return `
+    <span class="absolute top-3 right-3 z-10 inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 shadow-sm border border-emerald-200">
+      <i class="fas fa-check-circle"></i> En Stock
+    </span>`;
+}
+
+/**
+ * Crée un élément carte pour une robe
+ */
+function createDressCard(dress) {
+  const card = document.createElement('article');
+  card.className = 'bg-white rounded-lg shadow-md overflow-hidden group relative border border-slate-100';
+
+  const badgeHtml = getBadgeHtml(dress);
+  const imageUrl = dress.imageUrl || 'https://placehold.co/400x600/cccccc/ffffff?text=Robe';
+  const hasPrice = typeof dress.price === 'number';
+  const hasSize = Boolean(dress.size);
+
+  card.innerHTML = `
+  ${badgeHtml}
+  
+  <div class="overflow-hidden relative aspect-[3/4] bg-slate-100">
+    <button class="view-details-btn w-full h-full block" data-id="${dress.$id}">
+      <img src="${imageUrl}"
+           alt="${dress.name}"
+           class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-[1.08] group-hover:rotate-[0.5deg]">
+    </button>
+  </div>
+
+  <div class="p-5">
+    <button class="view-details-btn block text-left w-full" data-id="${dress.$id}">
+      <h3 class="font-semibold text-lg text-slate-800 tracking-tight truncate group-hover:text-blue-600 transition-colors duration-200" title="${dress.name}">
+        ${dress.name}
+      </h3>
+    </button>
+
+    <div class="flex justify-between items-center mt-2">
+      ${
+        hasPrice
+          ? `<p class="text-slate-800 font-semibold">${DAfmt.format(dress.price)}</p>`
+          : '<p class="text-slate-400 text-sm italic">Prix non défini</p>'
+      }
+
+
+    </div>
+
+    <div class="my-1 flex justify-between items-center">
+                    ${
+        dress.nb_reservation
+          ? `<p class="text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded-lg">Nombre de réservations: ${dress.nb_reservation}</p>`
+          : '<p class="text-xs text-slate-600 bg-slate-100 px-2 py-0.5 rounded-lg">Jamais réservé</p>'
+      }
+    </div>
+
+        <div class="flex my-1 justify-between items-center">
+                    ${
+        dress.size
+          ? `<p class="text-xs  text-slate-600 bg-slate-100 px-2 py-0.5 rounded-lg">Taille: ${dress.size}</p>`
+          : '<p class="text-xs  text-slate-600 bg-slate-100 px-2 py-0.5 rounded-lg">Taile: ND</p>'
+      }
+    </div>
+
+    <div class="flex items-center gap-3 mt-2 pt-4 border-t border-slate-200/60">
+      <button class="view-details-btn flex-1 text-sm font-medium bg-blue-600 text-white py-2.5 px-3 rounded-lg hover:bg-blue-700 shadow-sm hover:shadow-md transition-all duration-200 inline-flex justify-center items-center gap-2" data-id="${dress.$id}">
+        <i class="fas fa-eye"></i> Voir
+      </button>
+
+      <button class="edit-dress-btn flex-1 text-sm font-medium border border-slate-300 text-slate-700 py-2.5 px-3 rounded-lg bg-white hover:bg-slate-50 hover:border-slate-400 transition-all duration-200 inline-flex justify-center items-center gap-2" data-id="${dress.$id}">
+        <i class="fas fa-pencil-alt"></i> Modifier
+      </button>
+    </div>
+  </div>
+`;
+
+  return card;
+}
+
+
+
+
+/*
+       async function renderCataloguePage(pageIndex) {
         grid.innerHTML = '<p class="col-span-full text-center text-gray-500 py-10">Chargement...</p>';
         if (filterApplyBtn) filterApplyBtn.disabled = true;
         if (filterResetBtn) filterResetBtn.disabled = true;
@@ -697,7 +895,7 @@ const generatedLinkDisplay = document.getElementById('generated-link-display');
           if (filterApplyBtn) filterApplyBtn.disabled = false;
           if (filterResetBtn) filterResetBtn.disabled = false;
         }
-      }
+      } */
 
       /* ====== Pagination UI (Inchangé) ====== */
       function renderPagination() {
@@ -752,25 +950,25 @@ const generatedLinkDisplay = document.getElementById('generated-link-display');
 
       /* ====== Fonctions de Filtre ====== */
       async function applyFilters() {
-const type = filterType.value;
-      const date = clientDateFilter.value;
-      const size = filterSize.value.trim(); // .trim() pour enlever les espaces
-      const min = parseFloat(filterPriceMin.value);
-      const max = parseFloat(filterPriceMax.value);
-      
-currentFilters = {
-        type: type === 'all' ? null : type,
-        date: date || null,
-        size: size || null,
-        min: isNaN(min) || min <= 0 ? null : min,
-        max: isNaN(max) || max <= 0 ? null : max
-      };
-      
-      currentPage = 1;
-      pageCursors = [null];
-      await renderCataloguePage(currentPage);
-      renderPagination();
-    }
+        const type = filterType.value;
+        const date = clientDateFilter.value;
+        const size = filterSize.value.trim(); // .trim() pour enlever les espaces
+        const min = parseFloat(filterPriceMin.value);
+        const max = parseFloat(filterPriceMax.value);
+
+        currentFilters = {
+          type: type === 'all' ? null : type,
+          date: date || null,
+          size: size || null,
+          min: isNaN(min) || min <= 0 ? null : min,
+          max: isNaN(max) || max <= 0 ? null : max
+        };
+
+        currentPage = 1;
+        pageCursors = [null];
+        await renderCataloguePage(currentPage);
+        renderPagination();
+      }
 
       async function resetFilters() {
         filterType.value = 'all';
@@ -949,55 +1147,55 @@ currentFilters = {
 
 
 
-// --- NOUVELLE FONCTION : Générer le lien public ---
-    function generatePublicLink() {
-      const user = getCurrentUser();
-      if (!user) {
-        alert("Erreur : vous n'êtes pas connecté.");
-        return;
-      }
-      
-      // Lire TOUS les filtres
-      const type = filterType.value;
-      const date = clientDateFilter.value;
-      const size = filterSize.value.trim();
-      const minPrice = filterPriceMin.value;
-      const maxPrice = filterPriceMax.value;
+      // --- NOUVELLE FONCTION : Générer le lien public ---
+      function generatePublicLink() {
+        const user = getCurrentUser();
+        if (!user) {
+          alert("Erreur : vous n'êtes pas connecté.");
+          return;
+        }
 
-      if (!date) {
-        alert("Veuillez d'abord sélectionner une date.");
-        clientDateFilter.focus();
-        return;
+        // Lire TOUS les filtres
+        const type = filterType.value;
+        const date = clientDateFilter.value;
+        const size = filterSize.value.trim();
+        const minPrice = filterPriceMin.value;
+        const maxPrice = filterPriceMax.value;
+
+        if (!date) {
+          alert("Veuillez d'abord sélectionner une date.");
+          clientDateFilter.focus();
+          return;
+        }
+
+        const baseUrl = window.location.origin + window.location.pathname.replace('catalogue.html', '');
+
+        // Construire le lien avec tous les paramètres
+        let publicLink = `${baseUrl}public-catalogue.html?user=${user.$id}&date=${date}&type=${type}`;
+
+        // Ajouter les nouveaux paramètres seulement s'ils sont remplis
+        if (size) {
+          publicLink += `&size=${encodeURIComponent(size)}`;
+        }
+        if (minPrice) {
+          publicLink += `&minPrice=${minPrice}`;
+        }
+        if (maxPrice) {
+          publicLink += `&maxPrice=${maxPrice}`;
+        }
+
+        generatedLinkDisplay.value = publicLink;
+
+        try {
+          navigator.clipboard.writeText(publicLink);
+          alert("Lien copié dans le presse-papiers !");
+        } catch (err) {
+          console.warn("Copie auto. échouée : ", err);
+        }
       }
 
-      const baseUrl = window.location.origin + window.location.pathname.replace('catalogue.html', '');
-      
-      // Construire le lien avec tous les paramètres
-      let publicLink = `${baseUrl}public-catalogue.html?user=${user.$id}&date=${date}&type=${type}`;
-      
-      // Ajouter les nouveaux paramètres seulement s'ils sont remplis
-      if (size) {
-        publicLink += `&size=${encodeURIComponent(size)}`;
-      }
-      if (minPrice) {
-        publicLink += `&minPrice=${minPrice}`;
-      }
-      if (maxPrice) {
-        publicLink += `&maxPrice=${maxPrice}`;
-      }
-
-      generatedLinkDisplay.value = publicLink;
-      
-      try {
-        navigator.clipboard.writeText(publicLink);
-        alert("Lien copié dans le presse-papiers !");
-      } catch (err) {
-        console.warn("Copie auto. échouée : ", err);
-      }
-    }
-
-    // Lier la fonction au bouton
-    generateLinkBtn.addEventListener('click', generatePublicLink);
+      // Lier la fonction au bouton
+      generateLinkBtn.addEventListener('click', generatePublicLink);
 
       /* ====== Boot (MIS À JOUR - Suppression du chargement des bookings) ====== */
       async function main() {
