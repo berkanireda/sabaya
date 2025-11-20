@@ -170,12 +170,12 @@
     <!-- Template pour les cartes de stats -->
     <template id="stat-card-template">
         <div class="bg-white border border-slate-200 rounded-xl p-5 shadow-sm flex items-start gap-4">
-            <div class="stat-icon w-12 h-12 rounded-lg grid place-items-center text-xl">
+            <div class="stat-icon w-12 h-12 rounded-lg grid place-items-center text-sm">
                 <i class="fa-solid"></i>
             </div>
             <div>
-                <p class="stat-title text-sm font-medium text-slate-500"></p>
-                <p class="stat-value text-3xl font-bold text-slate-800"></p>
+                <p class="stat-title text-[13px] font-medium text-slate-500"></p>
+                <p class="stat-value text-[18px] font-bold text-slate-800"></p>
 
                 <p class="stat-sub-value1 hidden mt-1 text-xs text-slate-500"></p>
                 <p class="stat-sub-value2 hidden mt-0.5 text-xs text-slate-500"></p>
@@ -561,7 +561,7 @@
                 today.setHours(0, 0, 0, 0);
                 const startOfMonth = new Date(today.getFullYear(), today.getMonth(), 1);
 
-                let revenueToday = 0, revenueThisMonth = 0, bookingsThisMonth = 0;
+                let revenueToday = 0, revenueThisMonth = 0, bookingsThisMonth = 0, dueThisMonth = 0, verseThisMonth = 0;
                 let verseToday = 0, cautionToday = 0;
 
                 // === NOUVELLES LISTES POUR LE DASHBOARD ===
@@ -591,6 +591,15 @@
                         bookingsThisMonth++;
                     }
 
+                    if (bookingDate >= startOfMonth) {
+                        verseThisMonth += booking.verse || 0;
+                        bookingsThisMonth++;
+                    }
+
+                    if (bookingDate >= startOfMonth) {
+                        dueThisMonth = revenueThisMonth - verseThisMonth || 0;
+                    }
+
                     // --- NOUVELLE LOGIQUE : REMPLISSAGE DES LISTES ---
 
                     // 1. SORTIES : C'est aujourd'hui ET c'est "en attente" (pas encore retiré)
@@ -608,8 +617,8 @@
                 statsContainer.innerHTML = '';
                 statsContainer.append(
                     renderStatCard('fa-sack-dollar', "Chiffre d'affaires du jour", formatEuro(revenueToday), 'bg-emerald-100 text-emerald-600', `Versé: ${formatEuro(verseToday)}`, `Caution: ${formatEuro(cautionToday)}`),
-                    renderStatCard('fa-money-bill-trend-up', "Chiffre d'affaires (Mois)", formatEuro(revenueThisMonth), 'bg-blue-100 text-blue-600'),
-                    renderStatCard('fa-calendar-plus', 'Nouvelles réservations (Mois)', formatInt(bookingsThisMonth), 'bg-amber-100 text-amber-600')
+                    renderStatCard('fa-money-bill-trend-up', "Chiffre d'affaires (Mois)", formatEuro(revenueThisMonth), 'bg-blue-100 text-blue-600', `Montant dû: ${formatEuro(dueThisMonth)}`),
+                    renderStatCard('fa-calendar-plus', 'Nombre de réservations (Mois)', formatInt(bookingsThisMonth), 'bg-amber-100 text-amber-600')
                 );
 
                 // 5. Affichage Meilleures Robes (Inchangé)
@@ -643,7 +652,7 @@
                 }
             }
 
-            // === Main Execution == 
+          // === Main Execution == 
 
             async function main() {
                 await displayStats();

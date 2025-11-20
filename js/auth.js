@@ -30,6 +30,7 @@ document.addEventListener('DOMContentLoaded', async () => {
         'index.html': 'Calendrier',
         'catalogue.html': 'Catalogue',
         'dashboard.html': 'Tableau de Bord',
+        'reservations.html': 'Tableau de Bord',
     };
     const currentPath = window.location.pathname.split('/').pop();
     const pageTitle = pageTitles[currentPath] || 'Gestion';

@@ -45,10 +45,8 @@
   </style>
 </head>
 
-
 <body class="bg-slate-50 h-screen w-full flex overflow-hidden">
 
-  <!-- Header -->
   <aside id="sidebar-placeholder" class="w-64 h-full flex-shrink-0">
     <div class="h-full bg-white shadow-lg grid place-items-center">
       <i class="fas fa-spinner fa-spin text-blue-600 text-2xl"></i>
@@ -58,75 +56,70 @@
 
   <div class="flex-1 h-full overflow-y-auto py-8 px-6">
     <main>
-   <div class="grid grid-cols-1 lg:grid-cols-4 gap-8"> 
-    <!-- Colonne de gauche : Recherche (25%) -->
-    <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
+      <div class="grid grid-cols-1 lg:grid-cols-4 gap-8">
+        <div class="lg:col-span-1 bg-white p-6 rounded-xl shadow-lg">
 
-      <div>
-        <div class="flex items-center gap-2 mb-4">
-          <div class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600">
-            <i class="fa-solid fa-magnifying-glass"></i>
+          <div>
+            <div class="flex items-center gap-2 mb-4">
+              <div class="inline-flex h-8 w-8 items-center justify-center rounded-full bg-blue-50 text-blue-600">
+                <i class="fa-solid fa-magnifying-glass"></i>
+              </div>
+              <h2 class="text-lg font-semibold text-slate-800">Rechercher</h2>
+            </div>
+
+            <div class="relative mb-4">
+              <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
+              <input type="search" id="reservation-search-input"
+                placeholder="Bon A20, Robe sirène..."
+                class="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+            </div>
+
+            <div id="search-results-container" class="space-y-3 max-h-[80vh] overflow-y-auto pr-2"></div>
           </div>
-          <h2 class="text-lg font-semibold text-slate-800">Rechercher</h2>
+
         </div>
 
-        <div class="relative mb-4">
-          <i class="fas fa-search absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-          <input type="search" id="reservation-search-input" placeholder="Bon A20, Robe sirène..."
-            class="w-full pl-9 pr-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500">
+
+        <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-lg">
+
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
+            <div class="flex items-center gap-3">
+              <button id="prev-month" class="p-2 rounded-full hover:bg-slate-100">
+                <i class="fas fa-chevron-left text-slate-600 text-sm"></i>
+              </button>
+
+              <h2 id="current-month" class="text-xl font-semibold text-slate-800"></h2>
+
+              <button id="next-month" class="p-2 rounded-full hover:bg-slate-100">
+                <i class="fas fa-chevron-right text-slate-600 text-sm"></i>
+              </button>
+            </div>
+          </div>
+
+          <div class="calendar-grid text-[11px] font-medium text-slate-500 mb-1">
+            <div class="text-center py-1.5">Lun</div>
+            <div class="text-center py-1.5">Mar</div>
+            <div class="text-center py-1.5">Mer</div>
+            <div class="text-center py-1.5">Jeu</div>
+            <div class="text-center py-1.5">Ven</div>
+            <div class="text-center py-1.5">Sam</div>
+            <div class="text-center py-1.5">Dim</div>
+          </div>
+
+          <div id="calendar-body" class="calendar-grid"></div>
+
+          <div id="month-summary"
+            class="mt-4 p-3 rounded-lg bg-gray-50 border text-sm text-gray-700 hidden"></div>
         </div>
-
-        <div id="search-results-container" class="space-y-3 max-h-[80vh] overflow-y-auto pr-2"></div>
       </div>
-
-    </div>
-
-
-    <!-- Colonne de droite : Calendrier (75%) -->
-    <div class="lg:col-span-3 bg-white p-6 rounded-xl shadow-lg">
-
-      <!-- Barre d’actions -->
-      <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-        <div class="flex items-center gap-3">
-          <button id="prev-month" class="p-2 rounded-full hover:bg-slate-100">
-            <i class="fas fa-chevron-left text-slate-600 text-sm"></i>
-          </button>
-
-          <h2 id="current-month" class="text-xl font-semibold text-slate-800"></h2>
-
-          <button id="next-month" class="p-2 rounded-full hover:bg-slate-100">
-            <i class="fas fa-chevron-right text-slate-600 text-sm"></i>
-          </button>
-        </div>
-      </div>
-
-      <!-- En-têtes -->
-      <div class="calendar-grid text-[11px] font-medium text-slate-500 mb-1">
-        <div class="text-center py-1.5">Lun</div>
-        <div class="text-center py-1.5">Mar</div>
-        <div class="text-center py-1.5">Mer</div>
-        <div class="text-center py-1.5">Jeu</div>
-        <div class="text-center py-1.5">Ven</div>
-        <div class="text-center py-1.5">Sam</div>
-        <div class="text-center py-1.5">Dim</div>
-      </div>
-
-      <div id="calendar-body" class="calendar-grid"></div>
-
-      <div id="month-summary" class="mt-4 p-3 rounded-lg bg-gray-50 border text-sm text-gray-700 hidden"></div>
-    </div>
-</div>
 
     </main>
   </div>
 
 
-  <!-- Modal -->
-  <!-- Modal -->
   <div id="booking-modal" class="modal-hidden fixed inset-0 bg-black/50 flex justify-center p-4 z-50 overflow-y-auto"
     role="dialog" aria-modal="true" aria-labelledby="booking-modal-title">
     <div class="bg-white rounded-2xl shadow-2xl w-full max-w-2xl my-auto border border-slate-200">
-      <!-- En-tête -->
       <div class="flex items-center justify-between px-6 py-4 border-b border-slate-200">
         <div>
           <h3 id="booking-modal-title" class="text-lg font-semibold text-slate-900">
@@ -144,7 +137,6 @@
       </div>
 
       <div class="px-6 py-4 space-y-5">
-        <!-- RÉSERVATIONS EXISTANTES (on laisse le <details> pour ton JS) -->
         <details id="existing-bookings" class="mb-2 rounded-xl border border-slate-200 bg-slate-50">
           <summary
             class="list-none flex w-full items-center justify-between gap-3 px-4 py-2.5 cursor-pointer select-none">
@@ -160,7 +152,6 @@
           <div id="existing-bookings-list" class="space-y-2 max-h-40 overflow-y-auto px-4 pb-3 pt-2 text-sm"></div>
         </details>
 
-        <!-- FORMULAIRE D’AJOUT (sans accordéons) -->
         <div id="new-booking-section" class="rounded-2xl border border-slate-200 bg-slate-50/80 px-4 py-4">
           <div class="flex items-center justify-between mb-3">
             <div>
@@ -180,7 +171,6 @@
           <form id="add-booking-form" class="space-y-5">
             <input type="hidden" id="booking-date">
 
-            <!-- Bloc Sélection de robes -->
             <section class="bg-white rounded-xl border border-slate-200 px-4 py-3.5 space-y-3 shadow-sm">
               <div class="flex items-center justify-between gap-2">
                 <div class="flex items-center gap-2">
@@ -216,7 +206,6 @@
               </div>
             </section>
 
-            <!-- Bloc Infos client -->
             <section class="bg-white rounded-xl border border-slate-200 px-4 py-3.5 space-y-3 shadow-sm">
               <div class="flex items-center gap-2">
                 <div
@@ -259,8 +248,6 @@
               </div>
             </section>
 
-            <!-- Bloc Paiement -->
-            <!-- Bloc Paiement -->
             <section class="bg-white rounded-xl border border-slate-200 px-4 py-3.5 space-y-3 shadow-sm">
               <div class="flex items-center gap-2">
                 <div
@@ -270,12 +257,11 @@
                 <div>
                   <h5 class="text-sm font-semibold text-slate-800">Paiement</h5>
                   <p class="text-xs text-slate-500">
-                    Saisis le coût, ce qui est versé, la caution éventuelle et laisse le reste se calculer.
+                    Saisis le coût, ce qui est versé, la remise éventuelle et laisse le reste se calculer.
                   </p>
                 </div>
               </div>
 
-              <!-- Coût & versé -->
               <div class="flex flex-col sm:flex-row sm:items-center gap-3">
                 <div class="flex-1">
                   <label for="booking-cost" class="block text-xs font-medium text-slate-600 mb-1.5">
@@ -283,7 +269,7 @@
                   </label>
                   <input type="number" id="booking-cost" placeholder="0"
                     class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    step="1" min="0">
+                    step="0.01" min="0">
                 </div>
 
                 <div class="hidden sm:flex items-center justify-center pt-6">
@@ -298,11 +284,19 @@
                   </label>
                   <input type="number" id="booking-paid" placeholder="0"
                     class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-                    step="1" min="0">
+                    step="0.01" min="0">
                 </div>
               </div>
 
-              <!-- Reste -->
+              <div>
+                <label for="booking-discount" class="block text-xs font-medium text-slate-600 mb-1.5">
+                  Remise/Discount (DA)
+                </label>
+                <input type="number" id="booking-discount" placeholder="0" value="0"
+                  class="w-full px-3 py-2.5 rounded-lg border border-slate-200 text-sm placeholder-slate-400 focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
+                  step="0.01" min="0">
+              </div>
+
               <div>
                 <label for="booking-remaining" class="block text-xs font-medium text-slate-600 mb-1.5">
                   Reste à payer
@@ -312,7 +306,6 @@
                   readonly>
               </div>
 
-              <!-- Caution -->
               <div class="mt-3 border-t pt-3 space-y-3">
                 <div class="flex items-center justify-between gap-2">
                   <p class="text-xs font-medium text-slate-700">
@@ -339,13 +332,12 @@
                   </label>
                   <input type="number" id="booking-deposit-amount" placeholder="Ex : 5000"
                     class="w-full px-3 py-2.5 rounded-lg border border-emerald-200 text-sm placeholder-emerald-400 focus:ring-2 focus:ring-emerald-400 focus:border-emerald-400"
-                    step="1" min="0">
+                    step="0.01" min="0">
                 </div>
               </div>
             </section>
 
 
-            <!-- Bloc Accessoires & Remarques -->
             <section class="bg-white rounded-xl border border-slate-200 px-4 py-3.5 space-y-3 shadow-sm">
               <div class="flex items-center gap-2">
                 <div
@@ -406,7 +398,6 @@
               </div>
             </section>
 
-            <!-- Bouton submit -->
             <button type="submit"
               class="w-full inline-flex items-center justify-center gap-2 bg-gradient-to-r from-emerald-500 to-emerald-600 text-white py-2.5 rounded-xl text-sm font-semibold shadow-md hover:from-emerald-600 hover:to-emerald-700 hover:shadow-lg active:scale-[0.99] transition">
               <i class="fas fa-check text-sm"></i>
@@ -423,26 +414,14 @@
 
   <script src="https://cdn.jsdelivr.net/npm/appwrite@11.0.0"></script>
 
+
   <script src="./js/auth.js"></script>
   <script>
 
     function initPage() {
 
 
-
       // -------- Utils --------
-
-      function getStatusClass(status) {
-        switch (status) {
-          case 'En attente': return 'bg-slate-400 text-slate-50 border-blue-200';
-          case 'Retiré': return 'bg-blue-100 text-blue-700 border-blue-200';
-          case 'Rendu': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
-          case 'Annulé': return 'bg-red-100 text-red-700 border-red-200';
-          default: return 'bg-slate-100 text-slate-700 border-slate-200'; // en attente
-        }
-      }
-
-
       function fromISODateLocal(iso) {
         if (!iso) return new Date();
         const [y, m, d] = iso.split('T')[0].split('-').map(Number);
@@ -450,27 +429,33 @@
       }
       const DAfmt = new Intl.NumberFormat('fr-DZ', { style: 'currency', currency: 'DZD', maximumFractionDigits: 2 });
 
+      // Helper pour les couleurs de statut
+      function getStatusClass(status) {
+          switch ((status || 'en attente').toLowerCase()) {
+              case 'retiré': return 'bg-blue-100 text-blue-700 border-blue-200';
+              case 'rendu': return 'bg-emerald-100 text-emerald-700 border-emerald-200';
+              case 'annulé': return 'bg-red-100 text-red-700 border-red-200';
+              default: return 'bg-slate-100 text-slate-700 border-slate-200'; // en attente
+          }
+      }
+
       // -------- State (chargé depuis Appwrite) --------
       let currentDate = new Date();
-      // !! IMPORTANT: On garde 'dresses' pour la recherche et les modales
       let dresses = [];
       let bookings = [];
-
-      // 'selectedDressId' a été supprimé
       let newBookingSelectedDressIds = [];
       let editingBookingId = null;
 
       // -------- DOM refs --------
       const calendarBody = document.getElementById('calendar-body');
       const currentMonthEl = document.getElementById('current-month');
-      // 'dressListEl' et 'showAllBtn' ont été supprimés
       const monthSummary = document.getElementById('month-summary');
       const modal = document.getElementById('booking-modal');
-      const closeModalBtn = document.getElementById('close-modal');
       const modalDateEl = document.getElementById('modal-date');
       const bookingDateInput = document.getElementById('booking-date');
       const addBookingForm = document.getElementById('add-booking-form');
       const existingBookingsList = document.getElementById('existing-bookings-list');
+      const existingBookingsBox = document.getElementById('existing-bookings'); // Ajouté pour référence
       const newBookingSection = document.getElementById('new-booking-section');
       const bookingNotes = document.getElementById('booking-notes');
       const bookingAccessories = document.getElementById('booking-accessories');
@@ -478,6 +463,7 @@
       const bookingAccessoriesDetails = document.getElementById('booking-accessories-details');
       const bookingCost = document.getElementById('booking-cost');
       const bookingPaid = document.getElementById('booking-paid');
+      const bookingDiscount = document.getElementById('booking-discount');
       const bookingRemaining = document.getElementById('booking-remaining');
       const bookingDepositYes = document.getElementById('booking-deposit-yes');
       const bookingDepositNo = document.getElementById('booking-deposit-no');
@@ -493,22 +479,24 @@
       const dressOptionsDropdown = document.getElementById('dress-options-dropdown');
       const bookingSubmitText = document.getElementById('booking-submit-text');
 
-      const importInput = document.getElementById('import-input');
-      const loadingOverlay = document.getElementById('loading-overlay');
-
-      // -------- DOM REFS POUR LA RECHERCHE (Conservés) --------
       const searchInput = document.getElementById('reservation-search-input');
       const searchResultsContainer = document.getElementById('search-results-container');
+      const { Databases, Query, Permission, Role, ID } = Appwrite; // Destructuration Appwrite pour les classes
+
 
       // -------- Helpers UI --------
       function calculateRemaining() {
         const cost = Math.max(0, parseFloat(bookingCost.value) || 0);
         const paid = Math.max(0, parseFloat(bookingPaid.value) || 0);
-        const remaining = cost - paid;
+        const discount = Math.max(0, parseFloat(bookingDiscount.value) || 0); 
+        
+        const remaining = cost - paid - discount;
+        
         const abs = Math.abs(remaining);
         bookingRemaining.value = `${DAfmt.format(abs)}${remaining < 0 ? ' (trop-perçu)' : ''}`;
       }
-
+      
+      // ... (vos fonctions renderMonthSummary et generateCalendar) ...
       async function renderMonthSummary(year, month) {
         const ym = `${year}-${String(month + 1).padStart(2, '0')}`;
         let count = 0, encaisse = 0, reste = 0;
@@ -518,22 +506,16 @@
             count += 1;
             const cost = parseFloat(b.coutTotal) || 0;
             const paid = parseFloat(b.verse) || 0;
+            const discount = parseFloat(b.discount) || 0; // Utiliser le discount pour le calcul réel
             encaisse += paid;
-            reste += Math.max(0, cost - paid);
+            reste += Math.max(0, cost - paid - discount); // Le reste doit prendre en compte la remise
           }
         });
-        let user;
-        try {
-          user = await account.get();
-        } catch {
-          console.warn("Aucun utilisateur connecté");
-        }
+        
+        const user = getCurrentUser();
 
-        // ✅ Vérifie si c’est l’utilisateur autorisé
-        const ADMIN_EMAIL = "rbekani@gmail.com"; // <-- mets ton email Appwrite ici
-
-        if (user && user.email === ADMIN_EMAIL) {
-          // Affiche le résumé uniquement pour cet utilisateur
+        // Si l'utilisateur est l'admin, afficher le résumé
+        if (user && user.email === "rbekani@gmail.com") {
           monthSummary.classList.remove('hidden');
           monthSummary.innerHTML = `
       <div class="flex flex-wrap gap-4">
@@ -549,7 +531,6 @@
         }
       }
 
-      // -------- Calendrier --------
       function generateCalendar(year, month) {
         currentMonthEl.textContent = new Date(year, month, 1)
           .toLocaleDateString('fr-FR', { month: 'long', year: 'numeric' });
@@ -570,7 +551,7 @@
 
           const dayEl = document.createElement('div');
           dayEl.className =
-            "calendar-day border rounded-lg bg-white shadow-sm hover:shadow-md transition-all p-2 flex flex-col cursor-pointer";
+  "calendar-day border rounded-lg bg-white shadow-sm hover:shadow-md transition-all p-2 flex flex-col cursor-pointer";
 
           dayEl.dataset.date = dateStr;
 
@@ -593,7 +574,7 @@
           if (dayBookings.length) {
             const badge = document.createElement('span');
             badge.className =
-              "ml-auto inline-flex items-center justify-center px-2 py-[2px] rounded-full bg-red-500 text-white text-[10px] font-semibold";
+  "ml-auto inline-flex items-center justify-center px-2 py-[2px] rounded-full bg-red-500 text-white text-[10px] font-semibold";
 
             badge.textContent = dayBookings.length;
             headerWrap.appendChild(badge);
@@ -602,7 +583,7 @@
 
           const bookingsContainer = document.createElement('div');
           bookingsContainer.className =
-            "mt-1 text-[11px] space-y-1 overflow-y-auto flex-1 text-slate-700";
+  "mt-1 text-[11px] space-y-1 overflow-y-auto flex-1 text-slate-700";
 
 
           dayBookings.forEach(booking => {
@@ -645,6 +626,9 @@
         bookingDepositYes.checked = false;
         depositAmountContainer.classList.add('hidden');
         bookingDepositAmount.value = '';
+        
+        bookingDiscount.value = '0'; // NOUVEAU : Réinitialiser le champ Discount
+        
         dressOptionsDropdown.classList.add('hidden');
         dressOptionsDropdown.innerHTML = '';
         dressSearchInput.value = '';
@@ -661,7 +645,6 @@
           .filter(b => b.date.startsWith(date))
           .sort((a, b) => (a.reservationTimestamp || '').localeCompare(b.reservationTimestamp || ''));
 
-        const existingBookingsBox = document.getElementById('existing-bookings');
         existingBookingsList.innerHTML = '';
 
         if (bookingsForDay.length > 0) {
@@ -675,8 +658,14 @@
             wrap.className = 'bg-gray-100 p-2 rounded';
             const cost = parseFloat(booking.coutTotal) || 0;
             const paid = parseFloat(booking.verse) || 0;
-            const remaining = cost - paid;
+            const discount = parseFloat(booking.discount) || 0; // NOUVEAU : Récupérer le discount
+            const remaining = cost - paid - discount; // MODIFIÉ : Soustraire le discount
             const remainingClass = remaining > 0 ? 'text-red-600 font-semibold' : 'text-green-600';
+            
+            // Statut
+            const currentStatus = (booking.status || 'en attente').toLowerCase();
+            const statusClass = getStatusClass(currentStatus);
+            
             let accessoriesHtml = '';
             if (booking.accessoires) {
               let text = `Accessoires: ${booking.accessoiresDetails || 'Oui'}`;
@@ -691,23 +680,18 @@
               const formatted = d.toLocaleDateString('fr-FR') + ' à ' + d.toLocaleTimeString('fr-FR', { hour: '2-digit', minute: '2-digit' });
               timestampHtml = `<div class="text-xs text-gray-500 pl-6 mt-1 italic">Réservé le: ${formatted}</div>`;
             }
-
-            const currentStatus = booking.status || 'En attente';
-            const statusClass = getStatusClass(currentStatus);
-
-
-wrap.innerHTML = `
-            <div class="flex justify-between items-start gap-3">
+            
+            wrap.innerHTML = `
+            <div class="flex justify-between items-start gap-2">
               <div class="flex-grow">
                 
-                <div class="flex flex-wrap justify-between items-start gap-2 mb-1">
-                    <span class="text-sm text-slate-800">
-                        <i class="fas fa-tshirt text-slate-400 mr-1.5"></i>
-                        <strong>${dressNames}</strong> - ${booking.clientName}
+                <div class="flex flex-wrap items-start justify-between gap-2 mb-1">
+                    <span>
+                        <i class="fas fa-tshirt text-gray-500 mr-2"></i><strong>${dressNames}</strong> - ${booking.clientName}
                     </span>
-
-                    <select class="booking-status-select text-[11px] font-bold py-1 px-2 rounded-md border cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors ${statusClass}" 
-                            data-booking-id="${booking.$id}">
+                    
+                    <select class="booking-status-select text-[11px] font-bold py-1 px-2 rounded-md border cursor-pointer outline-none transition-colors ${statusClass}" 
+                            data-booking-id="${booking.$id}" data-old-status="${currentStatus}">
                         <option value="en attente" ${currentStatus === 'en attente' ? 'selected' : ''}>En attente</option>
                         <option value="retiré" ${currentStatus === 'retiré' ? 'selected' : ''}>Retiré</option>
                         <option value="rendu" ${currentStatus === 'rendu' ? 'selected' : ''}>Rendu</option>
@@ -720,40 +704,28 @@ wrap.innerHTML = `
                 ${accessoriesHtml}
                 ${notesHtml}
                 
-                ${(cost > 0 || paid > 0) ? `
-                  <div class="text-xs text-gray-700 pl-6 mt-1 border-t border-slate-200 pt-1">
-                    Coût: ${DAfmt.format(cost)} | Versé: ${DAfmt.format(paid)} | <strong class="${remainingClass}">Reste: ${DAfmt.format(Math.max(0, remaining))}</strong>
+                ${(cost > 0 || paid > 0 || discount > 0) ? `
+                  <div class="text-xs text-gray-700 pl-6 mt-1 border-t pt-1 space-y-0.5">
+                    <p>Coût: ${DAfmt.format(cost)} | Versé: ${DAfmt.format(paid)} ${discount > 0 ? `| Remise: ${DAfmt.format(discount)}` : ''}</p>
+                    <p><strong class="${remainingClass}">Reste à payer: ${DAfmt.format(Math.max(0, remaining))}</strong></p>
                   </div>
-                  ${booking.caution ? `<div class="text-[11px] text-amber-700 pl-6 mt-1 border-t border-slate-200 pt-1 flex items-center gap-1">
-                    <i class="fa-solid fa-triangle-exclamation text-amber-500"></i> Caution : <strong>${booking.cautionMontant || 0} DA</strong>
-                  </div>` : ''}
-                </div>` : ''}
+                  ${booking.caution ? `<div class="text-[11px] text-amber-700 pl-6 mt-1 border-t pt-1">
+      Caution : <strong>${booking.cautionMontant || 0} DA</strong>
+    </div>` : ''}
+  </div>` : ''
+              }
+
 
                 ${timestampHtml}
               </div>
-
- <div class="flex items-center gap-2 mt-2">
-
-  <button 
-    class="edit-booking-btn h-8 w-8 flex items-center justify-center 
-           rounded-full bg-white/70 backdrop-blur-sm 
-           border border-slate-300/50 shadow-sm 
-           text-blue-600 hover:bg-blue-50/60 transition-all duration-200"
-    data-booking-id="${booking.$id}">
-    <i class="fas fa-pen text-[13px]"></i>
-  </button>
-
-  <button 
-    class="delete-booking-btn h-8 w-8 flex items-center justify-center 
-           rounded-full bg-white/70 backdrop-blur-sm 
-           border border-slate-300/50 shadow-sm 
-           text-red-500 hover:bg-red-50/60 transition-all duration-200"
-    data-booking-id="${booking.$id}">
-    <i class="fas fa-trash text-[13px]"></i>
-  </button>
-
-</div>
-
+              <div class="flex flex-col gap-1 items-end">
+                <button class="edit-booking-btn text-blue-500 hover:text-blue-700 p-1.5 rounded-full" data-booking-id="${booking.$id}" aria-label="Modifier la réservation">
+                  <i class="fas fa-pencil-alt"></i>
+                </button>
+                <button class="delete-booking-btn text-red-500 hover:text-red-700 p-1.5 rounded-full" data-booking-id="${booking.$id}" aria-label="Supprimer la réservation">
+                  <i class="fas fa-trash-alt"></i>
+                </button>
+              </div>
             </div>
           `;
             frag.appendChild(wrap);
@@ -807,7 +779,6 @@ wrap.innerHTML = `
         } else {
 
 
-
           dressOptionsDropdown.innerHTML = '<p class="text-sm text-gray-500 italic p-2">Aucune robe disponible pour ce jour.</p>';
         }
 
@@ -831,16 +802,54 @@ wrap.innerHTML = `
         modal.classList.add('modal-hidden');
         if (prevFocusedEl && typeof prevFocusedEl.focus === 'function') prevFocusedEl.focus();
       }
+      
+      // --- NOUVEAU GESTIONNAIRE DE STATUT ---
+      async function handleStatusChangeCalendar(e) {
+          if (!e.target.classList.contains('booking-status-select')) return;
 
+          const selectEl = e.target;
+          const bookingId = selectEl.dataset.bookingId;
+          const newStatus = selectEl.value;
+          
+          // Mise à jour visuelle et désactivation
+          selectEl.className = `booking-status-select text-[11px] font-bold py-1 px-2 rounded-md border cursor-pointer outline-none transition-colors ${getStatusClass(newStatus)}`;
+          selectEl.disabled = true;
+
+          try {
+              // Sauvegarde dans Appwrite
+              const updatedDoc = await databases.updateDocument(DB_ID, COL_BOOKINGS, bookingId, {
+                  status: newStatus
+              });
+
+              // Mise à jour de l'état local (bookings array)
+              const index = bookings.findIndex(b => b.$id === bookingId);
+              if (index > -1) {
+                  bookings[index] = updatedDoc;
+              }
+              
+              // Re-render la liste existante dans le modal et le calendrier
+              openModal(bookingDateInput.value); 
+              generateCalendar(currentDate.getFullYear(), currentDate.getMonth()); 
+
+          } catch (error) {
+              console.error("Erreur mise à jour statut:", error);
+              alert("Impossible de changer le statut : " + error.message);
+          } finally {
+              selectEl.disabled = false;
+          }
+      }
+
+      // ... (vos fonctions handleBookingSubmit, startEditBooking, handleSearch, renderSearchResults, handleBookingActionClick) ...
       async function handleBookingSubmit(e) {
         e.preventDefault();
-
+        
+        // Sécurité utilisateur (via auth.js)
         const user = getCurrentUser();
         if (!user) {
           alert("Erreur critique : utilisateur non connecté.");
           return;
         }
-
+        
         const submitBtn = e.target.querySelector('button[type="submit"]');
         submitBtn.disabled = true;
         bookingSubmitText.textContent = editingBookingId ? 'Modification...' : 'Réservation...';
@@ -862,10 +871,13 @@ wrap.innerHTML = `
           ? document.querySelector('input[name="accessories-cost"]:checked').value
           : '';
 
+
         const hasDeposit = document.querySelector('input[name="booking-deposit"]:checked')?.value === 'oui';
         const depositAmount = hasDeposit ? Math.max(0, parseFloat(bookingDepositAmount.value) || 0) : 0;
+        
+        const discountValue = Math.max(0, parseFloat(bookingDiscount.value) || 0); // NOUVEAU: Récupérer le discount
 
-        // Prépare les données pour la réservation
+
         const appwriteData = {
           dressIds: selectedDressIds,
           date: bookingDateISO,
@@ -880,97 +892,73 @@ wrap.innerHTML = `
           verse: Math.max(0, parseFloat(bookingPaid.value) || 0),
           caution: hasDeposit,
           cautionMontant: depositAmount,
-          userId: user.$id
+          discount: discountValue, // NOUVEAU CHAMP DANS APPWRITE
+          status: 'en attente', // DÉFAUT : Nouvelle réservation est en attente
+          userId: user.$id // SÉCURITÉ
         };
 
         try {
-          // ## CAS 1 : MODIFICATION D'UNE RÉSERVATION EXISTANTE ##
           if (editingBookingId) {
             if (newBookingSelectedDressIds.length === 0) {
               const originalBooking = bookings.find(b => b.$id === editingBookingId);
               appwriteData.dressIds = originalBooking.dressIds || [];
             }
+            // Mise à jour (pas besoin de permissions ici)
             const updatedDoc = await databases.updateDocument(DB_ID, COL_BOOKINGS, editingBookingId, appwriteData);
             const index = bookings.findIndex(b => b.$id === editingBookingId);
             if (index > -1) {
               bookings[index] = updatedDoc;
             }
-
-            // TODO (Optionnel) : Gérer les événements de location
-            // Si les robes ou la date ont changé, il faudrait mettre à jour les
-            // documents "dress_events" correspondants. C'est plus complexe.
-            // Pour l'instant, on ne fait rien, mais gardez-le en tête.
-
-            // ## CAS 2 : CRÉATION D'UNE NOUVELLE RÉSERVATION ##
           } else {
             appwriteData.reservationTimestamp = new Date().toISOString();
-
-            // Prépare les permissions pour la nouvelle réservation
+            
+            // Permissions pour la création
             const bookingPermissions = [
               Permission.read(Role.user(user.$id)),
               Permission.update(Role.user(user.$id)),
               Permission.delete(Role.user(user.$id))
             ];
-
-            // Crée le document de réservation
-            const newDoc = await databases.createDocument(
-              DB_ID,
-              COL_BOOKINGS,
-              ID.unique(),
-              appwriteData,
-              bookingPermissions // Ajout des permissions
-            );
-
+            
+            const newDoc = await databases.createDocument(DB_ID, COL_BOOKINGS, ID.unique(), appwriteData, bookingPermissions);
             bookings.push(newDoc);
-
-            // --- AJOUT DE L'ÉVÉNEMENT DANS L'HISTORIQUE ---
-            // Prépare les permissions pour les documents d'événement
+            
+            // Logique d'ajout d'événement de location
             const eventPermissions = [
               Permission.read(Role.user(user.$id)),
               Permission.update(Role.user(user.$id)),
               Permission.delete(Role.user(user.$id))
             ];
 
-            // Crée un événement "Location" pour chaque robe sélectionnée
             for (const dressId of selectedDressIds) {
-              const eventData = {
-                userId: user.$id,
-                dressId: dressId,
-                date: bookingDateISO,
-                type: 'Location', // <-- Utilise votre type enuméré
-                notes: `Client: ${clientName}` + (appwriteData.voucherNumber ? ` (Bon: ${appwriteData.voucherNumber})` : ''),
-                bookingId: newDoc.$id // Lie l'événement à la réservation
-              };
-
-              // On crée l'événement.
-              // On utilise "await" pour s'assurer qu'ils sont créés avant de fermer,
-              // mais on ne gère pas les erreurs ici pour ne pas bloquer l'utilisateur.
-              // (Une meilleure gestion des erreurs pourrait être ajoutée plus tard)
-              try {
-                await databases.createDocument(DB_ID, "dress_events", ID.unique(), eventData, eventPermissions);
-              } catch (eventError) {
-                console.error(`Impossible de créer l'événement pour la robe ${dressId}:`, eventError);
-                // On n'alerte pas l'utilisateur, la réservation a fonctionné.
-              }
+                const eventData = {
+                    userId: user.$id,
+                    dressId: dressId,
+                    date: bookingDateISO,
+                    type: 'Location',
+                    notes: `Client: ${clientName}` + (appwriteData.voucherNumber ? ` (Bon: ${appwriteData.voucherNumber})` : ''),
+                    bookingId: newDoc.$id 
+                };
+                try {
+                    await databases.createDocument(DB_ID, "dress_events", ID.unique(), eventData, eventPermissions);
+                } catch (eventError) {
+                    console.error(`Impossible de créer l'événement pour la robe ${dressId}:`, eventError);
+                }
             }
-            // --- FIN DE L'AJOUT D'ÉVÉNEMENT ---
           }
 
-          // Réinitialisation de l'interface
           closeModal();
           generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
           handleSearch({ target: searchInput }); // Rafraîchir la recherche
           accessoriesDetailsContainer.classList.add('hidden');
 
         } catch (error) {
-          console.error("Erreur Appwrite lors de la sauvegarde:", error);
+          console.error("Erreur Appwrite:", error);
           alert("Erreur lors de la sauvegarde: " + error.message);
         } finally {
           submitBtn.disabled = false;
-          // Remettre le texte initial
-          bookingSubmitText.textContent = editingBookingId ? 'Modifier la réservation' : 'Réserver';
         }
       }
+
       function startEditBooking(bookingId) {
         const bookingToEdit = bookings.find(b => b.$id === bookingId);
         if (!bookingToEdit) return;
@@ -982,6 +970,9 @@ wrap.innerHTML = `
         bookingVenue.value = bookingToEdit.venue || '';
         bookingCost.value = bookingToEdit.coutTotal || '';
         bookingPaid.value = bookingToEdit.verse || '';
+        
+        bookingDiscount.value = bookingToEdit.discount || '0'; // NOUVEAU: Charger le discount
+
         bookingNotes.value = bookingToEdit.remarque || '';
 
         bookingAccessories.checked = bookingToEdit.accessoires || false;
@@ -1139,6 +1130,42 @@ wrap.innerHTML = `
         }
       }
 
+      // --- NOUVEAU GESTIONNAIRE DE STATUT ---
+      async function handleStatusChangeCalendar(e) {
+          if (!e.target.classList.contains('booking-status-select')) return;
+
+          const selectEl = e.target;
+          const bookingId = selectEl.dataset.bookingId;
+          const newStatus = selectEl.value;
+          
+          // Mise à jour visuelle et désactivation
+          selectEl.className = `booking-status-select text-[11px] font-bold py-1 px-2 rounded-md border cursor-pointer outline-none transition-colors ${getStatusClass(newStatus)}`;
+          selectEl.disabled = true;
+
+          try {
+              // Sauvegarde dans Appwrite
+              const updatedDoc = await databases.updateDocument(DB_ID, COL_BOOKINGS, bookingId, {
+                  status: newStatus
+              });
+
+              // Mise à jour de l'état local (bookings array)
+              const index = bookings.findIndex(b => b.$id === bookingId);
+              if (index > -1) {
+                  bookings[index] = updatedDoc;
+              }
+              
+              // Re-render la liste existante dans le modal et le calendrier
+              openModal(bookingDateInput.value); 
+              generateCalendar(currentDate.getFullYear(), currentDate.getMonth()); 
+
+          } catch (error) {
+              console.error("Erreur mise à jour statut:", error);
+              alert("Impossible de changer le statut : " + error.message);
+          } finally {
+              selectEl.disabled = false;
+          }
+      }
+
       // -------- Events --------
       document.getElementById('prev-month').addEventListener('click', () => {
         currentDate.setMonth(currentDate.getMonth() - 1);
@@ -1160,54 +1187,15 @@ wrap.innerHTML = `
 
       bookingCost.addEventListener('input', calculateRemaining);
       bookingPaid.addEventListener('input', calculateRemaining);
+      bookingDiscount.addEventListener('input', calculateRemaining); // NOUVEL ÉCOUTEUR DISCOUNT
 
       calendarBody.addEventListener('click', (e) => {
         const dayEl = e.target.closest('.calendar-day');
         if (dayEl && dayEl.dataset.date) openModal(dayEl.dataset.date);
       });
 
-      // Les écouteurs pour 'dressListEl' et 'showAllBtn' ont été supprimés
-
-      // --- Gestionnaire de changement de statut ---
-      existingBookingsList.addEventListener('change', async (e) => {
-        if (e.target.classList.contains('booking-status-select')) {
-          const selectEl = e.target;
-          const bookingId = selectEl.dataset.bookingId;
-          const newStatus = selectEl.value;
-
-          // 1. Mise à jour visuelle immédiate (couleur)
-          // On retire toutes les anciennes classes de couleur et on met la nouvelle
-          selectEl.className = `booking-status-select text-[11px] font-bold py-1 px-2 rounded-md border cursor-pointer outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-colors ${getStatusClass(newStatus)}`;
-
-          // 2. Désactiver temporairement pour éviter le spam
-          selectEl.disabled = true;
-
-          try {
-            // 3. Sauvegarde dans Appwrite
-            await databases.updateDocument(DB_ID, COL_BOOKINGS, bookingId, {
-              status: newStatus
-            });
-
-            // 4. Mettre à jour l'état local (pour que le calendrier reste cohérent sans recharger)
-            const localBooking = bookings.find(b => b.$id === bookingId);
-            if (localBooking) {
-              localBooking.status = newStatus;
-            }
-            
-            console.log(`Statut mis à jour : ${newStatus}`);
-
-          } catch (error) {
-            console.error("Erreur mise à jour statut:", error);
-            alert("Impossible de changer le statut (vérifiez votre connexion).");
-            // En cas d'erreur, on pourrait recharger la liste, mais ici on laisse l'utilisateur réessayer
-          } finally {
-            selectEl.disabled = false;
-          }
-        }
-      });
-
-
-      existingBookingsList.addEventListener('click', handleBookingActionClick);
+      // AJOUT DU LISTENER POUR LE CHANGEMENT DE STATUT DANS LA LISTE EXISTANTE
+      existingBookingsList.addEventListener('change', handleStatusChangeCalendar);
       searchResultsContainer.addEventListener('click', handleBookingActionClick);
       searchInput.addEventListener('input', handleSearch);
 
@@ -1325,20 +1313,14 @@ wrap.innerHTML = `
 
       // -------- Init (Fonction principale asynchrone) --------
       async function main() {
-        if (loadingOverlay) loadingOverlay.classList.remove('hidden');
-
-        // 1. Récupérer l'utilisateur
+        
+        // Sécurité utilisateur
         const user = getCurrentUser();
         if (!user) {
-          if (loadingOverlay) loadingOverlay.classList.add('hidden');
-          console.error("Utilisateur non trouvé, chargement annulé.");
-          return;
+          return; 
         }
-
-
+        
         try {
-
-          // !! On charge TOUJOURS les robes, même si on ne les affiche pas
           const [dressesResponse, bookingsResponse] = await Promise.all([
             databases.listDocuments(DB_ID, COL_DRESSES, [Query.limit(500), Query.equal("userId", [user.$id])]),
             databases.listDocuments(DB_ID, COL_BOOKINGS, [Query.limit(5000), Query.equal("userId", [user.$id])])
@@ -1346,7 +1328,6 @@ wrap.innerHTML = `
           dresses = dressesResponse.documents;
           bookings = bookingsResponse.documents;
 
-          // renderDresses() a été supprimé
           generateCalendar(currentDate.getFullYear(), currentDate.getMonth());
         } catch (error) {
           console.error("Impossible de charger les données Appwrite:", error);
@@ -1356,15 +1337,12 @@ wrap.innerHTML = `
             <p class="text-sm mt-2">Détails: ${error.message}</p>
             <p class="text-sm mt-2">Vérifie ta configuration et les permissions de tes collections.</pre>
         </div>`;
-        } finally {
-          if (loadingOverlay) loadingOverlay.classList.add('hidden');
         }
       }
 
       // Lance le chargement
       main();
-
-    };
+    }
   </script>
 
 </body>
